@@ -1,0 +1,17 @@
+*.[oa]
+*~
+*.swp
+*.svg
+*.png
+*.jpg
+*.eps
+*.pdf
+.tkenvrc
+out/
+/results/
+src/TrackingWSN
+simulations/.tkenvlog
+simulations/results/*.vec
+simulations/results/*.vci
+simulations/results/*.sca
+simulations/results/*.data
