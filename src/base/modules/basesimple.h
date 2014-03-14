@@ -26,9 +26,6 @@ BEGIN_NAMESPACE_TWSN
  */
 class BaseSimple : public cSimpleModule
 {
-    protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
 };
 
 END_NAMESPACE_TWSN

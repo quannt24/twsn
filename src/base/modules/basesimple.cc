@@ -18,11 +18,3 @@
 USING_NAMESPACE_TWSN
 
 Define_Module(BaseSimple);
-
-void BaseSimple::initialize()
-{
-}
-
-void BaseSimple::handleMessage(cMessage *msg)
-{
-}
