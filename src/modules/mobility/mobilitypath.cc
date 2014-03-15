@@ -22,6 +22,9 @@ Define_Module(MobilityPath);
 
 void MobilityPath::initialize()
 {
+    // Call initialize() of parent
+    BaseMobility::initialize();
+
     if (par("moving").boolValue()) {
         // Load path from file
         pathLen = loadPath() - 1;

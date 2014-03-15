@@ -13,29 +13,32 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "basemobility.h"
+#ifndef __TWSN_BASEPHY_H_
+#define __TWSN_BASEPHY_H_
 
-USING_NAMESPACE_TWSN
+#include <omnetpp.h>
+#include "twsndef.h"
+#include "basesimple.h"
 
-Define_Module(BaseMobility);
+BEGIN_NAMESPACE_TWSN
 
-void BaseMobility::initialize()
-{
-    // Call initialize() of parent
-    BaseSimple::initialize();
-
-    setCoord(par("posX").doubleValue(), par("posY").doubleValue());
-    updateDisplay();
-}
-
-/*
- * Update display of parent module in simulation
+/**
+ * Base class for physical layer
  */
-void BaseMobility::updateDisplay()
+class BasePhy : public BaseSimple
 {
-    cDisplayString &ds = getParentModule()->getDisplayString();
+    protected:
+        /** Delegate jobs to other message handling functions. */
+        virtual void handleMessage(cMessage *msg);
 
-    // Update displayed position according to object's coordination (x,y)
-    ds.setTagArg("p", 0, coord.getX());
-    ds.setTagArg("p", 1, coord.getY());
-}
+        /** Handle self message */
+        virtual void handleSelfMsg(cMessage *msg);
+        /** Handle message/packet from upperIn */
+        virtual void handleUpperMsg(cMessage *msg);
+        /** Handle control message from upperCtlIn */
+        virtual void handleUpperCtl(cMessage *msg);
+};
+
+END_NAMESPACE_TWSN
+
+#endif

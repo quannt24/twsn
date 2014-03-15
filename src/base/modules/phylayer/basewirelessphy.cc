@@ -13,29 +13,33 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "basemobility.h"
+#include "basewirelessphy.h"
 
 USING_NAMESPACE_TWSN
 
-Define_Module(BaseMobility);
+Define_Module(BaseWirelessPhy);
 
-void BaseMobility::initialize()
+void BaseWirelessPhy::initialize()
 {
     // Call initialize() of parent
-    BaseSimple::initialize();
+    BasePhy::initialize();
 
-    setCoord(par("posX").doubleValue(), par("posY").doubleValue());
-    updateDisplay();
+    // TODO Register with ChannelMgr
 }
 
-/*
- * Update display of parent module in simulation
- */
-void BaseMobility::updateDisplay()
+void BaseWirelessPhy::handleMessage(cMessage *msg)
 {
-    cDisplayString &ds = getParentModule()->getDisplayString();
+    if (msg->isSelfMessage()) {
+        handleSelfMsg(msg);
+    } else if (msg->getArrivalGate() == gate("upper$i")) {
+        handleUpperMsg(msg);
+    } else if (msg->getArrivalGate() == gate("upperCtl$i")) {
+        handleUpperCtl(msg);
+    } else if (msg->getArrivalGate() == gate("radioIn")) {
+        handleAirFrame(msg);
+    }
+}
 
-    // Update displayed position according to object's coordination (x,y)
-    ds.setTagArg("p", 0, coord.getX());
-    ds.setTagArg("p", 1, coord.getY());
+void BaseWirelessPhy::handleAirFrame(cMessage* msg)
+{
 }

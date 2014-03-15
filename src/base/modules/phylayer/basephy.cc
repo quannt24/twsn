@@ -13,29 +13,31 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "basemobility.h"
+#include "basephy.h"
 
 USING_NAMESPACE_TWSN
 
-Define_Module(BaseMobility);
+Define_Module(BasePhy);
 
-void BaseMobility::initialize()
+void BasePhy::handleMessage(cMessage *msg)
 {
-    // Call initialize() of parent
-    BaseSimple::initialize();
-
-    setCoord(par("posX").doubleValue(), par("posY").doubleValue());
-    updateDisplay();
+    if (msg->isSelfMessage()) {
+        handleSelfMsg(msg);
+    } else if (msg->getArrivalGate() == gate("upper$i")) {
+        handleUpperMsg(msg);
+    } else if (msg->getArrivalGate() == gate("upperCtl")) {
+        handleUpperCtl(msg);
+    }
 }
 
-/*
- * Update display of parent module in simulation
- */
-void BaseMobility::updateDisplay()
+void BasePhy::handleSelfMsg(cMessage* msg)
 {
-    cDisplayString &ds = getParentModule()->getDisplayString();
+}
 
-    // Update displayed position according to object's coordination (x,y)
-    ds.setTagArg("p", 0, coord.getX());
-    ds.setTagArg("p", 1, coord.getY());
+void BasePhy::handleUpperMsg(cMessage* msg)
+{
+}
+
+void BasePhy::handleUpperCtl(cMessage* msg)
+{
 }

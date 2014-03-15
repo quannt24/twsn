@@ -20,6 +20,7 @@ INCLUDE_PATH = \
     -Ibase/entities \
     -Ibase/modules \
     -Ibase/modules/mobility \
+    -Ibase/modules/phylayer \
     -Imodules \
     -Imodules/mobility \
     -Iutil
@@ -36,7 +37,13 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
-OBJS = $O/base/modules/basesimple.o $O/base/modules/mobility/basemobility.o $O/modules/mobility/mobilitypath.o $O/util/coord.o
+OBJS = \
+    $O/base/modules/basesimple.o \
+    $O/base/modules/mobility/basemobility.o \
+    $O/base/modules/phylayer/basephy.o \
+    $O/base/modules/phylayer/basewirelessphy.o \
+    $O/modules/mobility/mobilitypath.o \
+    $O/util/coord.o
 
 # Message files
 MSGFILES =
@@ -117,6 +124,7 @@ clean:
 	$(Q)-rm -f base/entities/*_m.cc base/entities/*_m.h
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
+	$(Q)-rm -f base/modules/phylayer/*_m.cc base/modules/phylayer/*_m.h
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
 	$(Q)-rm -f util/*_m.cc util/*_m.h
@@ -126,7 +134,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/entities/*.cc base/modules/*.cc base/modules/mobility/*.cc modules/*.cc modules/mobility/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/entities/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc modules/*.cc modules/mobility/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/modules/basesimple.o: base/modules/basesimple.cc \
@@ -136,6 +144,15 @@ $O/base/modules/mobility/basemobility.o: base/modules/mobility/basemobility.cc \
 	base/modules/basesimple.h \
 	base/modules/mobility/basemobility.h \
 	util/coord.h \
+	util/twsndef.h
+$O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
+	base/modules/basesimple.h \
+	base/modules/phylayer/basephy.h \
+	util/twsndef.h
+$O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessphy.cc \
+	base/modules/basesimple.h \
+	base/modules/phylayer/basephy.h \
+	base/modules/phylayer/basewirelessphy.h \
 	util/twsndef.h
 $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	base/modules/basesimple.h \

@@ -13,29 +13,28 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "basemobility.h"
+package twsn.base.modules.phylayer;
 
-USING_NAMESPACE_TWSN
+import twsn.base.modules.BaseSimple;
 
-Define_Module(BaseMobility);
-
-void BaseMobility::initialize()
+//
+// Base module for physical layer.
+// In actual simulation, this module should not be used; extends it with more specific parameters.
+//
+simple BasePhy extends BaseSimple like IPhy
 {
-    // Call initialize() of parent
-    BaseSimple::initialize();
+    parameters:
+        @class("BasePhy");
+        
+        // Length of physical header
+        int headerLen @unit(bit);
+        // Propagation delay
+        double propagationDelay @unit(s);
+		// Bit rate
+        int bitRate @unit(bps);
 
-    setCoord(par("posX").doubleValue(), par("posY").doubleValue());
-    updateDisplay();
-}
+    gates:
+        input upper; // For data packets from the MAC layer
+        input upperCtl; // For control messages from the MAC layer        
 
-/*
- * Update display of parent module in simulation
- */
-void BaseMobility::updateDisplay()
-{
-    cDisplayString &ds = getParentModule()->getDisplayString();
-
-    // Update displayed position according to object's coordination (x,y)
-    ds.setTagArg("p", 0, coord.getX());
-    ds.setTagArg("p", 1, coord.getY());
 }
