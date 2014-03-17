@@ -6,17 +6,15 @@
  */
 
 #include "coord.h"
+#include "math.h"
 
-USING_NAMESPACE_TWSN
+BEGIN_NAMESPACE_TWSN
 
-Coord::Coord()
+distance_t distance(Coord c1, Coord c2)
 {
-    x = 0; y = 0; z = 0;
+    return sqrt((c1.x - c2.x) * (c1.x - c2.x)
+            + (c1.y - c2.y) * (c1.y - c2.y)
+            + (c1.z - c2.z) * (c1.z - c2.z));
 }
 
-Coord::Coord(int x, int y, int z)
-{
-    this->x = x;
-    this->y = y;
-    this->z = z;
-}
+END_NAMESPACE_TWSN

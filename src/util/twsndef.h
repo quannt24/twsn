@@ -17,5 +17,6 @@
 
 /* Type definitions */
 typedef double distance_t;
+typedef int moduleid_t;
 
 #endif /* TWSNDEF_H_ */

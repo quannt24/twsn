@@ -17,6 +17,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 INCLUDE_PATH = \
     -I. \
     -Ibase \
+    -Ibase/channelmgr \
     -Ibase/entities \
     -Ibase/modules \
     -Ibase/modules/mobility \
@@ -38,6 +39,8 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
 OBJS = \
+    $O/base/channelmgr/phyentry.o \
+    $O/base/channelmgr/channelmgr.o \
     $O/base/modules/basesimple.o \
     $O/base/modules/mobility/basemobility.o \
     $O/base/modules/phylayer/basephy.o \
@@ -121,6 +124,7 @@ clean:
 	$(Q)-rm -f TWSN TWSN.exe libTWSN.so libTWSN.a libTWSN.dll libTWSN.dylib
 	$(Q)-rm -f ./*_m.cc ./*_m.h
 	$(Q)-rm -f base/*_m.cc base/*_m.h
+	$(Q)-rm -f base/channelmgr/*_m.cc base/channelmgr/*_m.h
 	$(Q)-rm -f base/entities/*_m.cc base/entities/*_m.h
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
@@ -134,9 +138,19 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/entities/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc modules/*.cc modules/mobility/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc modules/*.cc modules/mobility/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
+	base/channelmgr/channelmgr.h \
+	base/channelmgr/phyentry.h \
+	base/modules/basesimple.h \
+	util/coord.h \
+	util/twsndef.h
+$O/base/channelmgr/phyentry.o: base/channelmgr/phyentry.cc \
+	base/channelmgr/phyentry.h \
+	util/coord.h \
+	util/twsndef.h
 $O/base/modules/basesimple.o: base/modules/basesimple.cc \
 	base/modules/basesimple.h \
 	util/twsndef.h

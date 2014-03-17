@@ -18,25 +18,30 @@ BEGIN_NAMESPACE_TWSN
 class Coord
 {
     private:
-        int x, y, z;
+        double x, y, z;
 
     public:
         /** Constructors */
-        Coord();
-        Coord(int x, int y = 0, int z = 0);
+        Coord() { x = 0; y = 0; z = 0; };
+        Coord(double x, double y = 0, double z = 0) {
+            this->x = x;
+            this->y = y;
+            this->z = z;
+        };
 
-        int getX() const { return x; }
+        double getX() const { return x; }
+        void setX(double x) { this->x = x; }
 
-        void setX(int x) { this->x = x; }
+        double getY() const { return y; }
+        void setY(double y) { this->y = y; }
 
-        int getY() const { return y; }
+        double getZ() const { return z; }
+        void setZ(double z) { this->z = z; }
 
-        void setY(int y) { this->y = y; }
-
-        int getZ() const { return z; }
-
-        void setZ(int z) { this->z = z; }
+        friend distance_t distance(Coord c1, Coord c2);
 };
+
+distance_t distance(Coord c1, Coord c2);
 
 END_NAMESPACE_TWSN
 

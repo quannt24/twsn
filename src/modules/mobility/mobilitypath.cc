@@ -16,7 +16,7 @@
 #include "mobilitypath.h"
 #include <fstream>
 
-USING_NAMESPACE_TWSN
+BEGIN_NAMESPACE_TWSN
 
 Define_Module(MobilityPath);
 
@@ -108,3 +108,5 @@ MobilityPath::~MobilityPath()
     cancelAndDelete(moveMsg);
     delete coordArr;
 }
+
+END_NAMESPACE_TWSN

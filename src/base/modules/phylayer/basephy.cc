@@ -15,7 +15,7 @@
 
 #include "basephy.h"
 
-USING_NAMESPACE_TWSN
+BEGIN_NAMESPACE_TWSN
 
 Define_Module(BasePhy);
 
@@ -41,3 +41,5 @@ void BasePhy::handleUpperMsg(cMessage* msg)
 void BasePhy::handleUpperCtl(cMessage* msg)
 {
 }
+
+END_NAMESPACE_TWSN

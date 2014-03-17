@@ -13,31 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "basemobility.h"
+package twsn.base.channelmgr;
 
-BEGIN_NAMESPACE_TWSN
-
-Define_Module(BaseMobility);
-
-void BaseMobility::initialize()
+//
+// Central module for simulating wireless channel
+//
+simple ChannelMgr
 {
-    // Call initialize() of parent
-    BaseSimple::initialize();
-
-    setCoord(par("posX").doubleValue(), par("posY").doubleValue());
-    updateDisplay();
 }
-
-/*
- * Update display of parent module in simulation
- */
-void BaseMobility::updateDisplay()
-{
-    cDisplayString &ds = getParentModule()->getDisplayString();
-
-    // Update displayed position according to object's coordination (x,y)
-    ds.setTagArg("p", 0, coord.getX());
-    ds.setTagArg("p", 1, coord.getY());
-}
-
-END_NAMESPACE_TWSN
