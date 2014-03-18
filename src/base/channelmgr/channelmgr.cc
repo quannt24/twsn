@@ -14,6 +14,7 @@
 // 
 
 #include "channelmgr.h"
+#include <iomanip>
 
 namespace twsn {
 
@@ -56,6 +57,7 @@ void ChannelMgr::initCAT()
     int i, j;
     std::list<PhyEntry>::iterator peIt1, peIt2;
 
+    std::cerr << "ChannelMgr::initCAT\n";
     for (i = 0, peIt1 = peList.begin(); i < listSize; i++, peIt1++) {
         channelAccessTbl[i] = new int[listSize]; // Allocate memory
 
@@ -65,8 +67,10 @@ void ChannelMgr::initCAT()
             } else {
                 channelAccessTbl[i][j] = CAT_OUT_OF_RANGE;
             }
-            // TODO print for test
+            // TODO Print for test
+            std::cerr << std::setw(3) << channelAccessTbl[i][j] << ' ';
         }
+        std::cerr << endl; // TODO For test
     }
 }
 
@@ -88,7 +92,7 @@ ChannelMgr::~ChannelMgr()
     peList.clear();
 }
 
-void ChannelMgr::registerChannel(moduleid_t moduleId, Coord& coord, distance_t txRange)
+void ChannelMgr::registerChannel(moduleid_t moduleId, Coord coord, distance_t txRange)
 {
     // Only allow register in initialization stage 0
     if (currInitStage != 0) {
@@ -108,6 +112,33 @@ void ChannelMgr::registerChannel(moduleid_t moduleId, Coord& coord, distance_t t
 
     // Add new physical entry to list
     peList.push_back(PhyEntry(moduleId, coord, txRange, peList.size()));
+}
+
+std::list<int> ChannelMgr::getAdjPhyList(moduleid_t moduleId)
+{
+    std::list<int> adjList;
+
+    if ((currInitStage >= 0 && currInitStage < 2) || channelAccessTbl == NULL) {
+        EV << "ChannelMgr::warning: Adjacent list is not ready\n";
+        return adjList; // Return an empty list
+    }
+
+    int listSize = peList.size();
+    int i, j;
+    std::list<PhyEntry>::iterator peIt1, peIt2;
+
+    for (i = 0, peIt1 = peList.begin(); i < listSize; i++, peIt1++) {
+        if ((*peIt1).getModuleId() == moduleId) {
+            for (j = 0, peIt2 = peList.begin(); j < listSize; j++, peIt2++) {
+                if (channelAccessTbl[i][j] != CAT_OUT_OF_RANGE) {
+                    adjList.push_back((*peIt2).getModuleId());
+                }
+            }
+            break; // No need to loop more
+        }
+    }
+
+    return adjList;
 }
 
 } /* Namespace twsn */

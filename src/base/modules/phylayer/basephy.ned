@@ -27,14 +27,13 @@ simple BasePhy extends BaseSimple like IPhy
         @class("twsn::BasePhy");
         
         // Length of physical header
-        int headerLen @unit(bit);
+        int headerLen @unit(bit) = default(0 bit);
         // Propagation delay
-        double propagationDelay @unit(s);
+        double propagationDelay @unit(s) = default(0 s);
 		// Bit rate
-        int bitRate @unit(bps);
+        int bitRate @unit(bps) = default(250000 bps);
 
     gates:
-        input upper; // For data packets from the MAC layer
-        input upperCtl; // For control messages from the MAC layer        
-
+        input upper @loose; // For data packets from the MAC layer
+        input upperCtl @loose; // For control messages from the MAC layer        
 }

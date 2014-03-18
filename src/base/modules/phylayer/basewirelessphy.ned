@@ -27,23 +27,24 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
         // so that we can simulate a fixed transmission range for each physical module.
         // This parameter should be configured corresponding with output power (dBm) and
         // sensitivity of simulated devices with corresponding current consumption.
-        double txRange @unit(m);
+        double txRange @unit(m) = default(50 m);
         
         // Current consumption
-        double currTx @unit(mA);
-        double currRx @unit(mA);
+        double currTx @unit(mA) = default(0 mA);
+        double currRx @unit(mA) = default(0 mA);
         
-        int initRadioMode; // Radio mode at start of simulation (0 = Idle; 1 = Rx; 2 = Tx)
+        // Radio mode at start of simulation (0 = Idle; 1 = Rx; 2 = Tx)
+        int initRadioMode = default (0);
         
         // Radio mode switching delay
-        double delayIdleToRx @unit(s);
-        double delayIdleToTx @unit(s);
+        double delayIdleToRx @unit(s) = default(0 s);
+        double delayIdleToTx @unit(s) = default(0 s);
         
-        double delayRxToIdle @unit(s);
-        double delayRxToTx @unit(s);
+        double delayRxToIdle @unit(s) = default(0 s);
+        double delayRxToTx @unit(s) = default(0 s);
         
-        double delayTxToIdle @unit(s);
-        double delayTxToRx @unit(s);
+        double delayTxToIdle @unit(s) = default(0 s);
+        double delayTxToRx @unit(s) = default(0 s);
         
     gates:
         input radioIn @directIn; // for sendDirect from other physical layers   

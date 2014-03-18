@@ -19,6 +19,7 @@
 #include <omnetpp.h>
 #include "twsndef.h"
 #include "basephy.h"
+#include "channelmgr.h"
 
 namespace twsn {
 
@@ -28,11 +29,23 @@ namespace twsn {
 class BaseWirelessPhy : public BasePhy
 {
     protected:
+        ChannelMgr *channelMgr;
+        /** List of IDs of adjacent nodes (including THIS node) */
+        std::list<int> adjPhyList;
+
+        /** Override to use 3 initialization stages */
+        virtual int numInitStages () const { return 3; };
         virtual void initialize();
+        virtual void initialize(int stage);
         virtual void handleMessage(cMessage *msg);
 
         /** Handle message sent directly */
         virtual void handleAirFrame(cMessage *msg); // TODO use dedicated type
+        /** Register with ChannelMgr */
+        virtual void registerChannel();
+
+    public:
+        BaseWirelessPhy();
 };
 
 }

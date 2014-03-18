@@ -19,6 +19,7 @@ INCLUDE_PATH = \
     -Ibase \
     -Ibase/channelmgr \
     -Ibase/entities \
+    -Ibase/entities/nodes \
     -Ibase/modules \
     -Ibase/modules/mobility \
     -Ibase/modules/phylayer \
@@ -128,6 +129,7 @@ clean:
 	$(Q)-rm -f base/*_m.cc base/*_m.h
 	$(Q)-rm -f base/channelmgr/*_m.cc base/channelmgr/*_m.h
 	$(Q)-rm -f base/entities/*_m.cc base/entities/*_m.h
+	$(Q)-rm -f base/entities/nodes/*_m.cc base/entities/nodes/*_m.h
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
 	$(Q)-rm -f base/modules/phylayer/*_m.cc base/modules/phylayer/*_m.h
@@ -142,7 +144,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -168,9 +170,13 @@ $O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
 	base/modules/phylayer/basephy.h \
 	util/twsndef.h
 $O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessphy.cc \
+	base/channelmgr/channelmgr.h \
+	base/channelmgr/phyentry.h \
 	base/modules/basesimple.h \
+	base/modules/mobility/basemobility.h \
 	base/modules/phylayer/basephy.h \
 	base/modules/phylayer/basewirelessphy.h \
+	util/coord.h \
 	util/twsndef.h
 $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	base/modules/basesimple.h \

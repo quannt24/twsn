@@ -62,7 +62,13 @@ class ChannelMgr : public BaseSimple
          * If a registered physical module calls this function or it's not initialization stage 0 at
          * the time this function is called, there will be no effect.
          */
-        void registerChannel(moduleid_t moduleId, Coord &coord, distance_t txRange);
+        void registerChannel(moduleid_t moduleId, Coord coord, distance_t txRange);
+
+        /**
+         * Return list of IDs of adjacent physical modules corresponding to an specific physical
+         * module. This function should be called after initialization stage 1.
+         */
+        std::list<int> getAdjPhyList(moduleid_t moduleId);
 };
 
 }

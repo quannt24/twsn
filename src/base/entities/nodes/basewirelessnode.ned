@@ -13,18 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.entities;
+package twsn.base.entities.nodes;
 
-import twsn.base.modules.mobility.IMobility;
+import twsn.base.entities.BaseEntity;
+import twsn.base.modules.phylayer.IWirelessPhy;
 
-//
-// Base module for an entity
-//
-module BaseEntity
+// Base module for all wireless nodes
+module BaseWirelessNode extends BaseEntity
 {
     parameters:
-        string mobilityType = default("BaseMobility");
-        
+        string phyType = default("BaseWirelessPhy");
+
     submodules:
-        mobility: <mobilityType> like IMobility;
+        phy: <phyType> like IWirelessPhy;
 }

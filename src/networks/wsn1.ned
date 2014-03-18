@@ -17,9 +17,12 @@ package twsn.networks;
 
 import twsn.base.networks.BaseNetwork;
 import twsn.base.channelmgr.ChannelMgr;
+import twsn.base.entities.nodes.BaseWirelessNode;
 
 network Wsn1 extends BaseNetwork
 {
     submodules:
         channelMgr: ChannelMgr;
+        node1: BaseWirelessNode;
+        node2: BaseWirelessNode;
 }
