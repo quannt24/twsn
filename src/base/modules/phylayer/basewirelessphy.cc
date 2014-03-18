@@ -24,6 +24,7 @@ Define_Module(BaseWirelessPhy);
 
 void BaseWirelessPhy::initialize()
 {
+    // Stage 0
     // Call initialize() of parent
     BasePhy::initialize();
 
@@ -41,8 +42,9 @@ void BaseWirelessPhy::initialize(int stage)
             initialize();
             break;
         case 1:
+            // Do nothing
             break;
-        default:
+        case 2:
             // Get list of adjacent nodes (which are in txRange of this node)
             if (channelMgr != NULL) adjPhyList = channelMgr->getAdjPhyList(getId());
             break;

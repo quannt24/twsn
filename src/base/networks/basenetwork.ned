@@ -17,4 +17,9 @@ package twsn.base.networks;
 
 network BaseNetwork
 {
+    parameters:
+        double width @unit(m) = default(50m);
+        double height @unit(m) = default(50m);
+        
+        @display("bgs=3,m;bgb=$width,$height;"); // 1m ~ 3px
 }

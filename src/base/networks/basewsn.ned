@@ -13,17 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.networks;
+package twsn.base.networks;
 
-import twsn.base.networks.BaseWSN;
 import twsn.base.channelmgr.ChannelMgr;
-import twsn.base.entities.nodes.BaseWirelessNode;
 
-network Wsn1 extends BaseWSN
+network BaseWSN extends BaseNetwork
 {
-    parameters:
-        int numNodes = default(5);
-        
     submodules:
-        node[numNodes]: BaseWirelessNode;
+        channelMgr: ChannelMgr;
 }
