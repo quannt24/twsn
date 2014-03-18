@@ -24,7 +24,7 @@ simple BaseMobility extends BaseSimple like IMobility
 {
     parameters:
         @display("i=block/cogwheel");
-        @class("BaseMobility");
+        @class("twsn::BaseMobility");
 
         bool moving = default(false); // Equal 'true' if object is moving
 

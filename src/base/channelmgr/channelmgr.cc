@@ -15,19 +15,20 @@
 
 #include "channelmgr.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 Define_Module(ChannelMgr);
 
 void ChannelMgr::initialize()
 {
     // Stage 0
-    EV << "ChannelMgr::info: initialization stage " << currInitStage << endl;
 }
 
 void ChannelMgr::initialize(int stage)
 {
     currInitStage = stage;
+    EV << "ChannelMgr::info: initialization stage " << currInitStage << endl;
+
     switch (stage) {
         case 0:
             initialize();
@@ -76,7 +77,7 @@ ChannelMgr::ChannelMgr()
 
 ChannelMgr::~ChannelMgr()
 {
-    int i;
+    unsigned int i;
 
     // Free CAT
     for (i = 0; i < peList.size(); i++) {
@@ -109,4 +110,4 @@ void ChannelMgr::registerChannel(moduleid_t moduleId, Coord& coord, distance_t t
     peList.push_back(PhyEntry(moduleId, coord, txRange, peList.size()));
 }
 
-END_NAMESPACE_TWSN
+} /* Namespace twsn */

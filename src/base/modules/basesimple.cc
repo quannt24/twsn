@@ -15,8 +15,8 @@
 
 #include "basesimple.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 Define_Module(BaseSimple);
 
-END_NAMESPACE_TWSN
+}

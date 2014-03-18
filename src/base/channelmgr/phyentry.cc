@@ -7,8 +7,8 @@
 
 #include "phyentry.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 
 
-END_NAMESPACE_TWSN
+}

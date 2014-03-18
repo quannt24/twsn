@@ -13,28 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules.phylayer;
+package twsn.base.networks;
 
-import twsn.base.modules.BaseSimple;
-
-//
-// Base module for physical layer.
-// In actual simulation, this module should not be used; extends it with more specific parameters.
-//
-simple BasePhy extends BaseSimple like IPhy
+network BaseNetwork
 {
-    parameters:
-        @class("twsn::BasePhy");
-        
-        // Length of physical header
-        int headerLen @unit(bit);
-        // Propagation delay
-        double propagationDelay @unit(s);
-		// Bit rate
-        int bitRate @unit(bps);
-
-    gates:
-        input upper; // For data packets from the MAC layer
-        input upperCtl; // For control messages from the MAC layer        
-
 }

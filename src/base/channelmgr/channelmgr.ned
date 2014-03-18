@@ -20,4 +20,6 @@ package twsn.base.channelmgr;
 //
 simple ChannelMgr
 {
+    parameters:
+    	@class("twsn::ChannelMgr");
 }

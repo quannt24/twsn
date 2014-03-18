@@ -22,8 +22,10 @@ INCLUDE_PATH = \
     -Ibase/modules \
     -Ibase/modules/mobility \
     -Ibase/modules/phylayer \
+    -Ibase/networks \
     -Imodules \
     -Imodules/mobility \
+    -Inetworks \
     -Iutil
 
 # Additional object and library files to link with
@@ -129,8 +131,10 @@ clean:
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
 	$(Q)-rm -f base/modules/phylayer/*_m.cc base/modules/phylayer/*_m.h
+	$(Q)-rm -f base/networks/*_m.cc base/networks/*_m.h
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
+	$(Q)-rm -f networks/*_m.cc networks/*_m.h
 	$(Q)-rm -f util/*_m.cc util/*_m.h
 
 cleanall: clean
@@ -138,7 +142,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc modules/*.cc modules/mobility/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \

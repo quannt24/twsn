@@ -15,7 +15,7 @@
 
 #include "basewirelessphy.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 Define_Module(BaseWirelessPhy);
 
@@ -44,4 +44,4 @@ void BaseWirelessPhy::handleAirFrame(cMessage* msg)
 {
 }
 
-END_NAMESPACE_TWSN
+}

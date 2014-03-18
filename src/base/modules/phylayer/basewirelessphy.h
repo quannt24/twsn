@@ -20,7 +20,7 @@
 #include "twsndef.h"
 #include "basephy.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 /**
  * Base module for wireless physical layer
@@ -35,6 +35,6 @@ class BaseWirelessPhy : public BasePhy
         virtual void handleAirFrame(cMessage *msg); // TODO use dedicated type
 };
 
-END_NAMESPACE_TWSN
+}
 
 #endif

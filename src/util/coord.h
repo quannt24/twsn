@@ -10,7 +10,7 @@
 
 #include "twsndef.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 /**
  * Coordination in pixel
@@ -43,6 +43,6 @@ class Coord
 
 distance_t distance(Coord c1, Coord c2);
 
-END_NAMESPACE_TWSN
+}
 
 #endif /* COORD_H_ */

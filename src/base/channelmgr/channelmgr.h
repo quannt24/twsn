@@ -22,7 +22,7 @@
 #include "phyentry.h"
 #include "coord.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 /** States used in channel access table */
 enum CATState{CAT_FREE, CAT_BUSY, CAT_OUT_OF_RANGE = -1};
@@ -65,6 +65,6 @@ class ChannelMgr : public BaseSimple
         void registerChannel(moduleid_t moduleId, Coord &coord, distance_t txRange);
 };
 
-END_NAMESPACE_TWSN
+}
 
 #endif

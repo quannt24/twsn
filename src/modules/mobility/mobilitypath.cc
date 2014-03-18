@@ -16,7 +16,7 @@
 #include "mobilitypath.h"
 #include <fstream>
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 Define_Module(MobilityPath);
 
@@ -109,4 +109,4 @@ MobilityPath::~MobilityPath()
     delete coordArr;
 }
 
-END_NAMESPACE_TWSN
+}

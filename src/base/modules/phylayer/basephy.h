@@ -20,7 +20,7 @@
 #include "twsndef.h"
 #include "basesimple.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 /**
  * Base class for physical layer
@@ -39,6 +39,6 @@ class BasePhy : public BaseSimple
         virtual void handleUpperCtl(cMessage *msg);
 };
 
-END_NAMESPACE_TWSN
+}
 
 #endif

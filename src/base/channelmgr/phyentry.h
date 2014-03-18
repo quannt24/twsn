@@ -11,7 +11,7 @@
 #include "twsndef.h"
 #include "coord.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 class PhyEntry
 {
@@ -47,6 +47,6 @@ class PhyEntry
         inline void setIndex(int index) { this->index = index; }
 };
 
-END_NAMESPACE_TWSN
+}
 
 #endif /* PHYENTRY_H_ */

@@ -15,7 +15,7 @@
 
 #include "basemobility.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 Define_Module(BaseMobility);
 
@@ -40,4 +40,4 @@ void BaseMobility::updateDisplay()
     ds.setTagArg("p", 1, coord.getY());
 }
 
-END_NAMESPACE_TWSN
+}

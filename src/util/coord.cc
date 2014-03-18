@@ -8,7 +8,7 @@
 #include "coord.h"
 #include "math.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 distance_t distance(Coord c1, Coord c2)
 {
@@ -17,4 +17,4 @@ distance_t distance(Coord c1, Coord c2)
             + (c1.z - c2.z) * (c1.z - c2.z));
 }
 
-END_NAMESPACE_TWSN
+}

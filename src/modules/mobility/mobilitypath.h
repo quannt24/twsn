@@ -20,7 +20,7 @@
 #include "twsndef.h"
 #include "basemobility.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 #define MAX_PATH_LEN 10000
 
@@ -47,6 +47,6 @@ class MobilityPath : public BaseMobility
         ~MobilityPath();
 };
 
-END_NAMESPACE_TWSN
+}
 
 #endif

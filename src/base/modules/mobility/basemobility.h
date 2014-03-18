@@ -21,7 +21,7 @@
 #include "basesimple.h"
 #include "coord.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 /**
  * Base class for all mobility modules, which provides logic about position and mobility of an Entity.
@@ -55,6 +55,6 @@ class BaseMobility : public BaseSimple
         void updateDisplay();
 };
 
-END_NAMESPACE_TWSN
+}
 
 #endif

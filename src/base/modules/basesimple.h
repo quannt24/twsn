@@ -19,7 +19,7 @@
 #include <omnetpp.h>
 #include "twsndef.h"
 
-BEGIN_NAMESPACE_TWSN
+namespace twsn {
 
 /**
  * Base class for simple module of a host.
@@ -28,6 +28,6 @@ class BaseSimple : public cSimpleModule
 {
 };
 
-END_NAMESPACE_TWSN
+}
 
 #endif

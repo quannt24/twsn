@@ -21,7 +21,7 @@ package twsn.base.modules.phylayer;
 simple BaseWirelessPhy extends BasePhy like IWirelessPhy
 {
     parameters:
-        @class("BaseWirelessPhy");
+        @class("twsn::BaseWirelessPhy");
         
         // For simplicity, all physical modules are assumed having the same signal sensitivity,
         // so that we can simulate a fixed transmission range for each physical module.

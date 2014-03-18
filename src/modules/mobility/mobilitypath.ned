@@ -23,7 +23,7 @@ import twsn.base.modules.mobility.BaseMobility;
 simple MobilityPath extends BaseMobility
 {
     parameters:
-        @class("MobilityPath");
+        @class("twsn::MobilityPath");
         
         // File that storing moving path
         // Each line of path file contain coordination of one point in form: "x y" (without ")

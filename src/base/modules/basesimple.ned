@@ -20,4 +20,6 @@ package twsn.base.modules;
 //
 simple BaseSimple
 {
+    parameters:
+        @class("twsn::BaseSimple");
 }
