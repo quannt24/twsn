@@ -16,14 +16,27 @@
 package twsn.networks;
 
 import twsn.base.networks.BaseWSN;
-import twsn.base.channelmgr.ChannelMgr;
-import twsn.base.entities.nodes.BaseWirelessNode;
+import twsn.base.entities.nodes.INode;
+import twsn.helpers.WorldHelper;
 
-network Wsn1 extends BaseWSN
+network TrackingWSN extends BaseWSN
 {
     parameters:
-        int numNodes = default(5);
+        width = default(400m);
+        height = default(400m);
+        rows = default(20);
+        cols = default(20);
         
+        string nodeType = default("BaseWirelessNode");
+        int numNodes = default(400); // Number of sensor nodes
+
     submodules:
-        node[numNodes]: BaseWirelessNode;
+        node[numNodes]: <nodeType> like INode {
+            
+        }
+        
+        // Helpers should be declared after all entities
+        worldHelper: WorldHelper {
+            @display("p=-20,10");
+        }
 }

@@ -7,6 +7,7 @@
 
 #include "coord.h"
 #include "math.h"
+#include <iostream>
 
 namespace twsn {
 

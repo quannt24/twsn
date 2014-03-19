@@ -20,5 +20,7 @@ import twsn.base.channelmgr.ChannelMgr;
 network BaseWSN extends BaseNetwork
 {
     submodules:
-        channelMgr: ChannelMgr;
+        channelMgr: ChannelMgr {
+            @display("p=-20,40");
+        }
 }

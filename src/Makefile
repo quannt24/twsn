@@ -24,6 +24,7 @@ INCLUDE_PATH = \
     -Ibase/modules/mobility \
     -Ibase/modules/phylayer \
     -Ibase/networks \
+    -Ihelpers \
     -Imodules \
     -Imodules/mobility \
     -Inetworks \
@@ -48,6 +49,7 @@ OBJS = \
     $O/base/modules/mobility/basemobility.o \
     $O/base/modules/phylayer/basephy.o \
     $O/base/modules/phylayer/basewirelessphy.o \
+    $O/helpers/worldhelper.o \
     $O/modules/mobility/mobilitypath.o \
     $O/util/coord.o
 
@@ -134,6 +136,7 @@ clean:
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
 	$(Q)-rm -f base/modules/phylayer/*_m.cc base/modules/phylayer/*_m.h
 	$(Q)-rm -f base/networks/*_m.cc base/networks/*_m.h
+	$(Q)-rm -f helpers/*_m.cc helpers/*_m.h
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
 	$(Q)-rm -f networks/*_m.cc networks/*_m.h
@@ -144,7 +147,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc helpers/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -176,6 +179,12 @@ $O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessph
 	base/modules/mobility/basemobility.h \
 	base/modules/phylayer/basephy.h \
 	base/modules/phylayer/basewirelessphy.h \
+	util/coord.h \
+	util/twsndef.h
+$O/helpers/worldhelper.o: helpers/worldhelper.cc \
+	base/modules/basesimple.h \
+	base/modules/mobility/basemobility.h \
+	helpers/worldhelper.h \
 	util/coord.h \
 	util/twsndef.h
 $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \

@@ -13,35 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "basemobility.h"
+#ifndef __TWSN_WORLDHELPER_H_
+#define __TWSN_WORLDHELPER_H_
+
+#include <omnetpp.h>
+#include "twsndef.h"
+#include "basesimple.h"
 
 namespace twsn {
 
-Define_Module(BaseMobility);
-
-void BaseMobility::initialize()
-{
-    // Call initialize() of parent
-    BaseSimple::initialize();
-
-    setCoord(par("posX").doubleValue(), par("posY").doubleValue());
-    updateDisplay();
-}
-
-/*
- * Update display of parent module in simulation
+/**
+ * Central module for arranging entities in simulation area of TrackingWSN network.
  */
-void BaseMobility::updateDisplay()
+class WorldHelper : public BaseSimple
 {
-    Enter_Method_Silent("updateDisplay");
+    private:
+        void arrangeNodes();
+    protected:
+        virtual void initialize();
+};
 
-    cDisplayString &ds = getParentModule()->getDisplayString();
+}  // namespace twsn
 
-    // Update displayed position according to object's coordination (x,y)
-    ds.setTagArg("p", 0, coord.getX());
-    ds.setTagArg("p", 1, coord.getY());
-
-    //std::cerr << ds << endl;
-}
-
-}
+#endif

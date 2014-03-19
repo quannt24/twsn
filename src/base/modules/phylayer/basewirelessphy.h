@@ -33,8 +33,8 @@ class BaseWirelessPhy : public BasePhy
         /** List of IDs of adjacent nodes (including THIS node) */
         std::list<int> adjPhyList;
 
-        /** Override to use 3 initialization stages */
-        virtual int numInitStages () const { return 3; };
+        /** Override to use 4 initialization stages */
+        virtual int numInitStages () const { return 4; };
         virtual void initialize();
         virtual void initialize(int stage);
         virtual void handleMessage(cMessage *msg);

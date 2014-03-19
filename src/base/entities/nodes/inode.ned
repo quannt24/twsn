@@ -13,27 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules.mobility;
-
-import twsn.base.modules.BaseSimple;
+package twsn.base.entities.nodes;
 
 //
-// Base for all mobility modules
+// Interface for network node
 //
-simple BaseMobility extends BaseSimple like IMobility
+moduleinterface INode
 {
     parameters:
-        @class("twsn::BaseMobility");
-
-        bool moving = default(false); // Equal 'true' if object is moving
-
-        // Parameters for static (non-moving) Entity
-        double posX @unit(m) = default(0);
-        double posY @unit(m) = default(0);
-
-        // Parameters for moving Entity
-        double startMovingTime = default(0); // Time for start moving (from start of simulation)
-        bool stopSimWhenFinishMoving = default(false);
-        
-        @display("i=block/cogwheel");
+        string phyType;
 }

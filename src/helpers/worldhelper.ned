@@ -13,27 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules.mobility;
+package twsn.helpers;
 
 import twsn.base.modules.BaseSimple;
 
 //
-// Base for all mobility modules
+// Central module for arranging entities in simulation area of TrackingWSN network.
 //
-simple BaseMobility extends BaseSimple like IMobility
+simple WorldHelper extends BaseSimple
 {
     parameters:
-        @class("twsn::BaseMobility");
-
-        bool moving = default(false); // Equal 'true' if object is moving
-
-        // Parameters for static (non-moving) Entity
-        double posX @unit(m) = default(0);
-        double posY @unit(m) = default(0);
-
-        // Parameters for moving Entity
-        double startMovingTime = default(0); // Time for start moving (from start of simulation)
-        bool stopSimWhenFinishMoving = default(false);
-        
-        @display("i=block/cogwheel");
+        @class("twsn::WorldHelper");
 }

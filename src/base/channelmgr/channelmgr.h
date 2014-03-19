@@ -46,8 +46,8 @@ class ChannelMgr : public BaseSimple
         void initCAT();
 
     protected:
-        /** Override to use 3 initialization stages */
-        virtual int numInitStages () const { return 3; };
+        /** Override to use 4 initialization stages */
+        virtual int numInitStages () const { return 4; };
         virtual void initialize(); // Stage 0
         virtual void initialize(int stage);
 

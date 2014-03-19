@@ -20,6 +20,9 @@ network BaseNetwork
     parameters:
         double width @unit(m) = default(50m);
         double height @unit(m) = default(50m);
+        // Devide network into a grid
+        int rows = default(1);
+        int cols = default(1);
         
         @display("bgs=3,m;bgb=$width,$height;"); // 1m ~ 3px
 }

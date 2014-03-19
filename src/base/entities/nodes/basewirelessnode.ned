@@ -19,11 +19,12 @@ import twsn.base.entities.BaseEntity;
 import twsn.base.modules.phylayer.IWirelessPhy;
 
 // Base module for all wireless nodes
-module BaseWirelessNode extends BaseEntity
+module BaseWirelessNode extends BaseEntity like INode
 {
     parameters:
         string phyType = default("BaseWirelessPhy");
 
+        @display("is=s");
     submodules:
         phy: <phyType> like IWirelessPhy;
 }

@@ -27,7 +27,7 @@ class PhyEntry
             coord = Coord();
             txRange = 0;
         }
-        PhyEntry(moduleid_t moduleId, Coord &coord, distance_t txRange, int index) {
+        PhyEntry(moduleid_t moduleId, Coord coord, distance_t txRange, int index) {
             this->moduleId = moduleId;
             this->coord = coord;
             this->txRange = txRange;
@@ -37,7 +37,7 @@ class PhyEntry
         inline moduleid_t getModuleId() const { return moduleId; }
         inline void setModuleId(moduleid_t moduleId) { this->moduleId = moduleId; }
 
-        inline const Coord& getCoord() const { return coord; }
+        inline const Coord getCoord() const { return coord; }
         inline void setCoord(const Coord& coord) { this->coord = coord; }
 
         inline distance_t getTxRange() const { return txRange; }

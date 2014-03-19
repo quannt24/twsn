@@ -24,6 +24,8 @@ module BaseEntity
 {
     parameters:
         string mobilityType = default("BaseMobility");
+
+        @display("i=misc/node2");
         
     submodules:
         mobility: <mobilityType> like IMobility;

@@ -27,10 +27,6 @@ void BaseWirelessPhy::initialize()
     // Stage 0
     // Call initialize() of parent
     BasePhy::initialize();
-
-    // TODO Register with ChannelMgr at stage 0
-    channelMgr = check_and_cast<ChannelMgr*>(getModuleByPath("channelMgr"));
-    registerChannel();
 }
 
 void BaseWirelessPhy::initialize(int stage)
@@ -42,9 +38,14 @@ void BaseWirelessPhy::initialize(int stage)
             initialize();
             break;
         case 1:
-            // Do nothing
+            // Register with ChannelMgr at stage 1
+            channelMgr = check_and_cast<ChannelMgr*>(getModuleByPath("channelMgr"));
+            registerChannel();
             break;
         case 2:
+            // Channel Access Table is initialized in this stage
+            break;
+        case 3:
             // Get list of adjacent nodes (which are in txRange of this node)
             if (channelMgr != NULL) adjPhyList = channelMgr->getAdjPhyList(getId());
             break;

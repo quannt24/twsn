@@ -35,6 +35,9 @@ void ChannelMgr::initialize(int stage)
             initialize();
             break;
         case 1:
+            // Physical module registers at this stage
+            break;
+        case 2:
             // Initialize channel access table
             initCAT();
             break;
@@ -62,15 +65,15 @@ void ChannelMgr::initCAT()
         channelAccessTbl[i] = new int[listSize]; // Allocate memory
 
         for (j = 0, peIt2 = peList.begin(); j < listSize; j++, peIt2++) {
+            //std::cerr << distance((*peIt1).getCoord(), (*peIt2).getCoord()) << ' ';
             if (distance((*peIt1).getCoord(), (*peIt2).getCoord()) <= (*peIt1).getTxRange()) {
                 channelAccessTbl[i][j] = CAT_FREE;
             } else {
                 channelAccessTbl[i][j] = CAT_OUT_OF_RANGE;
             }
-            // TODO Print for test
-            std::cerr << std::setw(3) << channelAccessTbl[i][j] << ' ';
+            std::cerr << std::setw(3) << channelAccessTbl[i][j] << ' '; // Print for test
         }
-        std::cerr << endl; // TODO For test
+        std::cerr << endl; // For test
     }
 }
 
@@ -95,7 +98,7 @@ ChannelMgr::~ChannelMgr()
 void ChannelMgr::registerChannel(moduleid_t moduleId, Coord coord, distance_t txRange)
 {
     // Only allow register in initialization stage 0
-    if (currInitStage != 0) {
+    if (currInitStage >= 2) {
         EV << "ChannelMgr::warning: Registration is not allowed when not in initialization stage 0\n";
         return;
     }
@@ -118,7 +121,7 @@ std::list<int> ChannelMgr::getAdjPhyList(moduleid_t moduleId)
 {
     std::list<int> adjList;
 
-    if ((currInitStage >= 0 && currInitStage < 2) || channelAccessTbl == NULL) {
+    if ((currInitStage >= 0 && currInitStage <= 2) || channelAccessTbl == NULL) {
         EV << "ChannelMgr::warning: Adjacent list is not ready\n";
         return adjList; // Return an empty list
     }

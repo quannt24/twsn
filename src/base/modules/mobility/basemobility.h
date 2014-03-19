@@ -38,18 +38,18 @@ class BaseMobility : public BaseSimple
         virtual void initialize();
 
     public:
-        inline Coord getCoord() { return coord; };
-        inline void setCoord(Coord coord) { this->coord = coord; };
-        inline void setCoord(double x, double y) { this->coord = Coord(x, y); };
-        inline double getCoordX() { return coord.getX(); };
-        inline void setCoordX(double x) { coord.setX(x); };
-        inline double getCoordY() { return coord.getY(); };
-        inline void setCoordY(double y) { coord.setY(y); };
+        Coord getCoord() { return coord; };
+        void setCoord(Coord coord) { this->coord = coord; };
+        void setCoord(double x, double y) { coord.setX(x); coord.setY(y); };
+        double getCoordX() { return coord.getX(); };
+        void setCoordX(double x) { coord.setX(x); };
+        double getCoordY() { return coord.getY(); };
+        void setCoordY(double y) { coord.setY(y); };
 
-        inline int getRow() { return row; };
-        inline void setRow(int r) { row = r; };
-        inline int getCol() { return col; };
-        inline void setCol(int c) { col = c; };
+        int getRow() { return row; };
+        void setRow(int r) { row = r; };
+        int getCol() { return col; };
+        void setCol(int c) { col = c; };
 
         /** Update display of parent module in simulation */
         void updateDisplay();
