@@ -9,6 +9,14 @@
 
 namespace twsn {
 
+void twsn::PhyEntry::clearAdjList()
+{
+    adjList->clear();
+}
 
+void twsn::PhyEntry::addAdjNode(PhyEntry* pe)
+{
+    adjList->push_back(pe);
+}
 
 }

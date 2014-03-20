@@ -21,6 +21,7 @@
 #include "basesimple.h"
 #include "phyentry.h"
 #include "coord.h"
+#include "airframe_m.h"
 
 namespace twsn {
 
@@ -35,20 +36,13 @@ class ChannelMgr : public BaseSimple
     private:
         int currInitStage;
         // List of PhyEntry object, contains info of registered physical modules
-        std::list<PhyEntry> peList;
-        /**
-         * Channel Access Table (CAT), storing channel access states of registered physical modules.
-         * Each row is manipulated by corresponding transmitter.
-         */
-        int **channelAccessTbl;
-
-        /** Initialize channel access table */
-        void initCAT();
+        std::list<PhyEntry*> peList;
+        /** Air frames being sent */
+        std::list<AirFrame*> afList;
 
     protected:
-        /** Override to use 4 initialization stages */
-        virtual int numInitStages () const { return 4; };
-        virtual void initialize(); // Stage 0
+        /** Override to use multiple initialization stages */
+        virtual int numInitStages () const { return 3; };
         virtual void initialize(int stage);
 
     public:
@@ -56,19 +50,32 @@ class ChannelMgr : public BaseSimple
         virtual ~ChannelMgr();
 
         /**
+         * Called by physical module at initialization stage 1.
          * Register physical module with this ChannelMgr module.
          * All physical module using this ChannelMgr module must call this function to register in
-         * the initialization stage 0.
-         * If a registered physical module calls this function or it's not initialization stage 0 at
-         * the time this function is called, there will be no effect.
+         * the initialization stage 1 (after their positions are specified).
+         * If it's not initialization stage 0 at the time this function is called, there will be no
+         * effect.
+         * NOTE: EACH MODULE SHOULD ONLY CALL THIS FUNCTION ONLY ONE TIME; because of performance,
+         * we do not check if an physical module has already registered and duplicated entries may
+         * cause unexpected behaviors.
+         * Return: a pointer to the registered PhyEntry object corresponding to the physical module.
          */
-        void registerChannel(moduleid_t moduleId, Coord coord, distance_t txRange);
+        PhyEntry* registerChannel(moduleid_t moduleId, Coord coord, distance_t txRange);
 
         /**
-         * Return list of IDs of adjacent physical modules corresponding to an specific physical
-         * module. This function should be called after initialization stage 1.
+         * Called by a node sending an air frame.
+         * Hold an air frame which is being sent to the air.
+         * A physical module will call this function when sending a frame.
          */
-        std::list<int> getAdjPhyList(moduleid_t moduleId);
+        void holdAirFrame(PhyEntry *sender, AirFrame *frame);
+
+        /**
+         * Called by a node finishing receiving an air frame.
+         * Release an air frame when it is received by a node and then release channel around the
+         * sender.
+         */
+        void releaseAirFrame(AirFrame *frame);
 };
 
 }

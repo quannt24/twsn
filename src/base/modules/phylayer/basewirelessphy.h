@@ -20,6 +20,7 @@
 #include "twsndef.h"
 #include "basephy.h"
 #include "channelmgr.h"
+#include "airframe_m.h"
 
 namespace twsn {
 
@@ -29,18 +30,20 @@ namespace twsn {
 class BaseWirelessPhy : public BasePhy
 {
     protected:
+        /** ChannelMgr object simulating wireless channel */
         ChannelMgr *channelMgr;
-        /** List of IDs of adjacent nodes (including THIS node) */
-        std::list<int> adjPhyList;
+        /** PhyEntry holding channel information and connections of this node */
+        PhyEntry* phyEntry;
 
-        /** Override to use 4 initialization stages */
-        virtual int numInitStages () const { return 4; };
+        /** Override to use multiple initialization stages */
+        virtual int numInitStages () const { return 2; };
         virtual void initialize();
         virtual void initialize(int stage);
-        virtual void handleMessage(cMessage *msg);
 
+        /** Delegate jobs to other handling functions */
+        virtual void handleMessage(cMessage *msg);
         /** Handle message sent directly */
-        virtual void handleAirFrame(cMessage *msg); // TODO use dedicated type
+        virtual void handleAirFrame(AirFrame *frame);
         /** Register with ChannelMgr */
         virtual void registerChannel();
 

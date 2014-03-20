@@ -20,11 +20,6 @@ namespace twsn {
 
 Define_Module(ChannelMgr);
 
-void ChannelMgr::initialize()
-{
-    // Stage 0
-}
-
 void ChannelMgr::initialize(int stage)
 {
     currInitStage = stage;
@@ -32,48 +27,16 @@ void ChannelMgr::initialize(int stage)
 
     switch (stage) {
         case 0:
-            initialize();
+            BaseSimple::initialize(); // Stage 0
+            // Positions of nodes are specified at this stage
             break;
         case 1:
             // Physical module registers at this stage
-            break;
-        case 2:
-            // Initialize channel access table
-            initCAT();
             break;
         default:
             // Mark that initialization finished
             currInitStage = -1;
             break;
-    }
-}
-
-void ChannelMgr::initCAT()
-{
-    if (peList.size() <= 0) {
-        channelAccessTbl = NULL;
-        return;
-    }
-
-    int listSize = peList.size();
-    channelAccessTbl = new int*[listSize];
-    int i, j;
-    std::list<PhyEntry>::iterator peIt1, peIt2;
-
-    std::cerr << "ChannelMgr::initCAT\n";
-    for (i = 0, peIt1 = peList.begin(); i < listSize; i++, peIt1++) {
-        channelAccessTbl[i] = new int[listSize]; // Allocate memory
-
-        for (j = 0, peIt2 = peList.begin(); j < listSize; j++, peIt2++) {
-            //std::cerr << distance((*peIt1).getCoord(), (*peIt2).getCoord()) << ' ';
-            if (distance((*peIt1).getCoord(), (*peIt2).getCoord()) <= (*peIt1).getTxRange()) {
-                channelAccessTbl[i][j] = CAT_FREE;
-            } else {
-                channelAccessTbl[i][j] = CAT_OUT_OF_RANGE;
-            }
-            std::cerr << std::setw(3) << channelAccessTbl[i][j] << ' '; // Print for test
-        }
-        std::cerr << endl; // For test
     }
 }
 
@@ -84,64 +47,107 @@ ChannelMgr::ChannelMgr()
 
 ChannelMgr::~ChannelMgr()
 {
-    unsigned int i;
-
-    // Free CAT
-    for (i = 0; i < peList.size(); i++) {
-        delete channelAccessTbl[i];
+    // Dispose graph of physical entries
+    for (std::list<PhyEntry*>::iterator it = peList.begin(); it != peList.end(); it++) {
+        delete (*it);
     }
-    delete channelAccessTbl;
-
     peList.clear();
 }
 
-void ChannelMgr::registerChannel(moduleid_t moduleId, Coord coord, distance_t txRange)
+PhyEntry* ChannelMgr::registerChannel(moduleid_t moduleId, Coord coord, distance_t txRange)
 {
-    // Only allow register in initialization stage 0
-    if (currInitStage >= 2) {
-        EV << "ChannelMgr::warning: Registration is not allowed when not in initialization stage 0\n";
-        return;
+    Enter_Method_Silent("registerChannel");
+
+    // Only allow register in an initialization stage after stage 0.
+    // Calling this method is not allowed after initialization completes (currInitStage = -1).
+    if (currInitStage < 1) {
+        std::cerr << "ChannelMgr::error: registerChannel is not allowed at this time\n";
+        return NULL;
     }
 
-    std::list<PhyEntry>::iterator peIt;
+    std::list<PhyEntry*>::iterator it;
 
-    // Check if the module has already registered
-    for (peIt = peList.begin(); peIt != peList.end(); peIt++) {
-        if ((*peIt).getModuleId() == moduleId) {
-            EV << "ChannelMgr::warning: Module is already registered\n";
-            return;
+    distance_t d;
+    // Create new physical entry
+    PhyEntry *newPe = new PhyEntry(moduleId, coord, txRange);
+
+    // Connect new entry with adjacent entries
+    for (it = peList.begin(); it != peList.end(); it++) {
+        if ((*it)->getModuleId() == moduleId) continue; // For preventing stupid bug self connected
+
+        d = distance(coord, (*it)->getCoord());
+        if (d < txRange) {
+            newPe->addAdjNode(*it);
+        }
+        if (d < (*it)->getTxRange()) {
+            (*it)->addAdjNode(newPe);
         }
     }
 
-    // Add new physical entry to list
-    peList.push_back(PhyEntry(moduleId, coord, txRange, peList.size()));
+    peList.push_back(newPe);
+
+    return newPe;
 }
 
-std::list<int> ChannelMgr::getAdjPhyList(moduleid_t moduleId)
+void ChannelMgr::holdAirFrame(PhyEntry *sender, AirFrame *frame)
 {
-    std::list<int> adjList;
+    Enter_Method_Silent("holdAirFrame");
 
-    if ((currInitStage >= 0 && currInitStage <= 2) || channelAccessTbl == NULL) {
-        EV << "ChannelMgr::warning: Adjacent list is not ready\n";
-        return adjList; // Return an empty list
+    std::list<PhyEntry*>::iterator peIt;
+
+    // Change channel state of sender and adjacent nodes
+    sender->incChannelState();
+    for (peIt = sender->getAdjList()->begin();
+            peIt != sender->getAdjList()->end(); peIt++) {
+        if (*peIt != sender) (*peIt)->incChannelState();
     }
 
-    int listSize = peList.size();
-    int i, j;
-    std::list<PhyEntry>::iterator peIt1, peIt2;
+    // Add frame to list of being sent frames
+    afList.push_back(frame);
 
-    for (i = 0, peIt1 = peList.begin(); i < listSize; i++, peIt1++) {
-        if ((*peIt1).getModuleId() == moduleId) {
-            for (j = 0, peIt2 = peList.begin(); j < listSize; j++, peIt2++) {
-                if (channelAccessTbl[i][j] != CAT_OUT_OF_RANGE) {
-                    adjList.push_back((*peIt2).getModuleId());
-                }
+    // Mark frames which having error because of interference
+    for (std::list<AirFrame*>::iterator afIt = afList.begin(); afIt != afList.end(); afIt++) {
+
+        // Find entry of receiver and check its channel state
+        for (peIt = peList.begin(); peIt != peList.end(); peIt++) {
+            if ((*peIt)->getModuleId() == (*afIt)->getReceiver() && (*peIt)->getChannelState() > 1) {
+                // If having interference (channel state > 1)
+                (*afIt)->setBitError(true);
+                break;
             }
-            break; // No need to loop more
+        }
+    }
+}
+
+void ChannelMgr::releaseAirFrame(AirFrame* frame)
+{
+    Enter_Method_Silent("releaseAirFrame");
+
+    std::list<AirFrame*>::iterator afIt;
+    std::list<PhyEntry*>::iterator peIt, adjIt;
+    std::list<PhyEntry*>* adjList;
+
+    // Remove frame from afList
+    for (afIt = afList.begin(); afIt != afList.end(); afIt++) {
+        if (*afIt == frame) {
+            afList.erase(afIt);
+            break;
         }
     }
 
-    return adjList;
+    // Release channel around the sender
+    for (peIt = peList.begin(); peIt != peList.end(); peIt++) {
+        if ((*peIt)->getModuleId() == frame->getSender()) {
+            // Release channel at the sender
+            (*peIt)->decChannelState();
+            // Release channel at adjacent nodes of the sender
+            adjList = (*peIt)->getAdjList();
+            for (adjIt = adjList->begin(); adjIt != adjList->end(); adjIt++) {
+                if (*adjIt != *peIt) (*peIt)->decChannelState();
+            }
+            break;
+        }
+    }
 }
 
 } /* Namespace twsn */

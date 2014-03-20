@@ -31,23 +31,14 @@ void BaseWirelessPhy::initialize()
 
 void BaseWirelessPhy::initialize(int stage)
 {
-    EV << "BaseWirelessPhy::info: initialization stage " << stage << endl;
-
+    //EV << "BaseWirelessPhy::info: initialization stage " << stage << endl;
     switch (stage) {
         case 0:
             initialize();
             break;
         case 1:
             // Register with ChannelMgr at stage 1
-            channelMgr = check_and_cast<ChannelMgr*>(getModuleByPath("channelMgr"));
             registerChannel();
-            break;
-        case 2:
-            // Channel Access Table is initialized in this stage
-            break;
-        case 3:
-            // Get list of adjacent nodes (which are in txRange of this node)
-            if (channelMgr != NULL) adjPhyList = channelMgr->getAdjPhyList(getId());
             break;
     }
 }
@@ -61,27 +52,28 @@ void BaseWirelessPhy::handleMessage(cMessage *msg)
     } else if (msg->getArrivalGate() == gate("upperCtl$i")) {
         handleUpperCtl(msg);
     } else if (msg->getArrivalGate() == gate("radioIn")) {
-        handleAirFrame(msg);
+        handleAirFrame(check_and_cast<AirFrame*>(msg));
     }
 }
 
-void BaseWirelessPhy::handleAirFrame(cMessage* msg)
+void BaseWirelessPhy::handleAirFrame(AirFrame* frame)
 {
 }
 
 void BaseWirelessPhy::registerChannel()
 {
-    if (channelMgr == NULL) return;
-
+    channelMgr = check_and_cast<ChannelMgr*>(getModuleByPath("channelMgr"));
     BaseMobility *mob = check_and_cast<BaseMobility*>(getModuleByPath("^.mobility"));
+    if (channelMgr == NULL || mob == NULL) return;
 
-    channelMgr->registerChannel(getId(), mob->getCoord(), (distance_t) par("txRange").doubleValue());
+    phyEntry = channelMgr->registerChannel(getId(), mob->getCoord(), (distance_t) par("txRange").doubleValue());
     EV << "BaseWirelessPhy::info: Register channel\n";
 }
 
 BaseWirelessPhy::BaseWirelessPhy()
 {
     channelMgr = NULL;
+    phyEntry = NULL;
 }
 
 }
