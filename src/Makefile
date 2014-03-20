@@ -53,11 +53,13 @@ OBJS = \
     $O/helpers/worldhelper.o \
     $O/modules/mobility/mobilitypath.o \
     $O/util/coord.o \
-    $O/base/messages/airframe_m.o
+    $O/base/messages/airframe_m.o \
+    $O/base/messages/macpkt_m.o
 
 # Message files
 MSGFILES = \
-    base/messages/airframe.msg
+    base/messages/airframe.msg \
+    base/messages/macpkt.msg
 
 #------------------------------------------------------------------------------
 
@@ -168,6 +170,9 @@ $O/base/channelmgr/phyentry.o: base/channelmgr/phyentry.cc \
 $O/base/messages/airframe_m.o: base/messages/airframe_m.cc \
 	base/messages/airframe_m.h \
 	util/twsndef.h
+$O/base/messages/macpkt_m.o: base/messages/macpkt_m.cc \
+	base/messages/macpkt_m.h \
+	util/twsndef.h
 $O/base/modules/basesimple.o: base/modules/basesimple.cc \
 	base/modules/basesimple.h \
 	util/twsndef.h
@@ -177,6 +182,7 @@ $O/base/modules/mobility/basemobility.o: base/modules/mobility/basemobility.cc \
 	util/coord.h \
 	util/twsndef.h
 $O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
+	base/messages/macpkt_m.h \
 	base/modules/basesimple.h \
 	base/modules/phylayer/basephy.h \
 	util/twsndef.h
@@ -184,6 +190,7 @@ $O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessph
 	base/channelmgr/channelmgr.h \
 	base/channelmgr/phyentry.h \
 	base/messages/airframe_m.h \
+	base/messages/macpkt_m.h \
 	base/modules/basesimple.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/phylayer/basephy.h \

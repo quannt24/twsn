@@ -43,6 +43,16 @@ void BaseWirelessPhy::initialize(int stage)
     }
 }
 
+void BaseWirelessPhy::registerChannel()
+{
+    channelMgr = check_and_cast<ChannelMgr*>(getModuleByPath("channelMgr"));
+    BaseMobility *mob = check_and_cast<BaseMobility*>(getModuleByPath("^.mobility"));
+    if (channelMgr == NULL || mob == NULL) return;
+
+    phyEntry = channelMgr->registerChannel(getId(), mob->getCoord(), (distance_t) par("txRange").doubleValue());
+    EV << "BaseWirelessPhy::info: Register channel\n";
+}
+
 void BaseWirelessPhy::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
@@ -56,44 +66,89 @@ void BaseWirelessPhy::handleMessage(cMessage *msg)
     }
 }
 
+void BaseWirelessPhy::handleSelfMsg(cMessage* msg)
+{
+    if (msg == finishTxTimer) {
+        finishTx();
+    }
+}
+
 void BaseWirelessPhy::handleAirFrame(AirFrame* frame)
 {
+    recvAirFrame(frame);
 }
 
-void BaseWirelessPhy::registerChannel()
+void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
 {
-    channelMgr = check_and_cast<ChannelMgr*>(getModuleByPath("channelMgr"));
-    BaseMobility *mob = check_and_cast<BaseMobility*>(getModuleByPath("^.mobility"));
-    if (channelMgr == NULL || mob == NULL) return;
+    if (phyEntry == NULL) {
+        std::cerr << "BaseWirelessPhy::error: module has not registered with ChannelMgr\n";
+        delete pkt;
+        return;
+    }
+    /* Increase channel state */
+    channelMgr->startTx(phyEntry);
 
-    phyEntry = channelMgr->registerChannel(getId(), mob->getCoord(), (distance_t) par("txRange").doubleValue());
-    EV << "BaseWirelessPhy::info: Register channel\n";
+    /* Create physical frame */
+    AirFrame *frame = new AirFrame();
+    frame->setByteLength(frame->getFrameSize()); // Physical frame size only
+    frame->encapsulate(pkt); // Frame length will be increased by payload
+    frame->setSender(getId());
+
+    /* Calculate transmission time */
+    simtime_t txTime = ((double) frame->getBitLength()) / par("bitRate").doubleValue();
+
+    /* Send air frame containing MAC packet to each receiver */
+    if (pkt->getDesAddr() == MAC_BROADCAST_ADDR) {
+        // Send to all adjacent nodes
+        std::list<PhyEntry*>::iterator adjIt;
+        AirFrame *copy;
+
+        for (adjIt = phyEntry->getAdjList()->begin(); adjIt != phyEntry->getAdjList()->end(); adjIt++) {
+            copy = frame->dup();
+            copy->setReceiver((*adjIt)->getModuleId());
+            sendAirFrame(copy);
+        }
+        delete frame; // Original frame is redundant
+    } else {
+        frame->setReceiver(pkt->getDesAddr()); // MAC address is module id of physical module
+        sendAirFrame(frame);
+        // We do not simulate overhearing
+    }
+
+    /* Set timer for calling finishTx() */
+    scheduleAt(simTime() + txTime, finishTxTimer);
 }
 
-void BaseWirelessPhy::txMacPkt(cMessage* pkt)
+void BaseWirelessPhy::finishTx()
 {
-    /*
-     * TODO
-     * Call startTx()
-     * Call sendAirFrame() (use loop if broadcast)
-     * Set timer to call stopTx()
-     */
+    channelMgr->stopTx(phyEntry);
 }
 
 void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
 {
-    // TODO Call holdAirFrame() and sendDirect()
+    simtime_t txTime = ((double) frame->getBitLength()) / par("bitRate").doubleValue();
+    channelMgr->holdAirFrame(phyEntry, frame);
+    sendDirect(frame, 0, txTime, simulation.getModule(frame->getReceiver()), "radioIn");
 }
 
 void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
 {
-    // TODO Call releaseAirFrame()
+    channelMgr->releaseAirFrame(frame);
+    delete frame; // TODO Decapsulate the frame and processing instead of just delete it
 }
 
 BaseWirelessPhy::BaseWirelessPhy()
 {
     channelMgr = NULL;
     phyEntry = NULL;
+    transmitting = false;
+
+    finishTxTimer = new cMessage("FinishTxTimer");
+}
+
+BaseWirelessPhy::~BaseWirelessPhy()
+{
+    cancelAndDelete(finishTxTimer);
 }
 
 }

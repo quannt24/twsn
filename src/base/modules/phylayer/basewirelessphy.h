@@ -21,6 +21,7 @@
 #include "basephy.h"
 #include "channelmgr.h"
 #include "airframe_m.h"
+#include "macpkt_m.h"
 
 namespace twsn {
 
@@ -30,25 +31,34 @@ namespace twsn {
 class BaseWirelessPhy : public BasePhy
 {
     protected:
-        /** ChannelMgr object simulating wireless channel */
+        /* ChannelMgr object simulating wireless channel */
         ChannelMgr *channelMgr;
-        /** PhyEntry holding channel information and connections of this node */
+        /* PhyEntry holding channel information and connections of this node */
         PhyEntry* phyEntry;
+        bool transmitting;
+
+        /* Timer */
+        cMessage *finishTxTimer;
 
         /** Override to use multiple initialization stages */
         virtual int numInitStages () const { return 2; };
         virtual void initialize();
         virtual void initialize(int stage);
-
-        /** Delegate jobs to other handling functions */
-        virtual void handleMessage(cMessage *msg);
-        /** Handle message sent directly */
-        virtual void handleAirFrame(AirFrame *frame);
         /** Register with ChannelMgr */
         virtual void registerChannel();
 
-        /** Transmit a MAC packet to the air (broadcast or unicast) */
-        virtual void txMacPkt(cMessage *pkt); // TODO Use specific msg type
+        /** Delegate jobs to other handling functions */
+        virtual void handleMessage(cMessage *msg);
+        /** Handle self message */
+        virtual void handleSelfMsg(cMessage *msg);
+        /** Handle message sent directly */
+        virtual void handleAirFrame(AirFrame *frame);
+
+        /** Transmit a MAC packet (broadcast or unicast) */
+        virtual void txMacPkt(MacPkt *pkt);
+        /** Finish transmission */
+        virtual void finishTx();
+
         /**
          * Transmit air frame to the air (point to point). The frame must be created completely.
          * If channel registration has not completed (phyEntry == NULL), the frame will be deleted.
@@ -63,6 +73,7 @@ class BaseWirelessPhy : public BasePhy
 
     public:
         BaseWirelessPhy();
+        ~BaseWirelessPhy();
 };
 
 }

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/airframe.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/macpkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "airframe_m.h"
+#include "macpkt_m.h"
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -30,23 +30,22 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
-Register_Class(AirFrame);
+Register_Class(MacPkt);
 
-AirFrame::AirFrame(const char *name, int kind) : cPacket(name,kind)
+MacPkt::MacPkt(const char *name, int kind) : cPacket(name,kind)
 {
-    this->frameSize_var = 6;
 }
 
-AirFrame::AirFrame(const AirFrame& other) : cPacket(other)
+MacPkt::MacPkt(const MacPkt& other) : cPacket(other)
 {
     copy(other);
 }
 
-AirFrame::~AirFrame()
+MacPkt::~MacPkt()
 {
 }
 
-AirFrame& AirFrame::operator=(const AirFrame& other)
+MacPkt& MacPkt::operator=(const MacPkt& other)
 {
     if (this==&other) return *this;
     cPacket::operator=(other);
@@ -54,64 +53,51 @@ AirFrame& AirFrame::operator=(const AirFrame& other)
     return *this;
 }
 
-void AirFrame::copy(const AirFrame& other)
+void MacPkt::copy(const MacPkt& other)
 {
-    this->sender_var = other.sender_var;
-    this->receiver_var = other.receiver_var;
-    this->frameSize_var = other.frameSize_var;
+    this->srcAddr_var = other.srcAddr_var;
+    this->desAddr_var = other.desAddr_var;
 }
 
-void AirFrame::parsimPack(cCommBuffer *b)
+void MacPkt::parsimPack(cCommBuffer *b)
 {
     cPacket::parsimPack(b);
-    doPacking(b,this->sender_var);
-    doPacking(b,this->receiver_var);
-    doPacking(b,this->frameSize_var);
+    doPacking(b,this->srcAddr_var);
+    doPacking(b,this->desAddr_var);
 }
 
-void AirFrame::parsimUnpack(cCommBuffer *b)
+void MacPkt::parsimUnpack(cCommBuffer *b)
 {
     cPacket::parsimUnpack(b);
-    doUnpacking(b,this->sender_var);
-    doUnpacking(b,this->receiver_var);
-    doUnpacking(b,this->frameSize_var);
+    doUnpacking(b,this->srcAddr_var);
+    doUnpacking(b,this->desAddr_var);
 }
 
-moduleid_t& AirFrame::getSender()
+macaddr_t& MacPkt::getSrcAddr()
 {
-    return sender_var;
+    return srcAddr_var;
 }
 
-void AirFrame::setSender(const moduleid_t& sender)
+void MacPkt::setSrcAddr(const macaddr_t& srcAddr)
 {
-    this->sender_var = sender;
+    this->srcAddr_var = srcAddr;
 }
 
-moduleid_t& AirFrame::getReceiver()
+macaddr_t& MacPkt::getDesAddr()
 {
-    return receiver_var;
+    return desAddr_var;
 }
 
-void AirFrame::setReceiver(const moduleid_t& receiver)
+void MacPkt::setDesAddr(const macaddr_t& desAddr)
 {
-    this->receiver_var = receiver;
+    this->desAddr_var = desAddr;
 }
 
-int AirFrame::getFrameSize() const
-{
-    return frameSize_var;
-}
-
-void AirFrame::setFrameSize(int frameSize)
-{
-    this->frameSize_var = frameSize;
-}
-
-class AirFrameDescriptor : public cClassDescriptor
+class MacPktDescriptor : public cClassDescriptor
 {
   public:
-    AirFrameDescriptor();
-    virtual ~AirFrameDescriptor();
+    MacPktDescriptor();
+    virtual ~MacPktDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -130,34 +116,34 @@ class AirFrameDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(AirFrameDescriptor);
+Register_ClassDescriptor(MacPktDescriptor);
 
-AirFrameDescriptor::AirFrameDescriptor() : cClassDescriptor("AirFrame", "cPacket")
+MacPktDescriptor::MacPktDescriptor() : cClassDescriptor("MacPkt", "cPacket")
 {
 }
 
-AirFrameDescriptor::~AirFrameDescriptor()
+MacPktDescriptor::~MacPktDescriptor()
 {
 }
 
-bool AirFrameDescriptor::doesSupport(cObject *obj) const
+bool MacPktDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<AirFrame *>(obj)!=NULL;
+    return dynamic_cast<MacPkt *>(obj)!=NULL;
 }
 
-const char *AirFrameDescriptor::getProperty(const char *propertyname) const
+const char *MacPktDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int AirFrameDescriptor::getFieldCount(void *object) const
+int MacPktDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
-unsigned int AirFrameDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int MacPktDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -168,12 +154,11 @@ unsigned int AirFrameDescriptor::getFieldTypeFlags(void *object, int field) cons
     static unsigned int fieldTypeFlags[] = {
         FD_ISCOMPOUND,
         FD_ISCOMPOUND,
-        FD_ISEDITABLE,
     };
-    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
-const char *AirFrameDescriptor::getFieldName(void *object, int field) const
+const char *MacPktDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -182,24 +167,22 @@ const char *AirFrameDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "sender",
-        "receiver",
-        "frameSize",
+        "srcAddr",
+        "desAddr",
     };
-    return (field>=0 && field<3) ? fieldNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
-int AirFrameDescriptor::findField(void *object, const char *fieldName) const
+int MacPktDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "sender")==0) return base+0;
-    if (fieldName[0]=='r' && strcmp(fieldName, "receiver")==0) return base+1;
-    if (fieldName[0]=='f' && strcmp(fieldName, "frameSize")==0) return base+2;
+    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+0;
+    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *AirFrameDescriptor::getFieldTypeString(void *object, int field) const
+const char *MacPktDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -208,14 +191,13 @@ const char *AirFrameDescriptor::getFieldTypeString(void *object, int field) cons
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldTypeStrings[] = {
-        "moduleid_t",
-        "moduleid_t",
-        "int",
+        "macaddr_t",
+        "macaddr_t",
     };
-    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *AirFrameDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *MacPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -228,7 +210,7 @@ const char *AirFrameDescriptor::getFieldProperty(void *object, int field, const 
     }
 }
 
-int AirFrameDescriptor::getArraySize(void *object, int field) const
+int MacPktDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -236,13 +218,13 @@ int AirFrameDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    AirFrame *pp = (AirFrame *)object; (void)pp;
+    MacPkt *pp = (MacPkt *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string AirFrameDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string MacPktDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -250,16 +232,15 @@ std::string AirFrameDescriptor::getFieldAsString(void *object, int field, int i)
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    AirFrame *pp = (AirFrame *)object; (void)pp;
+    MacPkt *pp = (MacPkt *)object; (void)pp;
     switch (field) {
-        case 0: {std::stringstream out; out << pp->getSender(); return out.str();}
-        case 1: {std::stringstream out; out << pp->getReceiver(); return out.str();}
-        case 2: return long2string(pp->getFrameSize());
+        case 0: {std::stringstream out; out << pp->getSrcAddr(); return out.str();}
+        case 1: {std::stringstream out; out << pp->getDesAddr(); return out.str();}
         default: return "";
     }
 }
 
-bool AirFrameDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool MacPktDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -267,14 +248,13 @@ bool AirFrameDescriptor::setFieldAsString(void *object, int field, int i, const 
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    AirFrame *pp = (AirFrame *)object; (void)pp;
+    MacPkt *pp = (MacPkt *)object; (void)pp;
     switch (field) {
-        case 2: pp->setFrameSize(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *AirFrameDescriptor::getFieldStructName(void *object, int field) const
+const char *MacPktDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -283,14 +263,13 @@ const char *AirFrameDescriptor::getFieldStructName(void *object, int field) cons
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldStructNames[] = {
-        "moduleid_t",
-        "moduleid_t",
-        NULL,
+        "macaddr_t",
+        "macaddr_t",
     };
-    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
-void *AirFrameDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *MacPktDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -298,10 +277,10 @@ void *AirFrameDescriptor::getFieldStructPointer(void *object, int field, int i) 
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    AirFrame *pp = (AirFrame *)object; (void)pp;
+    MacPkt *pp = (MacPkt *)object; (void)pp;
     switch (field) {
-        case 0: return (void *)(&pp->getSender()); break;
-        case 1: return (void *)(&pp->getReceiver()); break;
+        case 0: return (void *)(&pp->getSrcAddr()); break;
+        case 1: return (void *)(&pp->getDesAddr()); break;
         default: return NULL;
     }
 }

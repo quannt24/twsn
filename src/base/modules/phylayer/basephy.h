@@ -19,6 +19,7 @@
 #include <omnetpp.h>
 #include "twsndef.h"
 #include "basesimple.h"
+#include "macpkt_m.h"
 
 namespace twsn {
 
@@ -37,6 +38,9 @@ class BasePhy : public BaseSimple
         virtual void handleUpperMsg(cMessage *msg);
         /** Handle control message from upperCtlIn */
         virtual void handleUpperCtl(cMessage *msg);
+
+        /** Transmit a MAC packet (broadcast or unicast) */
+        virtual void txMacPkt(MacPkt *pkt);
 };
 
 }

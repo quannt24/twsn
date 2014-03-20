@@ -25,6 +25,7 @@
  * packet AirFrame {
  *     moduleid_t sender;
  *     moduleid_t receiver;
+ *     int frameSize = 6; 
  * }
  * </pre>
  */
@@ -33,6 +34,7 @@ class AirFrame : public ::cPacket
   protected:
     moduleid_t sender_var;
     moduleid_t receiver_var;
+    int frameSize_var;
 
   private:
     void copy(const AirFrame& other);
@@ -57,6 +59,8 @@ class AirFrame : public ::cPacket
     virtual moduleid_t& getReceiver();
     virtual const moduleid_t& getReceiver() const {return const_cast<AirFrame*>(this)->getReceiver();}
     virtual void setReceiver(const moduleid_t& receiver);
+    virtual int getFrameSize() const;
+    virtual void setFrameSize(int frameSize);
 };
 
 inline void doPacking(cCommBuffer *b, AirFrame& obj) {obj.parsimPack(b);}

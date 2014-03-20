@@ -16,13 +16,12 @@
 cplusplus {{
 	#include "twsndef.h"
 }}
-class noncobject moduleid_t;
+class noncobject macaddr_t;
 
 //
-// Air frame for wireless physical layer
+// Base packet type for MAC layer
 //
-packet AirFrame {
-    moduleid_t sender;
-    moduleid_t receiver;
-    int frameSize = 6; // Default physical header is 6 bytes (IEEE 802.15.4 standard)
+packet MacPkt {
+    macaddr_t srcAddr; // MAC address of sender
+    macaddr_t desAddr; // MAC address of sender or broadcast address
 }

@@ -42,4 +42,9 @@ void BasePhy::handleUpperCtl(cMessage* msg)
 {
 }
 
+void BasePhy::txMacPkt(MacPkt* pkt)
+{
+    delete pkt; // What are you looking for?
+}
+
 }
