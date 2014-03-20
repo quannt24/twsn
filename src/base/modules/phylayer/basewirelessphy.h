@@ -47,6 +47,20 @@ class BaseWirelessPhy : public BasePhy
         /** Register with ChannelMgr */
         virtual void registerChannel();
 
+        /** Transmit a MAC packet to the air (broadcast or unicast) */
+        virtual void txMacPkt(cMessage *pkt); // TODO Use specific msg type
+        /**
+         * Transmit air frame to the air (point to point). The frame must be created completely.
+         * If channel registration has not completed (phyEntry == NULL), the frame will be deleted.
+         */
+        virtual void sendAirFrame(AirFrame *frame);
+        /**
+         * Called by handleAirFrame().
+         * Receive air frame procedures when cooperating with ChannelMgr. If channel registration
+         * has not completed (phyEntry == NULL), the frame will be deleted.
+         */
+        virtual void recvAirFrame(AirFrame *frame);
+
     public:
         BaseWirelessPhy();
 };

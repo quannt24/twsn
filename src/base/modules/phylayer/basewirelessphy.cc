@@ -70,6 +70,26 @@ void BaseWirelessPhy::registerChannel()
     EV << "BaseWirelessPhy::info: Register channel\n";
 }
 
+void BaseWirelessPhy::txMacPkt(cMessage* pkt)
+{
+    /*
+     * TODO
+     * Call startTx()
+     * Call sendAirFrame() (use loop if broadcast)
+     * Set timer to call stopTx()
+     */
+}
+
+void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
+{
+    // TODO Call holdAirFrame() and sendDirect()
+}
+
+void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
+{
+    // TODO Call releaseAirFrame()
+}
+
 BaseWirelessPhy::BaseWirelessPhy()
 {
     channelMgr = NULL;

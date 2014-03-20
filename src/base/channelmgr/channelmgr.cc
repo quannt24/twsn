@@ -89,32 +89,72 @@ PhyEntry* ChannelMgr::registerChannel(moduleid_t moduleId, Coord coord, distance
     return newPe;
 }
 
+void ChannelMgr::startTx(PhyEntry *sender)
+{
+    Enter_Method_Silent("startTx");
+
+    std::list<PhyEntry*>::iterator adjIt;
+    std::list<AirFrame*>::iterator afIt;
+
+    // Increase channel state of sender and adjacent nodes
+    sender->incChannelState();
+    for (adjIt = sender->getAdjList()->begin(); adjIt != sender->getAdjList()->end(); adjIt++) {
+        if (*adjIt != sender) (*adjIt)->incChannelState();
+    }
+
+    // Consider all air frames being sent
+    for (afIt = afList.begin(); afIt != afList.end(); afIt++) {
+
+        /* Find entry of receiver of a frame and check its channel state (we only need to consider
+         * receiving nodes which is in-range of newly transmitting node ('sender') including
+         * 'sender' itself. */
+        if ((*afIt)->getReceiver() == sender->getModuleId()) {
+            (*afIt)->setBitError(true); // Of course, it's interfered here
+        } else {
+            for (adjIt = sender->getAdjList()->begin();
+                    adjIt != sender->getAdjList()->end(); adjIt++) {
+                if ((*adjIt)->getModuleId() == (*afIt)->getReceiver()) {
+                    if ((*adjIt)->getChannelState() > 1) {
+                        // If having interference (channel state > 1)
+                        (*afIt)->setBitError(true);
+                    }
+                    break; // Next air frame in list
+                }
+            }
+        }
+    }
+}
+
+void ChannelMgr::stopTx(PhyEntry *sender)
+{
+    Enter_Method_Silent("stopTx");
+
+    std::list<PhyEntry*>::iterator adjIt;
+
+    // Decrease channel state of sender and adjacent nodes
+    sender->decChannelState();
+    for (adjIt = sender->getAdjList()->begin(); adjIt != sender->getAdjList()->end(); adjIt++) {
+        if (*adjIt != sender) (*adjIt)->decChannelState();
+    }
+}
+
 void ChannelMgr::holdAirFrame(PhyEntry *sender, AirFrame *frame)
 {
     Enter_Method_Silent("holdAirFrame");
 
-    std::list<PhyEntry*>::iterator peIt;
-
-    // Change channel state of sender and adjacent nodes
-    sender->incChannelState();
-    for (peIt = sender->getAdjList()->begin();
-            peIt != sender->getAdjList()->end(); peIt++) {
-        if (*peIt != sender) (*peIt)->incChannelState();
-    }
+    std::list<PhyEntry*>::iterator adjIt;
 
     // Add frame to list of being sent frames
     afList.push_back(frame);
 
-    // Mark frames which having error because of interference
-    for (std::list<AirFrame*>::iterator afIt = afList.begin(); afIt != afList.end(); afIt++) {
-
-        // Find entry of receiver and check its channel state
-        for (peIt = peList.begin(); peIt != peList.end(); peIt++) {
-            if ((*peIt)->getModuleId() == (*afIt)->getReceiver() && (*peIt)->getChannelState() > 1) {
-                // If having interference (channel state > 1)
-                (*afIt)->setBitError(true);
-                break;
+    // Check if this frame has error because of interference
+    for (adjIt = sender->getAdjList()->begin(); adjIt != sender->getAdjList()->end(); adjIt++) {
+        if ((*adjIt)->getModuleId() == frame->getReceiver()) {
+            if ((*adjIt)->getChannelState() > 1) {
+                // If having interference (channel state > 1) at receiver
+                frame->setBitError(true);
             }
+            break;
         }
     }
 }
@@ -124,27 +164,11 @@ void ChannelMgr::releaseAirFrame(AirFrame* frame)
     Enter_Method_Silent("releaseAirFrame");
 
     std::list<AirFrame*>::iterator afIt;
-    std::list<PhyEntry*>::iterator peIt, adjIt;
-    std::list<PhyEntry*>* adjList;
 
     // Remove frame from afList
     for (afIt = afList.begin(); afIt != afList.end(); afIt++) {
         if (*afIt == frame) {
             afList.erase(afIt);
-            break;
-        }
-    }
-
-    // Release channel around the sender
-    for (peIt = peList.begin(); peIt != peList.end(); peIt++) {
-        if ((*peIt)->getModuleId() == frame->getSender()) {
-            // Release channel at the sender
-            (*peIt)->decChannelState();
-            // Release channel at adjacent nodes of the sender
-            adjList = (*peIt)->getAdjList();
-            for (adjIt = adjList->begin(); adjIt != adjList->end(); adjIt++) {
-                if (*adjIt != *peIt) (*peIt)->decChannelState();
-            }
             break;
         }
     }

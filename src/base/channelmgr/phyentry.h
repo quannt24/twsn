@@ -20,7 +20,8 @@ class PhyEntry
         moduleid_t moduleId; // ID of physical module
         Coord coord; // Position of the device
         distance_t txRange; // Transmission range
-        int channelState; // Number of in-air signals at position of the node >= 0
+        /** Number of signals being sent over position of the node (>= 0) */
+        int channelState;
         std::list<PhyEntry*> *adjList; // List of entries which is in-range of this node
 
     public:

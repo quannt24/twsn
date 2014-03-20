@@ -64,16 +64,31 @@ class ChannelMgr : public BaseSimple
         PhyEntry* registerChannel(moduleid_t moduleId, Coord coord, distance_t txRange);
 
         /**
+         * Called by a node when starting transmission. Change (increase) channel state of sending
+         * node and its adjacent nodes (if they are in tx range of the sender, whether or not they
+         * are going to receive an air frame). Current in-air frames (in afList) will be checked
+         * for error because of interference.
+         */
+        void startTx(PhyEntry *sender);
+        /**
+         * Called by a node when it finishes its transmission. Change (decrease) channel state of
+         * sending node and its adjacent nodes (if they are in tx range of the sender, whether or
+         * not they are going to receive an air frame).
+         */
+        void stopTx(PhyEntry *sender);
+        /**
          * Called by a node sending an air frame.
-         * Hold an air frame which is being sent to the air.
-         * A physical module will call this function when sending a frame.
+         * Hold an air frame which is being sent to the air. It will be checked for error caused
+         * by interference due to current channel state of receiver.
+         * Sender must make sure receiving module is in its txRange (in its adjList).
+         * Error checking will be wrong if receiver is not in adjList of sender (this behavior is
+         * for performance).
          */
         void holdAirFrame(PhyEntry *sender, AirFrame *frame);
 
         /**
-         * Called by a node finishing receiving an air frame.
-         * Release an air frame when it is received by a node and then release channel around the
-         * sender.
+         * Called by every node finishing receiving an air frame.
+         * Release an air frame when it is received by a node.
          */
         void releaseAirFrame(AirFrame *frame);
 };
