@@ -34,9 +34,9 @@ class BasePhy : public BaseSimple
 
         /** Handle self message */
         virtual void handleSelfMsg(cMessage *msg);
-        /** Handle message/packet from upperIn */
+        /** Handle message/packet from upper$i */
         virtual void handleUpperMsg(cMessage *msg);
-        /** Handle control message from upperCtlIn */
+        /** Handle control message from upperCtl$i */
         virtual void handleUpperCtl(cMessage *msg);
 
         /** Transmit a MAC packet (broadcast or unicast) */

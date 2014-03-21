@@ -25,6 +25,8 @@
 
 namespace twsn {
 
+enum RadioMode {POWER_DOWN = 0, IDLE = 1, RX = 2, TX = 3};
+
 /**
  * Base module for wireless physical layer
  */
@@ -35,10 +37,15 @@ class BaseWirelessPhy : public BasePhy
         ChannelMgr *channelMgr;
         /* PhyEntry holding channel information and connections of this node */
         PhyEntry* phyEntry;
-        bool transmitting;
+
+        int radioMode; // Current radio mode
 
         /* Timer */
-        cMessage *finishTxTimer;
+        cMessage *finishTxTimer; // Simulate end of transmission
+        cMessage *fetchTimer; // Timer for send CMD_DATA_FETCH to upper layer
+        cMessage *switchTxTimer; // Simulate delay to switch to TX mode
+        cMessage *switchRxTimer; // Simulate delay to switch to RX mode
+        cMessage *switchIdleTimer; // Simulate delay to switch to IDLE mode
 
         /** Override to use multiple initialization stages */
         virtual int numInitStages () const { return 2; };
@@ -51,8 +58,15 @@ class BaseWirelessPhy : public BasePhy
         virtual void handleMessage(cMessage *msg);
         /** Handle self message */
         virtual void handleSelfMsg(cMessage *msg);
+        /** Handle message/packet from upper$i */
+        virtual void handleUpperMsg(cMessage *msg);
+        /** Handle control message from upperCtl$i */
+        virtual void handleUpperCtl(cMessage *msg);
         /** Handle message sent directly */
         virtual void handleAirFrame(AirFrame *frame);
+
+        /** Send command to fetch data packet from upper layer */
+        virtual void fetchPacket();
 
         /** Transmit a MAC packet (broadcast or unicast) */
         virtual void txMacPkt(MacPkt *pkt);
@@ -70,6 +84,11 @@ class BaseWirelessPhy : public BasePhy
          * has not completed (phyEntry == NULL), the frame will be deleted.
          */
         virtual void recvAirFrame(AirFrame *frame);
+
+        /** Start switching to a mode. It will take time for the transceiver switch between modes */
+        virtual void switchRadioMode(int mode);
+        /** Set radio mode. This function has effect immediately */
+        virtual void setRadioMode(int mode);
 
     public:
         BaseWirelessPhy();

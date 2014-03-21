@@ -19,4 +19,32 @@ namespace twsn {
 
 Define_Module(BaseSimple);
 
+void BaseSimple::printError(ErrLevel level, const std::string &msg)
+{
+    std::string levelName;
+
+    switch (level) {
+        case VERBOSE:
+            levelName = "Verbose";
+            break;
+        case DEBUG:
+            levelName = "Debug";
+            break;
+        case INFO:
+            levelName = "Info";
+            break;
+        case WARNING:
+            levelName = "Warning";
+            break;
+        case ERROR:
+            levelName = "Error";
+            break;
+        default:
+            levelName = "Unknown";
+            break;
+    }
+
+    std::cerr << getName() << ':' << levelName << ':' << msg << endl;
+}
+
 }

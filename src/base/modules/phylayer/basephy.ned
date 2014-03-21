@@ -25,11 +25,6 @@ simple BasePhy extends BaseSimple like IPhy
 {
     parameters:
         @class("twsn::BasePhy");
-        
-        // Length of physical header
-        int headerLen @unit(bit) = default(0 bit);
-        // Propagation delay
-        double propagationDelay @unit(s) = default(0 s);
 		// Bit rate
         int bitRate @unit(bps) = default(250000 bps);
 

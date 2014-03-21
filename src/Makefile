@@ -21,6 +21,8 @@ INCLUDE_PATH = \
     -Ibase/entities \
     -Ibase/entities/nodes \
     -Ibase/messages \
+    -Ibase/messages/control \
+    -Ibase/messages/data \
     -Ibase/modules \
     -Ibase/modules/mobility \
     -Ibase/modules/phylayer \
@@ -53,13 +55,15 @@ OBJS = \
     $O/helpers/worldhelper.o \
     $O/modules/mobility/mobilitypath.o \
     $O/util/coord.o \
-    $O/base/messages/airframe_m.o \
-    $O/base/messages/macpkt_m.o
+    $O/base/messages/control/command_m.o \
+    $O/base/messages/data/airframe_m.o \
+    $O/base/messages/data/macpkt_m.o
 
 # Message files
 MSGFILES = \
-    base/messages/airframe.msg \
-    base/messages/macpkt.msg
+    base/messages/control/command.msg \
+    base/messages/data/airframe.msg \
+    base/messages/data/macpkt.msg
 
 #------------------------------------------------------------------------------
 
@@ -138,6 +142,8 @@ clean:
 	$(Q)-rm -f base/entities/*_m.cc base/entities/*_m.h
 	$(Q)-rm -f base/entities/nodes/*_m.cc base/entities/nodes/*_m.h
 	$(Q)-rm -f base/messages/*_m.cc base/messages/*_m.h
+	$(Q)-rm -f base/messages/control/*_m.cc base/messages/control/*_m.h
+	$(Q)-rm -f base/messages/data/*_m.cc base/messages/data/*_m.h
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
 	$(Q)-rm -f base/modules/phylayer/*_m.cc base/modules/phylayer/*_m.h
@@ -153,13 +159,13 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc helpers/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc helpers/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
 	base/channelmgr/channelmgr.h \
 	base/channelmgr/phyentry.h \
-	base/messages/airframe_m.h \
+	base/messages/data/airframe_m.h \
 	base/modules/basesimple.h \
 	util/coord.h \
 	util/twsndef.h
@@ -167,11 +173,13 @@ $O/base/channelmgr/phyentry.o: base/channelmgr/phyentry.cc \
 	base/channelmgr/phyentry.h \
 	util/coord.h \
 	util/twsndef.h
-$O/base/messages/airframe_m.o: base/messages/airframe_m.cc \
-	base/messages/airframe_m.h \
+$O/base/messages/control/command_m.o: base/messages/control/command_m.cc \
+	base/messages/control/command_m.h
+$O/base/messages/data/airframe_m.o: base/messages/data/airframe_m.cc \
+	base/messages/data/airframe_m.h \
 	util/twsndef.h
-$O/base/messages/macpkt_m.o: base/messages/macpkt_m.cc \
-	base/messages/macpkt_m.h \
+$O/base/messages/data/macpkt_m.o: base/messages/data/macpkt_m.cc \
+	base/messages/data/macpkt_m.h \
 	util/twsndef.h
 $O/base/modules/basesimple.o: base/modules/basesimple.cc \
 	base/modules/basesimple.h \
@@ -182,15 +190,16 @@ $O/base/modules/mobility/basemobility.o: base/modules/mobility/basemobility.cc \
 	util/coord.h \
 	util/twsndef.h
 $O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
-	base/messages/macpkt_m.h \
+	base/messages/data/macpkt_m.h \
 	base/modules/basesimple.h \
 	base/modules/phylayer/basephy.h \
 	util/twsndef.h
 $O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessphy.cc \
 	base/channelmgr/channelmgr.h \
 	base/channelmgr/phyentry.h \
-	base/messages/airframe_m.h \
-	base/messages/macpkt_m.h \
+	base/messages/control/command_m.h \
+	base/messages/data/airframe_m.h \
+	base/messages/data/macpkt_m.h \
 	base/modules/basesimple.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/phylayer/basephy.h \

@@ -33,8 +33,9 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
         double currTx @unit(mA) = default(0 mA);
         double currRx @unit(mA) = default(0 mA);
         
-        // Radio mode at start of simulation (0 = Idle; 1 = Rx; 2 = Tx)
-        int initRadioMode = default (0);
+        // Radio mode at start of simulation
+        // enum RadioMode {POWER_DOWN = 0, IDLE = 1, RX = 2, TX = 3};
+        int initRadioMode = default (1);
         
         // Radio mode switching delay
         double delayIdleToRx @unit(s) = default(0 s);

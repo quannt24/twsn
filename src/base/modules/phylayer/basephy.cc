@@ -32,19 +32,22 @@ void BasePhy::handleMessage(cMessage *msg)
 
 void BasePhy::handleSelfMsg(cMessage* msg)
 {
+    delete msg;
 }
 
 void BasePhy::handleUpperMsg(cMessage* msg)
 {
+    delete msg;
 }
 
 void BasePhy::handleUpperCtl(cMessage* msg)
 {
+    delete msg;
 }
 
 void BasePhy::txMacPkt(MacPkt* pkt)
 {
-    delete pkt; // What are you looking for?
+    delete pkt;
 }
 
 }

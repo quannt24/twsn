@@ -26,6 +26,8 @@ namespace twsn {
  */
 class BaseSimple : public cSimpleModule
 {
+    protected:
+        void printError(ErrLevel errType, const std::string &msg);
 };
 
 }
