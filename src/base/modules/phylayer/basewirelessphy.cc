@@ -29,6 +29,8 @@ void BaseWirelessPhy::initialize()
     // Call initialize() of parent
     BasePhy::initialize();
     radioMode = par("initRadioMode").longValue();
+    pcTimestamp = simTime();
+    scheduleAt(simTime() + par("drawPeriod").doubleValue(), pcTimer);
 }
 
 void BaseWirelessPhy::initialize(int stage)
@@ -80,6 +82,8 @@ void BaseWirelessPhy::handleSelfMsg(cMessage* msg)
         setRadioMode(RX);
     } else if (msg == switchIdleTimer) {
         setRadioMode(IDLE);
+    } else if (msg == pcTimer) {
+        draw();
     }
 }
 
@@ -236,6 +240,9 @@ void BaseWirelessPhy::switchRadioMode(int mode)
 
 void BaseWirelessPhy::setRadioMode(int mode)
 {
+    // Draw energy before switching mode
+    draw();
+
     switch (mode) {
         case POWER_DOWN:
         case IDLE:
@@ -247,7 +254,35 @@ void BaseWirelessPhy::setRadioMode(int mode)
             printError(ERROR, "Unexpected radio mode");
             break;
     }
-    // TODO Calculate power consumption
+}
+
+void BaseWirelessPhy::draw()
+{
+    double p = 0; // Power
+    double energy = 0; // Consumed energy in (mWh)
+
+    // Calculate consumed energy
+    switch (radioMode) {
+        case IDLE:
+            p = par("pIdle").doubleValue();
+            break;
+        case RX:
+            p = par("pRx").doubleValue();
+            break;
+        case TX:
+            p = par("pTx").doubleValue();
+            break;
+    }
+    energy = p * (simTime() - pcTimestamp) / 3600;
+
+    // TODO Draw from power source
+
+    // Update time stamp
+    pcTimestamp = simTime();
+    // Set pcTimer
+    if (!pcTimer->isScheduled()) {
+        scheduleAt(simTime() + par("drawPeriod").doubleValue(), pcTimer);
+    }
 }
 
 BaseWirelessPhy::BaseWirelessPhy()
@@ -260,6 +295,7 @@ BaseWirelessPhy::BaseWirelessPhy()
     switchTxTimer = new cMessage("switchTxTimer");
     switchRxTimer = new cMessage("switchRxTimer");
     switchIdleTimer = new cMessage("switchIdleTimer");
+    pcTimer = new cMessage("PcTimer");
 }
 
 BaseWirelessPhy::~BaseWirelessPhy()
@@ -269,6 +305,7 @@ BaseWirelessPhy::~BaseWirelessPhy()
     cancelAndDelete(switchTxTimer);
     cancelAndDelete(switchRxTimer);
     cancelAndDelete(switchIdleTimer);
+    cancelAndDelete(pcTimer);
 }
 
 }

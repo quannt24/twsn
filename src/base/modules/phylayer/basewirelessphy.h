@@ -39,6 +39,7 @@ class BaseWirelessPhy : public BasePhy
         PhyEntry* phyEntry;
 
         int radioMode; // Current radio mode
+        simtime_t pcTimestamp; // Power consumption time stamp
 
         /* Timer */
         cMessage *finishTxTimer; // Simulate end of transmission
@@ -46,6 +47,7 @@ class BaseWirelessPhy : public BasePhy
         cMessage *switchTxTimer; // Simulate delay to switch to TX mode
         cMessage *switchRxTimer; // Simulate delay to switch to RX mode
         cMessage *switchIdleTimer; // Simulate delay to switch to IDLE mode
+        cMessage *pcTimer; // Power consumption timer (simulate continuous draw)
 
         /** Override to use multiple initialization stages */
         virtual int numInitStages () const { return 2; };
@@ -89,6 +91,9 @@ class BaseWirelessPhy : public BasePhy
         virtual void switchRadioMode(int mode);
         /** Set radio mode. This function has effect immediately */
         virtual void setRadioMode(int mode);
+
+        /** Calculate using time (based on pcTimestamp) and draw energy */
+        virtual void draw();
 
     public:
         BaseWirelessPhy();

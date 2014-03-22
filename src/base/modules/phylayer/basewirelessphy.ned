@@ -29,13 +29,9 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
         // sensitivity of simulated devices with corresponding current consumption.
         double txRange @unit(m) = default(50 m);
         
-        // Current consumption
-        double currTx @unit(mA) = default(0 mA);
-        double currRx @unit(mA) = default(0 mA);
-        
         // Radio mode at start of simulation
         // enum RadioMode {POWER_DOWN = 0, IDLE = 1, RX = 2, TX = 3};
-        int initRadioMode = default (1);
+        int initRadioMode = default(1);
         
         // Radio mode switching delay
         double delayIdleToRx @unit(s) = default(0 s);
@@ -46,6 +42,14 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
         
         double delayTxToIdle @unit(s) = default(0 s);
         double delayTxToRx @unit(s) = default(0 s);
+        
+        // Power consumption
+        double pIdle @unit(mW) = default(0 mW);
+        double pRx @unit(mW) = default(0 mW);
+        double pTx @unit(mW) = default(0 mW);
+        // Period for planning timer to calculate and draw energy from power source (simulate
+        // continuous draw)
+        double drawPeriod = default(1);
         
     gates:
         input radioIn @directIn; // for sendDirect from other physical layers   
