@@ -22,4 +22,5 @@ moduleinterface INode
 {
     parameters:
         string phyType;
+        string linkType;
 }

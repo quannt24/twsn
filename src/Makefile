@@ -24,6 +24,7 @@ INCLUDE_PATH = \
     -Ibase/messages/control \
     -Ibase/messages/data \
     -Ibase/modules \
+    -Ibase/modules/linklayer \
     -Ibase/modules/mobility \
     -Ibase/modules/phylayer \
     -Ibase/networks \
@@ -50,6 +51,7 @@ OBJS = \
     $O/base/channelmgr/channelmgr.o \
     $O/base/modules/baselayer.o \
     $O/base/modules/basesimple.o \
+    $O/base/modules/linklayer/baselink.o \
     $O/base/modules/mobility/basemobility.o \
     $O/base/modules/phylayer/basephy.o \
     $O/base/modules/phylayer/basewirelessphy.o \
@@ -146,6 +148,7 @@ clean:
 	$(Q)-rm -f base/messages/control/*_m.cc base/messages/control/*_m.h
 	$(Q)-rm -f base/messages/data/*_m.cc base/messages/data/*_m.h
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
+	$(Q)-rm -f base/modules/linklayer/*_m.cc base/modules/linklayer/*_m.h
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
 	$(Q)-rm -f base/modules/phylayer/*_m.cc base/modules/phylayer/*_m.h
 	$(Q)-rm -f base/networks/*_m.cc base/networks/*_m.h
@@ -160,7 +163,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc helpers/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc helpers/*.cc modules/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -189,6 +192,12 @@ $O/base/modules/baselayer.o: base/modules/baselayer.cc \
 	util/twsndef.h
 $O/base/modules/basesimple.o: base/modules/basesimple.cc \
 	base/modules/basesimple.h \
+	util/twsndef.h
+$O/base/modules/linklayer/baselink.o: base/modules/linklayer/baselink.cc \
+	base/messages/control/command_m.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	base/modules/linklayer/baselink.h \
 	util/twsndef.h
 $O/base/modules/mobility/basemobility.o: base/modules/mobility/basemobility.cc \
 	base/modules/basesimple.h \

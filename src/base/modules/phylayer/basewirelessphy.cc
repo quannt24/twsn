@@ -183,7 +183,9 @@ void BaseWirelessPhy::senseChannel()
 
 void BaseWirelessPhy::fetchPacket()
 {
-    // TODO Send fetch command
+    Command *cmd = new Command();
+    cmd->setCmdId(CMD_DATA_FETCH);
+    sendCtlUp(cmd);
 }
 
 void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
@@ -246,7 +248,12 @@ void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
 void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
 {
     channelMgr->releaseAirFrame(frame);
-    delete frame; // TODO Decapsulate the frame and processing instead of just delete it
+
+    cPacket *pkt = frame->decapsulate();
+    pkt->setBitError(frame->hasBitError());
+    sendUp(pkt);
+
+    delete frame;
 }
 
 void BaseWirelessPhy::switchRadioMode(int mode)

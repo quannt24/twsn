@@ -13,19 +13,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules;
+#ifndef __TWSN_BASELINK_H_
+#define __TWSN_BASELINK_H_
 
-//
-// Base module for a layer
-//
-simple BaseLayer extends BaseSimple like ILayer
+#include <omnetpp.h>
+#include "baselayer.h"
+
+namespace twsn {
+
+/**
+ * Base module for link layer
+ */
+class BaseLink : public BaseLayer
 {
-    parameters:
-        @class("BaseLayer");
-        
-    gates:
-        inout upper @loose; // For data packets from/to the upper layer
-        inout upperCtl @loose; // For control messages from/to the upper layer
-        inout lower; // For data packet from/to lower layer
-        inout lowerCtl; // For control message from/to lower layer
-}
+};
+
+}  // namespace twsn
+#endif

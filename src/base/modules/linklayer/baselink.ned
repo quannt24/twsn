@@ -13,19 +13,22 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules;
+package twsn.base.modules.linklayer;
+
+import twsn.base.modules.BaseLayer;
 
 //
-// Base module for a layer
+// Base module for link layer
 //
-simple BaseLayer extends BaseSimple like ILayer
+simple BaseLink extends BaseLayer like ILink
 {
     parameters:
-        @class("BaseLayer");
+        @class("twsn::BaseLink");
         
-    gates:
-        inout upper @loose; // For data packets from/to the upper layer
-        inout upperCtl @loose; // For control messages from/to the upper layer
-        inout lower; // For data packet from/to lower layer
-        inout lowerCtl; // For control message from/to lower layer
+        // Address length in bytes (default is 8 for EUI-64)
+        int addrLen = default(8);
+        // Max size of a link layer frame in bytes, not including physical layer header
+        int maxFrameSize = default(127);
+        // Max packet size (in bytes) for upper layer
+        int maxPacketSize = default(110);
 }

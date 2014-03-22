@@ -16,13 +16,10 @@
 package twsn.base.modules;
 
 //
-// Base module for a layer
+// Interface for a layer
 //
-simple BaseLayer extends BaseSimple like ILayer
+moduleinterface ILayer
 {
-    parameters:
-        @class("BaseLayer");
-        
     gates:
         inout upper @loose; // For data packets from/to the upper layer
         inout upperCtl @loose; // For control messages from/to the upper layer

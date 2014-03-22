@@ -28,6 +28,7 @@ simple BasePhy extends BaseSimple like IPhy
 		// Bit rate
         int bitRate @unit(bps) = default(250000 bps);
 
+        @display("i=block/rxtx");
     gates:
         inout upper @loose; // For data packets from the MAC layer
         inout upperCtl @loose; // For control messages from the MAC layer

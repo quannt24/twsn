@@ -22,18 +22,16 @@ import twsn.helpers.WorldHelper;
 network TrackingWSN extends BaseWSN
 {
     parameters:
-        width = default(400m);
-        height = default(400m);
-        rows = default(20);
-        cols = default(20);
+        width = default(50 m);
+        height = default(50 m);
+        rows = default(1);
+        cols = default(2);
         
         string nodeType = default("BaseWirelessNode");
-        int numNodes = default(400); // Number of sensor nodes
+        int numNodes = default(2); // Number of sensor nodes
 
     submodules:
-        node[numNodes]: <nodeType> like INode {
-            
-        }
+        node[numNodes]: <nodeType> like INode;
         
         // Helpers should be declared after all entities
         worldHelper: WorldHelper {

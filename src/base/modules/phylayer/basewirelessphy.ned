@@ -22,30 +22,30 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
 {
     parameters:
         @class("twsn::BaseWirelessPhy");
-        
+
         // For simplicity, all physical modules are assumed having the same signal sensitivity,
         // so that we can simulate a fixed transmission range for each physical module.
         // This parameter should be configured corresponding with output power (dBm) and
         // sensitivity of simulated devices with corresponding current consumption.
         double txRange @unit(m) = default(50 m);
-        
+
         // Radio mode at start of simulation
         // enum RadioMode {POWER_DOWN = 0, IDLE = 1, RX = 2, TX = 3};
         int initRadioMode = default(1);
-        
+
         // Radio mode switching delay
         double delayIdleToRx @unit(s) = default(0 s);
         double delayIdleToTx @unit(s) = default(0 s);
-        
+
         double delayRxToIdle @unit(s) = default(0 s);
         double delayRxToTx @unit(s) = default(0 s);
-        
+
         double delayTxToIdle @unit(s) = default(0 s);
         double delayTxToRx @unit(s) = default(0 s);
-        
+
         // Time to perform CCA
         double delayCCA @unit(s) = default(0.000128 s); // 8 symbol periods
-        
+
         // Power consumption
         double pIdle @unit(mW) = default(0 mW);
         double pRx @unit(mW) = default(0 mW);
@@ -53,7 +53,8 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
         // Period for planning timer to calculate and draw energy from power source (simulate
         // continuous draw)
         double drawPeriod = default(1);
-        
+
+        @display("i=block/wrxtx");
     gates:
         input radioIn @directIn; // for sendDirect from other physical layers   
 }

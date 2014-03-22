@@ -13,19 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules;
+#include "baselink.h"
 
-//
-// Base module for a layer
-//
-simple BaseLayer extends BaseSimple like ILayer
-{
-    parameters:
-        @class("BaseLayer");
-        
-    gates:
-        inout upper @loose; // For data packets from/to the upper layer
-        inout upperCtl @loose; // For control messages from/to the upper layer
-        inout lower; // For data packet from/to lower layer
-        inout lowerCtl; // For control message from/to lower layer
-}
+namespace twsn {
+
+Define_Module(BaseLink);
+
+}  // namespace twsn

@@ -17,14 +17,20 @@ package twsn.base.entities.nodes;
 
 import twsn.base.entities.BaseEntity;
 import twsn.base.modules.phylayer.IWirelessPhy;
+import twsn.base.modules.linklayer.ILink;
 
 // Base module for all wireless nodes
 module BaseWirelessNode extends BaseEntity like INode
 {
     parameters:
         string phyType = default("BaseWirelessPhy");
+        string linkType = default("BaseLink");
 
         @display("is=s");
     submodules:
         phy: <phyType> like IWirelessPhy;
+        link: <linkType> like ILink;
+    connections:
+        phy.upper <--> link.lower;
+        phy.upperCtl <--> link.lowerCtl;
 }

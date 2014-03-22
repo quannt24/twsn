@@ -21,14 +21,10 @@ package twsn.base.modules.phylayer;
 moduleinterface IPhy
 {
     parameters:
-        // Length of physical header
-        int headerLen @unit(bit);
-        // Propagation delay
-        double propagationDelay @unit(s);
 		// Bit rate
         int bitRate @unit(bps);
 
     gates:
-        input upper; // For data packets from the MAC layer
-        input upperCtl; // For control messages from the MAC layer        
+        inout upper; // For data packets from the MAC layer
+        inout upperCtl; // For control messages from the MAC layer        
 }
