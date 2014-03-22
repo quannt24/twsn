@@ -48,6 +48,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 OBJS = \
     $O/base/channelmgr/phyentry.o \
     $O/base/channelmgr/channelmgr.o \
+    $O/base/modules/baselayer.o \
     $O/base/modules/basesimple.o \
     $O/base/modules/mobility/basemobility.o \
     $O/base/modules/phylayer/basephy.o \
@@ -180,6 +181,11 @@ $O/base/messages/data/airframe_m.o: base/messages/data/airframe_m.cc \
 	util/twsndef.h
 $O/base/messages/data/macpkt_m.o: base/messages/data/macpkt_m.cc \
 	base/messages/data/macpkt_m.h \
+	util/twsndef.h
+$O/base/modules/baselayer.o: base/modules/baselayer.cc \
+	base/messages/control/command_m.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
 	util/twsndef.h
 $O/base/modules/basesimple.o: base/modules/basesimple.cc \
 	base/modules/basesimple.h \

@@ -273,7 +273,7 @@ void BaseWirelessPhy::draw()
             p = par("pTx").doubleValue();
             break;
     }
-    energy = p * (simTime() - pcTimestamp) / 3600;
+    energy = p * (simTime() - pcTimestamp).dbl() / 3600;
 
     // TODO Draw from power source
 

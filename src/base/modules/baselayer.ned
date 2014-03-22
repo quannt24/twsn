@@ -13,41 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "basephy.h"
+package twsn.base.modules;
 
-namespace twsn {
-
-Define_Module(BasePhy);
-
-void BasePhy::handleMessage(cMessage *msg)
+//
+// Base module for a layer
+//
+simple BaseLayer extends BaseSimple
 {
-    if (msg->isSelfMessage()) {
-        handleSelfMsg(msg);
-    } else if (msg->getArrivalGate() == gate("upper$i")) {
-        handleUpperMsg(msg);
-    } else if (msg->getArrivalGate() == gate("upperCtl$i")) {
-        handleUpperCtl(msg);
-    }
-}
-
-void BasePhy::handleSelfMsg(cMessage* msg)
-{
-    delete msg;
-}
-
-void BasePhy::handleUpperMsg(cMessage* msg)
-{
-    delete msg;
-}
-
-void BasePhy::handleUpperCtl(cMessage* msg)
-{
-    delete msg;
-}
-
-void BasePhy::txMacPkt(MacPkt* pkt)
-{
-    delete pkt;
-}
-
+    parameters:
+        @class("BaseLayer");
+        
+    gates:
+        inout upper @loose; // For data packets from/to the upper layer
+        inout upperCtl @loose; // For control messages from/to the upper layer
+        inout lower; // For data packet from/to lower layer
+        inout lowerCtl; // For control message from/to lower layer
 }
