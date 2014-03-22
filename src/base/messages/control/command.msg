@@ -30,10 +30,14 @@ enum CmdID {
     CMD_DATA_FETCH = 1; // Notify upper layer to send data packet through data gate
     
     // Physical specific commands
-    PHYCMD_PD = 2; // Power down
-    PHYCMD_IDLE = 3; // Switch to IDLE mode
-    PHYCMD_RX = 4; // Switch to RX mode
-    PHYCMD_TX = 5; // Switch to TX mode
+    CMD_PHY_PD = 10; // Power down
+    CMD_PHY_IDLE = 11; // Switch to IDLE mode
+    CMD_PHY_RX = 12; // Switch to RX mode
+    CMD_PHY_TX = 13; // Switch to TX mode
+    CMD_PHY_CCA = 14; // Perform clear channel assessment (CCA)
+    
+    // Data link specific commands
+    CMD_LIN_CCA_RESULT = 20; // CCA result
 };
 
 // Base class for command messages
@@ -45,4 +49,12 @@ message Command {
     int des = UNKNOWN;
     // Command ID, use CmdID
     int cmdId;
+}
+
+// Clear channel assessment result
+message CmdCCAR extends Command {
+    src = PHYS;
+    des = LINK;
+    cmdId = CMD_LIN_CCA_RESULT;
+    bool clearChannel;
 }

@@ -22,6 +22,7 @@
 #include "channelmgr.h"
 #include "airframe_m.h"
 #include "macpkt_m.h"
+#include "command_m.h"
 
 namespace twsn {
 
@@ -48,6 +49,7 @@ class BaseWirelessPhy : public BasePhy
         cMessage *switchRxTimer; // Simulate delay to switch to RX mode
         cMessage *switchIdleTimer; // Simulate delay to switch to IDLE mode
         cMessage *pcTimer; // Power consumption timer (simulate continuous draw)
+        cMessage *ccaTimer; // Simulating CCA delay
 
         /** Override to use multiple initialization stages */
         virtual int numInitStages () const { return 2; };
@@ -66,6 +68,17 @@ class BaseWirelessPhy : public BasePhy
         virtual void handleUpperCtl(cMessage *msg);
         /** Handle message sent directly */
         virtual void handleAirFrame(AirFrame *frame);
+
+        /** Send data packet up */
+        virtual void sendUp(cPacket *pkt);
+        /** Send control message up */
+        virtual void sendCtlUp(Command *cmd);
+
+        /** Perform CCA, return result after CCA delay. In simulation, this function simply set
+         * a timer for calling senseChannel() after delay time. */
+        virtual void performCCA();
+        /** Check channelState of phyEntry object. Report result to upper layer by a command. */
+        virtual void senseChannel();
 
         /** Send command to fetch data packet from upper layer */
         virtual void fetchPacket();

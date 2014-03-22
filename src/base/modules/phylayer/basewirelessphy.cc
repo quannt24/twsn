@@ -84,6 +84,8 @@ void BaseWirelessPhy::handleSelfMsg(cMessage* msg)
         setRadioMode(IDLE);
     } else if (msg == pcTimer) {
         draw();
+    } else if (msg == ccaTimer) {
+        senseChannel();
     }
 }
 
@@ -125,6 +127,10 @@ void BaseWirelessPhy::handleUpperCtl(cMessage* msg)
                 }
             }
             break;
+
+        case CMD_PHY_CCA:
+            performCCA();
+            break;
     }
 
     delete msg;
@@ -133,6 +139,46 @@ void BaseWirelessPhy::handleUpperCtl(cMessage* msg)
 void BaseWirelessPhy::handleAirFrame(AirFrame* frame)
 {
     recvAirFrame(frame);
+}
+
+void BaseWirelessPhy::sendUp(cPacket* pkt)
+{
+    if (gate("upper$o")->isPathOK()) {
+        send(pkt, "upper$o");
+    } else {
+        printError(ERROR, "Gate is not connected. Deleting message.");
+        delete pkt;
+    }
+}
+
+void BaseWirelessPhy::sendCtlUp(Command* cmd)
+{
+    if (gate("upperCtl$o")->isPathOK()) {
+        send(cmd, "upperCtl$o");
+    } else {
+        printError(ERROR, "Gate is not connected. Deleting message.");
+        delete cmd;
+    }
+}
+
+void BaseWirelessPhy::performCCA()
+{
+    if (radioMode == TX || radioMode == RX) {
+        scheduleAt(simTime() + par("delayCCA").doubleValue(), ccaTimer);
+    } else {
+        printError(ERROR, "Cannot perform CCA when radio is not in TX or RX modes");
+    }
+}
+
+void BaseWirelessPhy::senseChannel()
+{
+    bool clearChannel = false;
+    if (phyEntry != NULL && phyEntry->getChannelState() == 0) clearChannel = true;
+
+    CmdCCAR *cmd = new CmdCCAR();
+    cmd->setClearChannel(clearChannel);
+
+    sendCtlUp(cmd);
 }
 
 void BaseWirelessPhy::fetchPacket()
@@ -296,6 +342,7 @@ BaseWirelessPhy::BaseWirelessPhy()
     switchRxTimer = new cMessage("switchRxTimer");
     switchIdleTimer = new cMessage("switchIdleTimer");
     pcTimer = new cMessage("PcTimer");
+    ccaTimer = new cMessage("CCATimer");
 }
 
 BaseWirelessPhy::~BaseWirelessPhy()
@@ -306,6 +353,7 @@ BaseWirelessPhy::~BaseWirelessPhy()
     cancelAndDelete(switchRxTimer);
     cancelAndDelete(switchIdleTimer);
     cancelAndDelete(pcTimer);
+    cancelAndDelete(ccaTimer);
 }
 
 }

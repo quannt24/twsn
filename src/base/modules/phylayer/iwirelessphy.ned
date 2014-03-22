@@ -27,11 +27,9 @@ moduleinterface IWirelessPhy extends IPhy
         // sensitivity of simulated devices with corresponding current consumption.
         double txRange @unit(m);
         
-        // Current consumption
-        double currTx @unit(mA);
-        double currRx @unit(mA);
-        
-        int initRadioMode; // Radio mode at start of simulation (0 = Idle; 1 = Rx; 2 = Tx)
+        // Radio mode at start of simulation
+        // enum RadioMode {POWER_DOWN = 0, IDLE = 1, RX = 2, TX = 3};
+        int initRadioMode;
         
         // Radio mode switching delay
         double delayIdleToRx @unit(s);
@@ -42,6 +40,17 @@ moduleinterface IWirelessPhy extends IPhy
         
         double delayTxToIdle @unit(s);
         double delayTxToRx @unit(s);
+        
+        // Time to perform CCA
+        double delayCCA @unit(s);
+        
+        // Power consumption
+        double pIdle @unit(mW);
+        double pRx @unit(mW);
+        double pTx @unit(mW);
+        // Period for planning timer to calculate and draw energy from power source (simulate
+        // continuous draw)
+        double drawPeriod;
         
     gates:
         input radioIn @directIn; // for sendDirect from other physical layers

@@ -46,20 +46,26 @@ enum CmdLevel {
  *     CMD_DATA_FETCH = 1; 
  *     
  *     
- *     PHYCMD_PD = 2; 
- *     PHYCMD_IDLE = 3; 
- *     PHYCMD_RX = 4; 
- *     PHYCMD_TX = 5; 
+ *     CMD_PHY_PD = 10; 
+ *     CMD_PHY_IDLE = 11; 
+ *     CMD_PHY_RX = 12; 
+ *     CMD_PHY_TX = 13; 
+ *     CMD_PHY_CCA = 14; 
+ *     
+ *     
+ *     CMD_LIN_CCA_RESULT = 20; 
  * };
  * </pre>
  */
 enum CmdID {
     CMD_DATA_NOTI = 0,
     CMD_DATA_FETCH = 1,
-    PHYCMD_PD = 2,
-    PHYCMD_IDLE = 3,
-    PHYCMD_RX = 4,
-    PHYCMD_TX = 5
+    CMD_PHY_PD = 10,
+    CMD_PHY_IDLE = 11,
+    CMD_PHY_RX = 12,
+    CMD_PHY_TX = 13,
+    CMD_PHY_CCA = 14,
+    CMD_LIN_CCA_RESULT = 20
 };
 
 /**
@@ -110,6 +116,46 @@ class Command : public ::cMessage
 
 inline void doPacking(cCommBuffer *b, Command& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, Command& obj) {obj.parsimUnpack(b);}
+
+/**
+ * Class generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * <pre>
+ * message CmdCCAR extends Command {
+ *     src = PHYS;
+ *     des = LINK;
+ *     cmdId = CMD_LIN_CCA_RESULT;
+ *     bool clearChannel;
+ * }
+ * </pre>
+ */
+class CmdCCAR : public ::Command
+{
+  protected:
+    bool clearChannel_var;
+
+  private:
+    void copy(const CmdCCAR& other);
+
+  protected:
+    // protected and unimplemented operator==(), to prevent accidental usage
+    bool operator==(const CmdCCAR&);
+
+  public:
+    CmdCCAR(const char *name=NULL, int kind=0);
+    CmdCCAR(const CmdCCAR& other);
+    virtual ~CmdCCAR();
+    CmdCCAR& operator=(const CmdCCAR& other);
+    virtual CmdCCAR *dup() const {return new CmdCCAR(*this);}
+    virtual void parsimPack(cCommBuffer *b);
+    virtual void parsimUnpack(cCommBuffer *b);
+
+    // field getter/setter methods
+    virtual bool getClearChannel() const;
+    virtual void setClearChannel(bool clearChannel);
+};
+
+inline void doPacking(cCommBuffer *b, CmdCCAR& obj) {obj.parsimPack(b);}
+inline void doUnpacking(cCommBuffer *b, CmdCCAR& obj) {obj.parsimUnpack(b);}
 
 
 #endif // _COMMAND_M_H_

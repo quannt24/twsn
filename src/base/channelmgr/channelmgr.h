@@ -34,6 +34,7 @@ enum CATState{CAT_FREE, CAT_BUSY, CAT_OUT_OF_RANGE = -1};
 class ChannelMgr : public BaseSimple
 {
     private:
+        // Current init stage, hold -1 when initialization is not started or completed
         int currInitStage;
         // List of PhyEntry object, contains info of registered physical modules
         std::list<PhyEntry*> peList;
@@ -76,6 +77,7 @@ class ChannelMgr : public BaseSimple
          * not they are going to receive an air frame).
          */
         void stopTx(PhyEntry *sender);
+
         /**
          * Called by a node sending an air frame.
          * Hold an air frame which is being sent to the air. It will be checked for error caused
@@ -85,7 +87,6 @@ class ChannelMgr : public BaseSimple
          * for performance).
          */
         void holdAirFrame(PhyEntry *sender, AirFrame *frame);
-
         /**
          * Called by every node finishing receiving an air frame.
          * Release an air frame when it is received by a node.

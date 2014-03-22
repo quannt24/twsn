@@ -19,6 +19,6 @@ enum ErrLevel {VERBOSE, DEBUG, INFO, WARNING, ERROR};
 
 /* Constants */
 const macaddr_t MAC_BROADCAST_ADDR = -1;
-const double symbolPeriod = 16e-6; // 16us
+const double symbolPeriod = 16e-6; // 16us, corresponding to 4 bits over 250kbps
 
 #endif /* TWSNDEF_H_ */
