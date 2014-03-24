@@ -107,6 +107,22 @@ void BaseWirelessPhy::handleUpperCtl(cMessage* msg)
     Command *cmd = check_and_cast<Command*>(msg);
 
     switch (cmd->getCmdId()) {
+        case CMD_PHY_PD:
+            setRadioMode(POWER_DOWN);
+            break;
+
+        case CMD_PHY_IDLE:
+            switchRadioMode(IDLE);
+            break;
+
+        case CMD_PHY_RX:
+            switchRadioMode(RX);
+            break;
+
+        case CMD_PHY_TX:
+            switchRadioMode(TX);
+            break;
+
         case CMD_DATA_NOTI:
             if (radioMode == TX) {
                 if (!finishTxTimer->isScheduled()) {
@@ -191,11 +207,17 @@ void BaseWirelessPhy::fetchPacket()
 
 void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
 {
-    if (phyEntry == NULL) {
-        std::cerr << "BaseWirelessPhy::error: module has not registered with ChannelMgr\n";
+    if (channelMgr == NULL || phyEntry == NULL) {
+        printError(ERROR, "Module has not registered with ChannelMgr. Dropping packet.");
         delete pkt;
         return;
     }
+    if (radioMode != TX) {
+        printError(ERROR, "Cannot transmit when not in TX mode. Dropping packet.");
+        delete pkt;
+        return;
+    }
+
     /* Increase channel state */
     channelMgr->startTx(phyEntry);
 
@@ -250,7 +272,19 @@ void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
 
 void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
 {
+    if (channelMgr == NULL) {
+        printError(ERROR, "Module has not registered with ChannelMgr. Dropping frame.");
+        delete frame;
+        return;
+    }
+
     channelMgr->releaseAirFrame(frame);
+
+    if (radioMode != RX) {
+        printError(WARNING, "Cannot receive when not in RX mode. Dropping frame.");
+        delete frame;
+        return;
+    }
 
     cPacket *pkt = frame->decapsulate();
     pkt->setBitError(frame->hasBitError());
@@ -266,6 +300,11 @@ void BaseWirelessPhy::switchRadioMode(int mode)
     cancelEvent(switchIdleTimer);
     cancelEvent(switchRxTimer);
     cancelEvent(switchTxTimer);
+
+    if (radioMode != IDLE && radioMode != RX && radioMode != TX) {
+        printError(WARNING, "Cannot switch radio mode when power down");
+        return;
+    }
 
     switch (mode) {
         case IDLE:
@@ -293,7 +332,8 @@ void BaseWirelessPhy::switchRadioMode(int mode)
             scheduleAt(simTime() + switchDelay, switchTxTimer);
             break;
         default:
-            printError(ERROR, "Unexpected radio mode");
+            printError(ERROR, "Unexpected radio mode. Set to POWER_DOWN.");
+            setRadioMode(POWER_DOWN);
             return;
     }
 }

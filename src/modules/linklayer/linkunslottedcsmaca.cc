@@ -25,12 +25,20 @@ void LinkUnslottedCSMACA::initialize()
     aMaxBE = par("aMaxBE").longValue();
     macMaxNB = par("macMaxNB").longValue();
     macMinBE = par("macMinBE").longValue();
+    scheduleAt(0, listenTimer);
 }
 
 void LinkUnslottedCSMACA::handleSelfMsg(cMessage* msg)
 {
     if (msg == backoffTimer) {
         performCCA();
+    } else if (msg == listenTimer) {
+        // Switch radio transceiver to listen mode
+        Command *cmd = new Command();
+        cmd->setSrc(LINK);
+        cmd->setDes(PHYS);
+        cmd->setCmdId(CMD_PHY_RX);
+        sendCtlDown(cmd);
     }
 }
 
@@ -64,7 +72,7 @@ void LinkUnslottedCSMACA::handleUpperCtl(cMessage* msg)
 
     switch (cmd->getCmdId()) {
         case CMD_DATA_NOTI:
-            if (outPkt == NULL) fetchPacketFromUpper();
+            if (outPkt == NULL) fetchPacketFromUpper(); // TODO and fetchTimer is not scheduled
             delete cmd;
             break;
 
@@ -108,10 +116,18 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
             break;
 
         case CMD_READY:
-            // Fetch next packet from queue
-            if (outPkt == NULL) fetchPacketFromUpper();
+            // Fetch next packet from queue TODO After IFS
+            if (outPkt == NULL) fetchPacketFromUpper(); // TODO and fetchTimer is not scheduled
             else startSending();
             delete cmd;
+
+            // Switch radio transceiver to listen mode
+            Command *rxcmd = new Command();
+            rxcmd->setSrc(LINK);
+            rxcmd->setDes(PHYS);
+            rxcmd->setCmdId(CMD_PHY_RX);
+            sendCtlDown(rxcmd);
+            break;
 
         default:
             // Just forward to upper layer
@@ -168,11 +184,13 @@ LinkUnslottedCSMACA::LinkUnslottedCSMACA()
 {
     outPkt = NULL;
     backoffTimer = new cMessage("backoffTimer");
+    listenTimer = new cMessage("listenTimer");
 }
 
 LinkUnslottedCSMACA::~LinkUnslottedCSMACA()
 {
     cancelAndDelete(backoffTimer);
+    cancelAndDelete(listenTimer);
 }
 
 }  // namespace twsn
