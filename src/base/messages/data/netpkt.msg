@@ -11,30 +11,18 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
-package twsn.networks;
+cplusplus {{
+	#include "twsndef.h"
+}}
+class noncobject netaddr_t;
 
-import twsn.base.networks.BaseWSN;
-import twsn.base.entities.nodes.INode;
-import twsn.helpers.WorldHelper;
-
-network TrackingWSN extends BaseWSN
-{
-    parameters:
-        width = default(50 m);
-        height = default(50 m);
-        rows = default(1);
-        cols = default(2);
-        
-        string nodeType = default("TrackingNode");
-        int numNodes = default(2); // Number of sensor nodes
-
-    submodules:
-        node[numNodes]: <nodeType> like INode;
-        
-        // Helpers should be declared after all entities
-        worldHelper: WorldHelper {
-            @display("p=-20,10");
-        }
+//
+// Base packet type for network layer
+//
+packet NetPkt {
+    netaddr_t srcAddr; // Network address of sender
+    netaddr_t desAddr; // Network address of sender or broadcast address
+    int pktSize = 16; // Packet size in bytes
 }

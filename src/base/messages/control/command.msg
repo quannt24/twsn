@@ -28,6 +28,7 @@ enum CmdID {
     // Commnon commands
     CMD_DATA_NOTI = 0; // Notify lower layer for pending data packet
     CMD_DATA_FETCH = 1; // Notify upper layer to send data packet through data gate
+    CMD_READY = 2; // Notify upper layer that lower layer is ready
     
     // Physical specific commands
     CMD_PHY_PD = 10; // Power down
@@ -49,6 +50,14 @@ message Command {
     int des = UNKNOWN;
     // Command ID, use CmdID
     int cmdId;
+}
+
+// Request to perform clear channel assessment
+message CmdCCA extends Command {
+    src = LINK;
+    des = PHYS;
+    cmdId = CMD_PHY_CCA;
+    double duration = 0.000128; // CCA duration, default is 8 symbol periods
 }
 
 // Clear channel assessment result

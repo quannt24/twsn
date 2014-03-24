@@ -24,4 +24,5 @@ class noncobject macaddr_t;
 packet MacPkt {
     macaddr_t srcAddr; // MAC address of sender
     macaddr_t desAddr; // MAC address of sender or broadcast address
+    int pktSize = 16; // Packet size in bytes
 }

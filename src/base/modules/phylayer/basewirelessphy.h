@@ -76,11 +76,11 @@ class BaseWirelessPhy : public BasePhy
 
         /** Perform CCA, return result after CCA delay. In simulation, this function simply set
          * a timer for calling senseChannel() after delay time. */
-        virtual void performCCA();
+        virtual void performCCA(double duration);
         /** Check channelState of phyEntry object. Report result to upper layer by a command. */
         virtual void senseChannel();
 
-        /** Send command to fetch data packet from upper layer */
+        /** Send command CMD_DATA_FETCH to fetch data packet from upper layer */
         virtual void fetchPacket();
 
         /** Transmit a MAC packet (broadcast or unicast) */

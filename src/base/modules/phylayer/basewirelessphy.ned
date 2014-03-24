@@ -43,9 +43,6 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
         double delayTxToIdle @unit(s) = default(0 s);
         double delayTxToRx @unit(s) = default(0 s);
 
-        // Time to perform CCA
-        double delayCCA @unit(s) = default(0.000128 s); // 8 symbol periods
-
         // Power consumption
         double pIdle @unit(mW) = default(0 mW);
         double pRx @unit(mW) = default(0 mW);

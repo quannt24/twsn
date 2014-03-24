@@ -13,27 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TWSN_BASELAYER_H_
-#define __TWSN_BASELAYER_H_
+#ifndef __TWSN_DOWNQUEUE_H_
+#define __TWSN_DOWNQUEUE_H_
 
 #include <omnetpp.h>
-#include "twsndef.h"
-#include "basesimple.h"
-#include "command_m.h"
+#include "baselayer.h"
 
 namespace twsn {
 
 /**
- * Base module for a layer
+ * Queue for lower layer
  */
-class BaseLayer : public BaseSimple
+class DownQueue : public BaseLayer
 {
-    protected:
-        /** Delegate jobs to other message handling functions. */
-        virtual void handleMessage(cMessage *msg);
+    private:
+        cPacketQueue queue;
 
-        /** Handle self message */
-        virtual void handleSelfMsg(cMessage *msg);
+        /** Dequeue message and send down. If the queue is empty, send a CMD_DATA_EMPTY command. */
+        void dequeueMsg();
+
+    protected:
         /** Handle message/packet from upper$i */
         virtual void handleUpperMsg(cMessage *msg);
         /** Handle control message from upperCtl$i */
@@ -42,22 +41,8 @@ class BaseLayer : public BaseSimple
         virtual void handleLowerMsg(cMessage *msg);
         /** Handle control message from lowerCtl$i */
         virtual void handleLowerCtl(cMessage *msg);
-
-        /** Send data packet up */
-        void sendUp(cPacket *pkt);
-        /** Send control message up */
-        void sendCtlUp(Command *cmd);
-        /** Send data packet down */
-        void sendDown(cPacket *pkt);
-        /** Send control message down */
-        void sendCtlDown(Command *cmd);
-
-        /** Send command CMD_DATA_FETCH to upper layer */
-        virtual void fetchPacketFromUpper();
-        /** Send command CMD_DATA_NOTI to lower layer */
-        virtual void notifyLower();
 };
 
-} // namespace twsn
+}  // namespace twsn
 
 #endif

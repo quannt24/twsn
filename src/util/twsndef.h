@@ -14,6 +14,7 @@
 typedef double distance_t;
 typedef long moduleid_t;
 typedef long macaddr_t;
+typedef long netaddr_t;
 
 enum ErrLevel {VERBOSE, DEBUG, INFO, WARNING, ERROR};
 

@@ -129,7 +129,8 @@ void BaseWirelessPhy::handleUpperCtl(cMessage* msg)
             break;
 
         case CMD_PHY_CCA:
-            performCCA();
+            CmdCCA *cmdCCA = check_and_cast<CmdCCA*>(cmd);
+            performCCA(cmdCCA->getDuration());
             break;
     }
 
@@ -161,10 +162,10 @@ void BaseWirelessPhy::sendCtlUp(Command* cmd)
     }
 }
 
-void BaseWirelessPhy::performCCA()
+void BaseWirelessPhy::performCCA(double duration)
 {
     if (radioMode == TX || radioMode == RX) {
-        scheduleAt(simTime() + par("delayCCA").doubleValue(), ccaTimer);
+        scheduleAt(simTime() + duration, ccaTimer);
     } else {
         printError(ERROR, "Cannot perform CCA when radio is not in TX or RX modes");
     }
@@ -232,10 +233,12 @@ void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
 void BaseWirelessPhy::finishTx()
 {
     channelMgr->stopTx(phyEntry);
-    // Auto switch to Rx
-    if (!fetchTimer->isScheduled()) {
-        switchRadioMode(RX);
-    }
+    // Send ready command to upper layer
+    Command *cmd = new Command();
+    cmd->setSrc(PHYS);
+    cmd->setDes(LINK);
+    cmd->setCmdId(CMD_READY);
+    sendCtlUp(cmd);
 }
 
 void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
@@ -259,6 +262,10 @@ void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
 void BaseWirelessPhy::switchRadioMode(int mode)
 {
     double switchDelay = 0;
+
+    cancelEvent(switchIdleTimer);
+    cancelEvent(switchRxTimer);
+    cancelEvent(switchTxTimer);
 
     switch (mode) {
         case IDLE:

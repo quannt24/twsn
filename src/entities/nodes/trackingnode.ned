@@ -13,28 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.networks;
+package twsn.entities.nodes;
 
-import twsn.base.networks.BaseWSN;
-import twsn.base.entities.nodes.INode;
-import twsn.helpers.WorldHelper;
+import twsn.base.entities.nodes.BaseWirelessNode;
 
-network TrackingWSN extends BaseWSN
+//
+// Sensor node for tracking
+//
+module TrackingNode extends BaseWirelessNode
 {
     parameters:
-        width = default(50 m);
-        height = default(50 m);
-        rows = default(1);
-        cols = default(2);
-        
-        string nodeType = default("TrackingNode");
-        int numNodes = default(2); // Number of sensor nodes
-
+        phyType = default("BaseWirelessPhy");
+        linkType = default("LinkUnslottedCSMACA");
+    gates:
     submodules:
-        node[numNodes]: <nodeType> like INode;
-        
-        // Helpers should be declared after all entities
-        worldHelper: WorldHelper {
-            @display("p=-20,10");
-        }
+    connections:
 }

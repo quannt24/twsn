@@ -13,28 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.networks;
+package twsn.modules.linklayer;
 
-import twsn.base.networks.BaseWSN;
-import twsn.base.entities.nodes.INode;
-import twsn.helpers.WorldHelper;
+import twsn.base.modules.linklayer.BaseLink;
 
-network TrackingWSN extends BaseWSN
+//
+// Link layer with unslotted CSMA/CA
+//
+simple LinkUnslottedCSMACA extends BaseLink
 {
     parameters:
-        width = default(50 m);
-        height = default(50 m);
-        rows = default(1);
-        cols = default(2);
-        
-        string nodeType = default("TrackingNode");
-        int numNodes = default(2); // Number of sensor nodes
-
-    submodules:
-        node[numNodes]: <nodeType> like INode;
-        
-        // Helpers should be declared after all entities
-        worldHelper: WorldHelper {
-            @display("p=-20,10");
-        }
+        double ccaDur = 0.000128; // CCA duration (8 * symbolPeriod)
+        double aUnitBP = 0.00032; // A unit backoff-period (20 * symbolPeriod)
+        int aMaxBE = default(5);
+		int macMaxNB = default(5);
+		int macMinBE = default(3);
 }

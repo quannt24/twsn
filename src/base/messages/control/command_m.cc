@@ -46,6 +46,7 @@ EXECUTE_ON_STARTUP(
     if (!e) enums.getInstance()->add(e = new cEnum("CmdID"));
     e->insert(CMD_DATA_NOTI, "CMD_DATA_NOTI");
     e->insert(CMD_DATA_FETCH, "CMD_DATA_FETCH");
+    e->insert(CMD_READY, "CMD_READY");
     e->insert(CMD_PHY_PD, "CMD_PHY_PD");
     e->insert(CMD_PHY_IDLE, "CMD_PHY_IDLE");
     e->insert(CMD_PHY_RX, "CMD_PHY_RX");
@@ -327,6 +328,246 @@ void *CommandDescriptor::getFieldStructPointer(void *object, int field, int i) c
         field -= basedesc->getFieldCount(object);
     }
     Command *pp = (Command *)object; (void)pp;
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+Register_Class(CmdCCA);
+
+CmdCCA::CmdCCA(const char *name, int kind) : Command(name,kind)
+{
+    this->setSrc(LINK);
+    this->setDes(PHYS);
+    this->setCmdId(CMD_PHY_CCA);
+
+    this->duration_var = 0.000128;
+}
+
+CmdCCA::CmdCCA(const CmdCCA& other) : Command(other)
+{
+    copy(other);
+}
+
+CmdCCA::~CmdCCA()
+{
+}
+
+CmdCCA& CmdCCA::operator=(const CmdCCA& other)
+{
+    if (this==&other) return *this;
+    Command::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void CmdCCA::copy(const CmdCCA& other)
+{
+    this->duration_var = other.duration_var;
+}
+
+void CmdCCA::parsimPack(cCommBuffer *b)
+{
+    Command::parsimPack(b);
+    doPacking(b,this->duration_var);
+}
+
+void CmdCCA::parsimUnpack(cCommBuffer *b)
+{
+    Command::parsimUnpack(b);
+    doUnpacking(b,this->duration_var);
+}
+
+double CmdCCA::getDuration() const
+{
+    return duration_var;
+}
+
+void CmdCCA::setDuration(double duration)
+{
+    this->duration_var = duration;
+}
+
+class CmdCCADescriptor : public cClassDescriptor
+{
+  public:
+    CmdCCADescriptor();
+    virtual ~CmdCCADescriptor();
+
+    virtual bool doesSupport(cObject *obj) const;
+    virtual const char *getProperty(const char *propertyname) const;
+    virtual int getFieldCount(void *object) const;
+    virtual const char *getFieldName(void *object, int field) const;
+    virtual int findField(void *object, const char *fieldName) const;
+    virtual unsigned int getFieldTypeFlags(void *object, int field) const;
+    virtual const char *getFieldTypeString(void *object, int field) const;
+    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
+    virtual int getArraySize(void *object, int field) const;
+
+    virtual std::string getFieldAsString(void *object, int field, int i) const;
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
+
+    virtual const char *getFieldStructName(void *object, int field) const;
+    virtual void *getFieldStructPointer(void *object, int field, int i) const;
+};
+
+Register_ClassDescriptor(CmdCCADescriptor);
+
+CmdCCADescriptor::CmdCCADescriptor() : cClassDescriptor("CmdCCA", "Command")
+{
+}
+
+CmdCCADescriptor::~CmdCCADescriptor()
+{
+}
+
+bool CmdCCADescriptor::doesSupport(cObject *obj) const
+{
+    return dynamic_cast<CmdCCA *>(obj)!=NULL;
+}
+
+const char *CmdCCADescriptor::getProperty(const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->getProperty(propertyname) : NULL;
+}
+
+int CmdCCADescriptor::getFieldCount(void *object) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? 1+basedesc->getFieldCount(object) : 1;
+}
+
+unsigned int CmdCCADescriptor::getFieldTypeFlags(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeFlags(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static unsigned int fieldTypeFlags[] = {
+        FD_ISEDITABLE,
+    };
+    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+}
+
+const char *CmdCCADescriptor::getFieldName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldNames[] = {
+        "duration",
+    };
+    return (field>=0 && field<1) ? fieldNames[field] : NULL;
+}
+
+int CmdCCADescriptor::findField(void *object, const char *fieldName) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    int base = basedesc ? basedesc->getFieldCount(object) : 0;
+    if (fieldName[0]=='d' && strcmp(fieldName, "duration")==0) return base+0;
+    return basedesc ? basedesc->findField(object, fieldName) : -1;
+}
+
+const char *CmdCCADescriptor::getFieldTypeString(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeString(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldTypeStrings[] = {
+        "double",
+    };
+    return (field>=0 && field<1) ? fieldTypeStrings[field] : NULL;
+}
+
+const char *CmdCCADescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldProperty(object, field, propertyname);
+        field -= basedesc->getFieldCount(object);
+    }
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+int CmdCCADescriptor::getArraySize(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getArraySize(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    CmdCCA *pp = (CmdCCA *)object; (void)pp;
+    switch (field) {
+        default: return 0;
+    }
+}
+
+std::string CmdCCADescriptor::getFieldAsString(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldAsString(object,field,i);
+        field -= basedesc->getFieldCount(object);
+    }
+    CmdCCA *pp = (CmdCCA *)object; (void)pp;
+    switch (field) {
+        case 0: return double2string(pp->getDuration());
+        default: return "";
+    }
+}
+
+bool CmdCCADescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->setFieldAsString(object,field,i,value);
+        field -= basedesc->getFieldCount(object);
+    }
+    CmdCCA *pp = (CmdCCA *)object; (void)pp;
+    switch (field) {
+        case 0: pp->setDuration(string2double(value)); return true;
+        default: return false;
+    }
+}
+
+const char *CmdCCADescriptor::getFieldStructName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldStructNames[] = {
+        NULL,
+    };
+    return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
+}
+
+void *CmdCCADescriptor::getFieldStructPointer(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructPointer(object, field, i);
+        field -= basedesc->getFieldCount(object);
+    }
+    CmdCCA *pp = (CmdCCA *)object; (void)pp;
     switch (field) {
         default: return NULL;
     }

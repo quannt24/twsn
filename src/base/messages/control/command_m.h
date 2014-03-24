@@ -44,6 +44,7 @@ enum CmdLevel {
  *     
  *     CMD_DATA_NOTI = 0; 
  *     CMD_DATA_FETCH = 1; 
+ *     CMD_READY = 2; 
  *     
  *     
  *     CMD_PHY_PD = 10; 
@@ -60,6 +61,7 @@ enum CmdLevel {
 enum CmdID {
     CMD_DATA_NOTI = 0,
     CMD_DATA_FETCH = 1,
+    CMD_READY = 2,
     CMD_PHY_PD = 10,
     CMD_PHY_IDLE = 11,
     CMD_PHY_RX = 12,
@@ -116,6 +118,46 @@ class Command : public ::cMessage
 
 inline void doPacking(cCommBuffer *b, Command& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, Command& obj) {obj.parsimUnpack(b);}
+
+/**
+ * Class generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * <pre>
+ * message CmdCCA extends Command {
+ *     src = LINK;
+ *     des = PHYS;
+ *     cmdId = CMD_PHY_CCA;
+ *     double duration = 0.000128; 
+ * }
+ * </pre>
+ */
+class CmdCCA : public ::Command
+{
+  protected:
+    double duration_var;
+
+  private:
+    void copy(const CmdCCA& other);
+
+  protected:
+    // protected and unimplemented operator==(), to prevent accidental usage
+    bool operator==(const CmdCCA&);
+
+  public:
+    CmdCCA(const char *name=NULL, int kind=0);
+    CmdCCA(const CmdCCA& other);
+    virtual ~CmdCCA();
+    CmdCCA& operator=(const CmdCCA& other);
+    virtual CmdCCA *dup() const {return new CmdCCA(*this);}
+    virtual void parsimPack(cCommBuffer *b);
+    virtual void parsimUnpack(cCommBuffer *b);
+
+    // field getter/setter methods
+    virtual double getDuration() const;
+    virtual void setDuration(double duration);
+};
+
+inline void doPacking(cCommBuffer *b, CmdCCA& obj) {obj.parsimPack(b);}
+inline void doUnpacking(cCommBuffer *b, CmdCCA& obj) {obj.parsimUnpack(b);}
 
 /**
  * Class generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.

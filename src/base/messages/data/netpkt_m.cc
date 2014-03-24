@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/data/macpkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/data/netpkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "macpkt_m.h"
+#include "netpkt_m.h"
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -30,23 +30,23 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
-Register_Class(MacPkt);
+Register_Class(NetPkt);
 
-MacPkt::MacPkt(const char *name, int kind) : cPacket(name,kind)
+NetPkt::NetPkt(const char *name, int kind) : cPacket(name,kind)
 {
     this->pktSize_var = 16;
 }
 
-MacPkt::MacPkt(const MacPkt& other) : cPacket(other)
+NetPkt::NetPkt(const NetPkt& other) : cPacket(other)
 {
     copy(other);
 }
 
-MacPkt::~MacPkt()
+NetPkt::~NetPkt()
 {
 }
 
-MacPkt& MacPkt::operator=(const MacPkt& other)
+NetPkt& NetPkt::operator=(const NetPkt& other)
 {
     if (this==&other) return *this;
     cPacket::operator=(other);
@@ -54,14 +54,14 @@ MacPkt& MacPkt::operator=(const MacPkt& other)
     return *this;
 }
 
-void MacPkt::copy(const MacPkt& other)
+void NetPkt::copy(const NetPkt& other)
 {
     this->srcAddr_var = other.srcAddr_var;
     this->desAddr_var = other.desAddr_var;
     this->pktSize_var = other.pktSize_var;
 }
 
-void MacPkt::parsimPack(cCommBuffer *b)
+void NetPkt::parsimPack(cCommBuffer *b)
 {
     cPacket::parsimPack(b);
     doPacking(b,this->srcAddr_var);
@@ -69,7 +69,7 @@ void MacPkt::parsimPack(cCommBuffer *b)
     doPacking(b,this->pktSize_var);
 }
 
-void MacPkt::parsimUnpack(cCommBuffer *b)
+void NetPkt::parsimUnpack(cCommBuffer *b)
 {
     cPacket::parsimUnpack(b);
     doUnpacking(b,this->srcAddr_var);
@@ -77,41 +77,41 @@ void MacPkt::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->pktSize_var);
 }
 
-macaddr_t& MacPkt::getSrcAddr()
+netaddr_t& NetPkt::getSrcAddr()
 {
     return srcAddr_var;
 }
 
-void MacPkt::setSrcAddr(const macaddr_t& srcAddr)
+void NetPkt::setSrcAddr(const netaddr_t& srcAddr)
 {
     this->srcAddr_var = srcAddr;
 }
 
-macaddr_t& MacPkt::getDesAddr()
+netaddr_t& NetPkt::getDesAddr()
 {
     return desAddr_var;
 }
 
-void MacPkt::setDesAddr(const macaddr_t& desAddr)
+void NetPkt::setDesAddr(const netaddr_t& desAddr)
 {
     this->desAddr_var = desAddr;
 }
 
-int MacPkt::getPktSize() const
+int NetPkt::getPktSize() const
 {
     return pktSize_var;
 }
 
-void MacPkt::setPktSize(int pktSize)
+void NetPkt::setPktSize(int pktSize)
 {
     this->pktSize_var = pktSize;
 }
 
-class MacPktDescriptor : public cClassDescriptor
+class NetPktDescriptor : public cClassDescriptor
 {
   public:
-    MacPktDescriptor();
-    virtual ~MacPktDescriptor();
+    NetPktDescriptor();
+    virtual ~NetPktDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -130,34 +130,34 @@ class MacPktDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(MacPktDescriptor);
+Register_ClassDescriptor(NetPktDescriptor);
 
-MacPktDescriptor::MacPktDescriptor() : cClassDescriptor("MacPkt", "cPacket")
+NetPktDescriptor::NetPktDescriptor() : cClassDescriptor("NetPkt", "cPacket")
 {
 }
 
-MacPktDescriptor::~MacPktDescriptor()
+NetPktDescriptor::~NetPktDescriptor()
 {
 }
 
-bool MacPktDescriptor::doesSupport(cObject *obj) const
+bool NetPktDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<MacPkt *>(obj)!=NULL;
+    return dynamic_cast<NetPkt *>(obj)!=NULL;
 }
 
-const char *MacPktDescriptor::getProperty(const char *propertyname) const
+const char *NetPktDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int MacPktDescriptor::getFieldCount(void *object) const
+int NetPktDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? 3+basedesc->getFieldCount(object) : 3;
 }
 
-unsigned int MacPktDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int NetPktDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -173,7 +173,7 @@ unsigned int MacPktDescriptor::getFieldTypeFlags(void *object, int field) const
     return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
-const char *MacPktDescriptor::getFieldName(void *object, int field) const
+const char *NetPktDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -189,7 +189,7 @@ const char *MacPktDescriptor::getFieldName(void *object, int field) const
     return (field>=0 && field<3) ? fieldNames[field] : NULL;
 }
 
-int MacPktDescriptor::findField(void *object, const char *fieldName) const
+int NetPktDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
@@ -199,7 +199,7 @@ int MacPktDescriptor::findField(void *object, const char *fieldName) const
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *MacPktDescriptor::getFieldTypeString(void *object, int field) const
+const char *NetPktDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -208,14 +208,14 @@ const char *MacPktDescriptor::getFieldTypeString(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldTypeStrings[] = {
-        "macaddr_t",
-        "macaddr_t",
+        "netaddr_t",
+        "netaddr_t",
         "int",
     };
     return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *MacPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *NetPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -228,7 +228,7 @@ const char *MacPktDescriptor::getFieldProperty(void *object, int field, const ch
     }
 }
 
-int MacPktDescriptor::getArraySize(void *object, int field) const
+int NetPktDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -236,13 +236,13 @@ int MacPktDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    MacPkt *pp = (MacPkt *)object; (void)pp;
+    NetPkt *pp = (NetPkt *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string MacPktDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string NetPktDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -250,7 +250,7 @@ std::string MacPktDescriptor::getFieldAsString(void *object, int field, int i) c
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    MacPkt *pp = (MacPkt *)object; (void)pp;
+    NetPkt *pp = (NetPkt *)object; (void)pp;
     switch (field) {
         case 0: {std::stringstream out; out << pp->getSrcAddr(); return out.str();}
         case 1: {std::stringstream out; out << pp->getDesAddr(); return out.str();}
@@ -259,7 +259,7 @@ std::string MacPktDescriptor::getFieldAsString(void *object, int field, int i) c
     }
 }
 
-bool MacPktDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool NetPktDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -267,14 +267,14 @@ bool MacPktDescriptor::setFieldAsString(void *object, int field, int i, const ch
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    MacPkt *pp = (MacPkt *)object; (void)pp;
+    NetPkt *pp = (NetPkt *)object; (void)pp;
     switch (field) {
         case 2: pp->setPktSize(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *MacPktDescriptor::getFieldStructName(void *object, int field) const
+const char *NetPktDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -283,14 +283,14 @@ const char *MacPktDescriptor::getFieldStructName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldStructNames[] = {
-        "macaddr_t",
-        "macaddr_t",
+        "netaddr_t",
+        "netaddr_t",
         NULL,
     };
     return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
 }
 
-void *MacPktDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *NetPktDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -298,7 +298,7 @@ void *MacPktDescriptor::getFieldStructPointer(void *object, int field, int i) co
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    MacPkt *pp = (MacPkt *)object; (void)pp;
+    NetPkt *pp = (NetPkt *)object; (void)pp;
     switch (field) {
         case 0: return (void *)(&pp->getSrcAddr()); break;
         case 1: return (void *)(&pp->getDesAddr()); break;

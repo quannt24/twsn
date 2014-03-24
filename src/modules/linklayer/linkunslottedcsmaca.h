@@ -13,25 +13,33 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TWSN_BASELAYER_H_
-#define __TWSN_BASELAYER_H_
+#ifndef __TWSN_LINKUNSLOTTEDCSMACA_H_
+#define __TWSN_LINKUNSLOTTEDCSMACA_H_
 
 #include <omnetpp.h>
-#include "twsndef.h"
-#include "basesimple.h"
-#include "command_m.h"
+#include "baselink.h"
+#include "macpkt_m.h"
 
 namespace twsn {
 
 /**
- * Base module for a layer
+ * Link layer with unslotted CSMA/CA
  */
-class BaseLayer : public BaseSimple
+class LinkUnslottedCSMACA : public BaseLink
 {
     protected:
-        /** Delegate jobs to other message handling functions. */
-        virtual void handleMessage(cMessage *msg);
+        MacPkt *outPkt; // Packet being sent
 
+        int aMaxBE;
+        int macMaxNB;
+        int macMinBE;
+        int nb; // Number of current backoff
+        int be; // Backoff exponent
+
+        /* Timers */
+        cMessage *backoffTimer; // End of backoff
+
+        virtual void initialize();
         /** Handle self message */
         virtual void handleSelfMsg(cMessage *msg);
         /** Handle message/packet from upper$i */
@@ -43,21 +51,23 @@ class BaseLayer : public BaseSimple
         /** Handle control message from lowerCtl$i */
         virtual void handleLowerCtl(cMessage *msg);
 
-        /** Send data packet up */
-        void sendUp(cPacket *pkt);
-        /** Send control message up */
-        void sendCtlUp(Command *cmd);
-        /** Send data packet down */
-        void sendDown(cPacket *pkt);
-        /** Send control message down */
-        void sendCtlDown(Command *cmd);
+        /** Start sending procedures to send outPkt */
+        void startSending();
+        /** Backoff with random backoff expenent */
+        void backoff();
+        /** Request physical layer to perform CCA for a specific duration */
+        void performCCA();
+        /** Send packet to physcal layer to transmit. This function should only called after
+         * receive CMD_DATA_FETCH from physical layer */
+        void transmitPkt();
+        /** Update variables and begin next round */
+        void nextRound();
 
-        /** Send command CMD_DATA_FETCH to upper layer */
-        virtual void fetchPacketFromUpper();
-        /** Send command CMD_DATA_NOTI to lower layer */
-        virtual void notifyLower();
+    public:
+        LinkUnslottedCSMACA();
+        ~LinkUnslottedCSMACA();
 };
 
-} // namespace twsn
+}  // namespace twsn
 
 #endif
