@@ -13,15 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules.queue;
+package twsn.base.modules.netlayer;
 
-import twsn.base.modules.BaseLayer;
+import twsn.base.modules.ILayer;
 
 //
-// Queue for lower layer
+// Interface for network layer
 //
-simple DownQueue extends BaseLayer
+moduleinterface INet extends ILayer
 {
-    @class("twsn::DownQueue");
-    @display("i=block/queue");
+    parameters:
+        // Flag for distinguishing between base station and sensor node
+        bool isBaseStation;
 }

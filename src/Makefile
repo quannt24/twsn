@@ -26,7 +26,9 @@ INCLUDE_PATH = \
     -Ibase/modules \
     -Ibase/modules/linklayer \
     -Ibase/modules/mobility \
+    -Ibase/modules/netlayer \
     -Ibase/modules/phylayer \
+    -Ibase/modules/queue \
     -Ibase/networks \
     -Ientities \
     -Ientities/nodes \
@@ -34,7 +36,6 @@ INCLUDE_PATH = \
     -Imodules \
     -Imodules/linklayer \
     -Imodules/mobility \
-    -Imodules/queue \
     -Inetworks \
     -Iutil
 
@@ -57,12 +58,13 @@ OBJS = \
     $O/base/modules/basesimple.o \
     $O/base/modules/linklayer/baselink.o \
     $O/base/modules/mobility/basemobility.o \
+    $O/base/modules/netlayer/basenet.o \
     $O/base/modules/phylayer/basephy.o \
     $O/base/modules/phylayer/basewirelessphy.o \
+    $O/base/modules/queue/downqueue.o \
     $O/helpers/worldhelper.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
     $O/modules/mobility/mobilitypath.o \
-    $O/modules/queue/downqueue.o \
     $O/util/coord.o \
     $O/base/messages/control/command_m.o \
     $O/base/messages/data/airframe_m.o \
@@ -158,7 +160,9 @@ clean:
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
 	$(Q)-rm -f base/modules/linklayer/*_m.cc base/modules/linklayer/*_m.h
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
+	$(Q)-rm -f base/modules/netlayer/*_m.cc base/modules/netlayer/*_m.h
 	$(Q)-rm -f base/modules/phylayer/*_m.cc base/modules/phylayer/*_m.h
+	$(Q)-rm -f base/modules/queue/*_m.cc base/modules/queue/*_m.h
 	$(Q)-rm -f base/networks/*_m.cc base/networks/*_m.h
 	$(Q)-rm -f entities/*_m.cc entities/*_m.h
 	$(Q)-rm -f entities/nodes/*_m.cc entities/nodes/*_m.h
@@ -166,7 +170,6 @@ clean:
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
 	$(Q)-rm -f modules/linklayer/*_m.cc modules/linklayer/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
-	$(Q)-rm -f modules/queue/*_m.cc modules/queue/*_m.h
 	$(Q)-rm -f networks/*_m.cc networks/*_m.h
 	$(Q)-rm -f util/*_m.cc util/*_m.h
 
@@ -175,7 +178,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/phylayer/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc helpers/*.cc modules/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/queue/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc helpers/*.cc modules/*.cc modules/linklayer/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -219,6 +222,12 @@ $O/base/modules/mobility/basemobility.o: base/modules/mobility/basemobility.cc \
 	base/modules/mobility/basemobility.h \
 	util/coord.h \
 	util/twsndef.h
+$O/base/modules/netlayer/basenet.o: base/modules/netlayer/basenet.cc \
+	base/messages/control/command_m.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	base/modules/netlayer/basenet.h \
+	util/twsndef.h
 $O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
 	base/messages/data/macpkt_m.h \
 	base/modules/basesimple.h \
@@ -235,6 +244,12 @@ $O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessph
 	base/modules/phylayer/basephy.h \
 	base/modules/phylayer/basewirelessphy.h \
 	util/coord.h \
+	util/twsndef.h
+$O/base/modules/queue/downqueue.o: base/modules/queue/downqueue.cc \
+	base/messages/control/command_m.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	base/modules/queue/downqueue.h \
 	util/twsndef.h
 $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	base/modules/basesimple.h \
@@ -256,12 +271,6 @@ $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	base/modules/mobility/basemobility.h \
 	modules/mobility/mobilitypath.h \
 	util/coord.h \
-	util/twsndef.h
-$O/modules/queue/downqueue.o: modules/queue/downqueue.cc \
-	base/messages/control/command_m.h \
-	base/modules/baselayer.h \
-	base/modules/basesimple.h \
-	modules/queue/downqueue.h \
 	util/twsndef.h
 $O/util/coord.o: util/coord.cc \
 	util/coord.h \

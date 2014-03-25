@@ -23,14 +23,14 @@ void BaseLink::initialize(int stage)
 {
     switch (stage) {
         case 0:
-            initialized();
+            BaseLayer::initialize();
             break;
 
         case 1:
             macAddr = getModuleByPath("^.phy")->getId();
-            char msg[100];
+            /*char msg[100];
             sprintf(msg, "MAC address %d", (int) macAddr);
-            printError(VERBOSE, msg);
+            printError(VERBOSE, msg);*/
             break;
 
         default:

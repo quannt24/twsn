@@ -13,15 +13,34 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules.queue;
+#include "basenet.h"
 
-import twsn.base.modules.BaseLayer;
+namespace twsn {
 
-//
-// Queue for lower layer
-//
-simple DownQueue extends BaseLayer
+Define_Module(BaseNet);
+
+void BaseNet::initialize(int stage)
 {
-    @class("twsn::DownQueue");
-    @display("i=block/queue");
+    switch (stage) {
+        case 0:
+            BaseLayer::initialize();
+            break;
+
+        case 1:
+            macAddr = getModuleByPath("^.phy")->getId();
+            /*char msg[100];
+            sprintf(msg, "MAC address %d", (int) macAddr);
+            printError(VERBOSE, msg);*/
+            break;
+
+        default:
+            break;
+    }
 }
+
+BaseNet::BaseNet()
+{
+    macAddr = 0;
+}
+
+}  // namespace twsn

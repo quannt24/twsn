@@ -13,15 +13,31 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules.queue;
+#ifndef __TWSN_BASENET_H_
+#define __TWSN_BASENET_H_
 
-import twsn.base.modules.BaseLayer;
+#include <omnetpp.h>
+#include "twsndef.h"
+#include "baselayer.h"
 
-//
-// Queue for lower layer
-//
-simple DownQueue extends BaseLayer
+namespace twsn {
+
+/**
+ * Base module for network layer
+ */
+class BaseNet : public BaseLayer
 {
-    @class("twsn::DownQueue");
-    @display("i=block/queue");
-}
+    protected:
+        macaddr_t macAddr; // MAC address of this node
+
+        /** Override to use multiple initialization stages */
+        virtual int numInitStages() const { return 2; }
+        virtual void initialize(int stage);
+
+    public:
+        BaseNet();
+};
+
+}  // namespace twsn
+
+#endif

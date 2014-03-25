@@ -19,14 +19,18 @@ import twsn.base.entities.BaseEntity;
 import twsn.base.modules.phylayer.IWirelessPhy;
 import twsn.base.modules.ILayer;
 import twsn.base.modules.linklayer.ILink;
+import twsn.base.modules.netlayer.INet;
 
+//
 // Base module for all wireless nodes
+//
 module BaseWirelessNode extends BaseEntity like INode
 {
     parameters:
         string phyType = default("BaseWirelessPhy");
         string linkType = default("BaseLink");
         string linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
+        string netType = default("BaseNet");
 
         @display("is=s");
     submodules:
@@ -39,9 +43,14 @@ module BaseWirelessNode extends BaseEntity like INode
         linkQueue: <linkQueueType> like ILayer {
             @display("p=150,250");
         }
+        net: <netType> like INet {
+            @display("p=150,350");
+        }
     connections:
         phy.upper <--> link.lower;
         phy.upperCtl <--> link.lowerCtl;
         link.upper <--> linkQueue.lower;
         link.upperCtl <--> linkQueue.lowerCtl;
+        linkQueue.upper <--> net.lower;
+        linkQueue.upperCtl <--> net.lowerCtl;
 }

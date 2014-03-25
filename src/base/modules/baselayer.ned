@@ -22,7 +22,6 @@ simple BaseLayer extends BaseSimple like ILayer
 {
     parameters:
         @class("twsn::BaseLayer");
-
         @display("i=block/layer");
     gates:
         inout upper @loose; // For data packets from/to the upper layer
