@@ -61,7 +61,7 @@ PhyEntry* ChannelMgr::registerChannel(moduleid_t moduleId, Coord coord, distance
     // Only allow register in an initialization stage after stage 0.
     // Calling this method is not allowed after initialization completes (currInitStage = -1).
     if (currInitStage < 1) {
-        std::cerr << "ChannelMgr::error: registerChannel is not allowed at this time\n";
+        printError(ERROR, "registerChannel is not allowed at this time");
         return NULL;
     }
 

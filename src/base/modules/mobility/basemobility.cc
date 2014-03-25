@@ -40,8 +40,6 @@ void BaseMobility::updateDisplay()
     // Update displayed position according to object's coordination (x,y)
     ds.setTagArg("p", 0, coord.getX());
     ds.setTagArg("p", 1, coord.getY());
-
-    //std::cerr << ds << endl;
 }
 
 }

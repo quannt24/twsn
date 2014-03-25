@@ -17,6 +17,7 @@ package twsn.base.entities.nodes;
 
 import twsn.base.entities.BaseEntity;
 import twsn.base.modules.phylayer.IWirelessPhy;
+import twsn.base.modules.ILayer;
 import twsn.base.modules.linklayer.ILink;
 
 // Base module for all wireless nodes
@@ -25,12 +26,22 @@ module BaseWirelessNode extends BaseEntity like INode
     parameters:
         string phyType = default("BaseWirelessPhy");
         string linkType = default("BaseLink");
+        string linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
 
         @display("is=s");
     submodules:
-        phy: <phyType> like IWirelessPhy;
-        link: <linkType> like ILink;
+        phy: <phyType> like IWirelessPhy {
+            @display("p=150,50");
+        }
+        link: <linkType> like ILink {
+            @display("p=150,150");
+        }
+        linkQueue: <linkQueueType> like ILayer {
+            @display("p=150,250");
+        }
     connections:
         phy.upper <--> link.lower;
         phy.upperCtl <--> link.lowerCtl;
+        link.upper <--> linkQueue.lower;
+        link.upperCtl <--> linkQueue.lowerCtl;
 }

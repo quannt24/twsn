@@ -13,14 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.modules.queue;
-
-import twsn.base.modules.BaseLayer;
+package twsn.base.entities;
 
 //
-// Queue for lower layer
+// Interface for an entity
 //
-simple DownQueue extends BaseLayer
+moduleinterface IEntity
 {
-    @display("i=block/queue");
+    parameters:
+        string mobilityType;
 }

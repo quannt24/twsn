@@ -13,22 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.entities;
+package twsn.base.modules.queue;
 
-import twsn.base.modules.mobility.IMobility;
+import twsn.base.modules.BaseLayer;
 
 //
-// Base module for an entity
+// Queue for lower layer
 //
-module BaseEntity like IEntity
+simple DownQueue extends BaseLayer
 {
-    parameters:
-        string mobilityType = default("BaseMobility");
-
-        @display("i=misc/node2");
-
-    submodules:
-        mobility: <mobilityType> like IMobility {
-            @display("p=50,50");
-        }
+    @display("i=block/queue");
 }

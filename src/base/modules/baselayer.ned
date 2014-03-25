@@ -21,7 +21,7 @@ package twsn.base.modules;
 simple BaseLayer extends BaseSimple like ILayer
 {
     parameters:
-        @class("BaseLayer");
+        @class("twsn::BaseLayer");
 
         @display("i=block/layer");
     gates:

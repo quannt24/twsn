@@ -36,8 +36,8 @@ void WorldHelper::arrangeNodes()
         node = wsn->getSubmodule("node", i);
         mob = check_and_cast<BaseMobility*>(node->getSubmodule("mobility"));
 
-        std::cerr << (i % wsnCols) * (wsnWidth / wsnCols) + intuniform(0, wsnWidth / wsnCols) << ' ';
-        std::cerr << (i / wsnCols % wsnRows) * (wsnHeight / wsnRows) + intuniform(0, wsnHeight / wsnRows) << endl;
+        //std::cerr << (i % wsnCols) * (wsnWidth / wsnCols) + intuniform(0, wsnWidth / wsnCols) << ' ';
+        //std::cerr << (i / wsnCols % wsnRows) * (wsnHeight / wsnRows) + intuniform(0, wsnHeight / wsnRows) << endl;
         mob->setCoordX((i % wsnCols) * (wsnWidth / wsnCols) + intuniform(0, wsnWidth / wsnCols));
         mob->setCoordY((i / wsnCols % wsnRows) * (wsnHeight / wsnRows) + intuniform(0, wsnHeight / wsnRows));
         mob->setRow(i / wsnCols % wsnRows);

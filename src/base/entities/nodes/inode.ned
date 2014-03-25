@@ -15,10 +15,12 @@
 
 package twsn.base.entities.nodes;
 
+import twsn.base.entities.IEntity;
+
 //
 // Interface for network node
 //
-moduleinterface INode
+moduleinterface INode extends IEntity
 {
     parameters:
         string phyType;
