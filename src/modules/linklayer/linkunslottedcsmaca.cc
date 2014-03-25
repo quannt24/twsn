@@ -22,6 +22,7 @@ Define_Module(LinkUnslottedCSMACA);
 
 void LinkUnslottedCSMACA::initialize()
 {
+    BaseLink::initialized();
     aMaxBE = par("aMaxBE").longValue();
     macMaxNB = par("macMaxNB").longValue();
     macMinBE = par("macMinBE").longValue();
@@ -88,9 +89,26 @@ void LinkUnslottedCSMACA::handleUpperCtl(cMessage* msg)
 
 void LinkUnslottedCSMACA::handleLowerMsg(cMessage* msg)
 {
-    // TODO
-    EV << "Mac: packet received\n";
-    delete msg;
+    MacPkt *macpkt = check_and_cast<MacPkt*>(msg);
+    cPacket *netpkt = NULL;
+
+    switch (macpkt->getPktType()) {
+        case MAC_PKT_PAYLOAD:
+            // Forward network packet to upper layer
+            netpkt = macpkt->decapsulate();
+            if (netpkt != NULL) {
+                sendUp(netpkt);
+            } else {
+                printError(WARNING, "NULL payload");
+            }
+            delete macpkt;
+            break;
+
+        default:
+            printError(WARNING, "Unknown MAC packet type");
+            delete macpkt;
+            break;
+    }
 }
 
 void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
@@ -117,16 +135,18 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
 
         case CMD_READY:
             // Fetch next packet from queue TODO After IFS
-            if (outPkt == NULL) fetchPacketFromUpper(); // TODO and fetchTimer is not scheduled
-            else startSending();
+            if (outPkt == NULL) {
+                fetchPacketFromUpper(); // TODO and fetchTimer is not scheduled
+                // Switch radio transceiver to listen mode
+                Command *rxcmd = new Command();
+                rxcmd->setSrc(LINK);
+                rxcmd->setDes(PHYS);
+                rxcmd->setCmdId(CMD_PHY_RX);
+                sendCtlDown(rxcmd);
+            } else {
+                startSending();
+            }
             delete cmd;
-
-            // Switch radio transceiver to listen mode
-            Command *rxcmd = new Command();
-            rxcmd->setSrc(LINK);
-            rxcmd->setDes(PHYS);
-            rxcmd->setCmdId(CMD_PHY_RX);
-            sendCtlDown(rxcmd);
             break;
 
         default:

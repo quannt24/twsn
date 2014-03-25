@@ -24,5 +24,6 @@ class noncobject netaddr_t;
 packet NetPkt {
     netaddr_t srcAddr; // Network address of sender
     netaddr_t desAddr; // Network address of sender or broadcast address
-    int pktSize = 16; // Packet size in bytes
+    bool preambleFlag = false; // Using one bit in flag field
+    int pktSize = 17; // Packet size in bytes
 }

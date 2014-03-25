@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/airframe.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/data/airframe.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:

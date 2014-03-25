@@ -18,10 +18,18 @@ cplusplus {{
 }}
 class noncobject macaddr_t;
 
+enum MacPktType {
+    MAC_PKT_PAYLOAD = 0; // Payload MAC packet
+    MAC_PKT_CTL = 1; // Control MAC packet
+    MAC_PKT_PREAMBLE = 2; // Preamble/strobe
+    MAC_PKT_ACK = 3; // Acknowledgement
+};
+
 //
 // Base packet type for MAC layer
 //
 packet MacPkt {
+    int pktType = MAC_PKT_PAYLOAD;
     macaddr_t srcAddr; // MAC address of sender
     macaddr_t desAddr; // MAC address of sender or broadcast address
     int pktSize = 16; // Packet size in bytes

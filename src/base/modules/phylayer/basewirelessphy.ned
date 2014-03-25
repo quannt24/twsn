@@ -49,7 +49,7 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
         double pTx @unit(mW) = default(0 mW);
         // Period for planning timer to calculate and draw energy from power source (simulate
         // continuous draw)
-        double drawPeriod = default(1);
+        double drawPeriod = default(0.5);
 
         @display("i=block/wrxtx");
     gates:

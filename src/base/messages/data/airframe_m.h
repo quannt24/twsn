@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/airframe.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/data/airframe.msg.
 //
 
 #ifndef _AIRFRAME_M_H_
@@ -20,7 +20,7 @@
 
 
 /**
- * Class generated from <tt>base/messages/airframe.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/data/airframe.msg</tt> by opp_msgc.
  * <pre>
  * packet AirFrame {
  *     moduleid_t sender;

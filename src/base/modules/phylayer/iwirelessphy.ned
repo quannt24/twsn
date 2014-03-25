@@ -41,9 +41,6 @@ moduleinterface IWirelessPhy extends IPhy
         double delayTxToIdle @unit(s);
         double delayTxToRx @unit(s);
         
-        // Time to perform CCA
-        double delayCCA @unit(s);
-        
         // Power consumption
         double pIdle @unit(mW);
         double pRx @unit(mW);

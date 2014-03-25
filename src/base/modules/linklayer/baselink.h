@@ -26,6 +26,14 @@ namespace twsn {
  */
 class BaseLink : public BaseLayer
 {
+    protected:
+        macaddr_t macAddr; // MAC address of this node
+
+        /** Override to use multiple initialization stages */
+        virtual int numInitStages() const { return 2; }
+        virtual void initialize(int stage);
+    public:
+        BaseLink();
 };
 
 }  // namespace twsn

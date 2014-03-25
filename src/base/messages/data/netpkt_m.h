@@ -25,7 +25,8 @@
  * packet NetPkt {
  *     netaddr_t srcAddr; 
  *     netaddr_t desAddr; 
- *     int pktSize = 16; 
+ *     bool preambleFlag = false; 
+ *     int pktSize = 17; 
  * }
  * </pre>
  */
@@ -34,6 +35,7 @@ class NetPkt : public ::cPacket
   protected:
     netaddr_t srcAddr_var;
     netaddr_t desAddr_var;
+    bool preambleFlag_var;
     int pktSize_var;
 
   private:
@@ -59,6 +61,8 @@ class NetPkt : public ::cPacket
     virtual netaddr_t& getDesAddr();
     virtual const netaddr_t& getDesAddr() const {return const_cast<NetPkt*>(this)->getDesAddr();}
     virtual void setDesAddr(const netaddr_t& desAddr);
+    virtual bool getPreambleFlag() const;
+    virtual void setPreambleFlag(bool preambleFlag);
     virtual int getPktSize() const;
     virtual void setPktSize(int pktSize);
 };

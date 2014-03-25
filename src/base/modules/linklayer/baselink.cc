@@ -19,4 +19,28 @@ namespace twsn {
 
 Define_Module(BaseLink);
 
+void BaseLink::initialize(int stage)
+{
+    switch (stage) {
+        case 0:
+            initialized();
+            break;
+
+        case 1:
+            macAddr = getModuleByPath("^.phy")->getId();
+            char msg[100];
+            sprintf(msg, "MAC address %d", (int) macAddr);
+            printError(VERBOSE, msg);
+            break;
+
+        default:
+            break;
+    }
+}
+
+BaseLink::BaseLink()
+{
+    macAddr = 0;
+}
+
 }  // namespace twsn
