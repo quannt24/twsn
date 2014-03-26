@@ -27,11 +27,19 @@ network TrackingWSN extends BaseWSN
         rows = default(2);
         cols = default(2);
         
+        // Sensor node type
         string nodeType = default("TrackingNode");
         int numNodes = default(4); // Number of sensor nodes
+        // Base station type
+        string bsType = default("TrackingBaseStation");
 
     submodules:
-        node[numNodes]: <nodeType> like INode;
+        node[numNodes]: <nodeType> like INode; // Position of nodes will be arranged by helper
+        bs: <bsType> like INode {
+            parameters:
+            	mobility.posX = 0;
+            	mobility.posY = 0;
+        };
         
         // Helpers should be declared after all entities
         worldHelper: WorldHelper {

@@ -13,16 +13,18 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.helpers;
+package twsn.entities.nodes;
 
-import twsn.base.modules.BaseSimple;
+import twsn.base.entities.nodes.BaseWirelessNode;
 
-//
-// Central module for arranging entities in simulation area of TrackingWSN network.
-//
-simple WorldHelper extends BaseSimple
+module TrackingBaseStation extends BaseWirelessNode
 {
     parameters:
-        @class("twsn::WorldHelper");
-        @display("i=misc/globe");
+        phyType = default("BaseWirelessPhy");
+        linkType = default("LinkUnslottedCSMACA");
+        linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
+        netType = default("NetEMRP");
+
+        net.isBaseStation = true;
+        @display("i=device/server2");
 }

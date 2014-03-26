@@ -43,9 +43,7 @@ void NetEMRP::initialize()
 {
     BaseNet::initialize();
     // Set timer for initialize EMRP first time
-    if (!par("isBaseStation").boolValue()) {
-        scheduleAt(uniform(0, par("initInterval").doubleValue()), bcRelayInfoTimer);
-    }
+    scheduleAt(uniform(0, par("initInterval").doubleValue()), bcRelayInfoTimer);
 }
 
 void NetEMRP::handleSelfMsg(cMessage* msg)
@@ -90,6 +88,8 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
             }
         }
     }
+
+    delete msg;
 }
 
 void NetEMRP::handleLowerCtl(cMessage* msg)
