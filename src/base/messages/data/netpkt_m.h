@@ -26,7 +26,8 @@
  *     netaddr_t srcAddr; 
  *     netaddr_t desAddr; 
  *     bool preambleFlag = false; 
- *     int pktSize = 17; 
+ *     int hopLimit = 64;
+ *     int pktSize = 18; 
  * }
  * </pre>
  */
@@ -36,6 +37,7 @@ class NetPkt : public ::cPacket
     netaddr_t srcAddr_var;
     netaddr_t desAddr_var;
     bool preambleFlag_var;
+    int hopLimit_var;
     int pktSize_var;
 
   private:
@@ -63,6 +65,8 @@ class NetPkt : public ::cPacket
     virtual void setDesAddr(const netaddr_t& desAddr);
     virtual bool getPreambleFlag() const;
     virtual void setPreambleFlag(bool preambleFlag);
+    virtual int getHopLimit() const;
+    virtual void setHopLimit(int hopLimit);
     virtual int getPktSize() const;
     virtual void setPktSize(int pktSize);
 };

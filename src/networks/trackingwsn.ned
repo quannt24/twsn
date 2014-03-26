@@ -24,11 +24,11 @@ network TrackingWSN extends BaseWSN
     parameters:
         width = default(50 m);
         height = default(50 m);
-        rows = default(1);
+        rows = default(2);
         cols = default(2);
         
         string nodeType = default("TrackingNode");
-        int numNodes = default(2); // Number of sensor nodes
+        int numNodes = default(4); // Number of sensor nodes
 
     submodules:
         node[numNodes]: <nodeType> like INode;

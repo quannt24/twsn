@@ -32,6 +32,7 @@ class BaseLink : public BaseLayer
         /** Override to use multiple initialization stages */
         virtual int numInitStages() const { return 2; }
         virtual void initialize(int stage);
+        virtual void initialize();
     public:
         BaseLink();
 };

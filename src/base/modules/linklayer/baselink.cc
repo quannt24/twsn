@@ -23,7 +23,7 @@ void BaseLink::initialize(int stage)
 {
     switch (stage) {
         case 0:
-            BaseLayer::initialize();
+            initialize();
             break;
 
         case 1:
@@ -36,6 +36,11 @@ void BaseLink::initialize(int stage)
         default:
             break;
     }
+}
+
+void BaseLink::initialize()
+{
+    BaseLayer::initialize();
 }
 
 BaseLink::BaseLink()

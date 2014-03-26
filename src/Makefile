@@ -33,9 +33,11 @@ INCLUDE_PATH = \
     -Ientities \
     -Ientities/nodes \
     -Ihelpers \
+    -Imessages \
     -Imodules \
     -Imodules/linklayer \
     -Imodules/mobility \
+    -Imodules/netlayer \
     -Inetworks \
     -Iutil
 
@@ -65,18 +67,21 @@ OBJS = \
     $O/helpers/worldhelper.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
     $O/modules/mobility/mobilitypath.o \
+    $O/modules/netlayer/netemrp.o \
     $O/util/coord.o \
     $O/base/messages/control/command_m.o \
     $O/base/messages/data/airframe_m.o \
     $O/base/messages/data/netpkt_m.o \
-    $O/base/messages/data/macpkt_m.o
+    $O/base/messages/data/macpkt_m.o \
+    $O/messages/netemrppkt_m.o
 
 # Message files
 MSGFILES = \
     base/messages/control/command.msg \
     base/messages/data/airframe.msg \
     base/messages/data/netpkt.msg \
-    base/messages/data/macpkt.msg
+    base/messages/data/macpkt.msg \
+    messages/netemrppkt.msg
 
 #------------------------------------------------------------------------------
 
@@ -167,9 +172,11 @@ clean:
 	$(Q)-rm -f entities/*_m.cc entities/*_m.h
 	$(Q)-rm -f entities/nodes/*_m.cc entities/nodes/*_m.h
 	$(Q)-rm -f helpers/*_m.cc helpers/*_m.h
+	$(Q)-rm -f messages/*_m.cc messages/*_m.h
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
 	$(Q)-rm -f modules/linklayer/*_m.cc modules/linklayer/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
+	$(Q)-rm -f modules/netlayer/*_m.cc modules/netlayer/*_m.h
 	$(Q)-rm -f networks/*_m.cc networks/*_m.h
 	$(Q)-rm -f util/*_m.cc util/*_m.h
 
@@ -178,7 +185,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc helpers/*.cc modules/*.cc modules/linklayer/*.cc modules/mobility/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc helpers/*.cc messages/*.cc modules/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -226,7 +233,9 @@ $O/base/modules/netlayer/basenet.o: base/modules/netlayer/basenet.cc \
 	base/messages/control/command_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
+	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
+	util/coord.h \
 	util/twsndef.h
 $O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
 	base/messages/data/macpkt_m.h \
@@ -257,6 +266,10 @@ $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	helpers/worldhelper.h \
 	util/coord.h \
 	util/twsndef.h
+$O/messages/netemrppkt_m.o: messages/netemrppkt_m.cc \
+	base/messages/data/netpkt_m.h \
+	messages/netemrppkt_m.h \
+	util/twsndef.h
 $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmaca.cc \
 	base/messages/control/command_m.h \
 	base/messages/data/macpkt_m.h \
@@ -270,6 +283,17 @@ $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	base/modules/basesimple.h \
 	base/modules/mobility/basemobility.h \
 	modules/mobility/mobilitypath.h \
+	util/coord.h \
+	util/twsndef.h
+$O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
+	base/messages/control/command_m.h \
+	base/messages/data/netpkt_m.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	base/modules/mobility/basemobility.h \
+	base/modules/netlayer/basenet.h \
+	messages/netemrppkt_m.h \
+	modules/netlayer/netemrp.h \
 	util/coord.h \
 	util/twsndef.h
 $O/util/coord.o: util/coord.cc \

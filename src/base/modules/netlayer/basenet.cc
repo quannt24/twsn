@@ -14,6 +14,7 @@
 // 
 
 #include "basenet.h"
+#include "basemobility.h"
 
 namespace twsn {
 
@@ -23,7 +24,7 @@ void BaseNet::initialize(int stage)
 {
     switch (stage) {
         case 0:
-            BaseLayer::initialize();
+            initialize();
             break;
 
         case 1:
@@ -38,9 +39,21 @@ void BaseNet::initialize(int stage)
     }
 }
 
+void BaseNet::initialize()
+{
+    BaseLayer::initialize();
+}
+
 BaseNet::BaseNet()
 {
     macAddr = 0;
+}
+
+void BaseNet::setBsPos(Coord bsCoord)
+{
+    BaseMobility *mob = (BaseMobility*) getModuleByPath("^.mobility");
+    this->bsCoord = bsCoord;
+    dBs = distance(bsCoord, mob->getCoord());
 }
 
 }  // namespace twsn

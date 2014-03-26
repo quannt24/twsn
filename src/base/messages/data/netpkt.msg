@@ -25,5 +25,6 @@ packet NetPkt {
     netaddr_t srcAddr; // Network address of sender
     netaddr_t desAddr; // Network address of sender or broadcast address
     bool preambleFlag = false; // Using one bit in flag field
-    int pktSize = 17; // Packet size in bytes
+    int hopLimit = 64;
+    int pktSize = 18; // Packet size in bytes. Please use setByteLength() to set this size to packet.
 }

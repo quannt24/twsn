@@ -25,7 +25,6 @@ module TrackingNode extends BaseWirelessNode
     parameters:
         phyType = default("BaseWirelessPhy");
         linkType = default("LinkUnslottedCSMACA");
-    gates:
-    submodules:
-    connections:
+        linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
+        netType = default("NetEMRP");
 }
