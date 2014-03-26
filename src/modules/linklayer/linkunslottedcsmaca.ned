@@ -23,6 +23,8 @@ import twsn.base.modules.linklayer.BaseLink;
 simple LinkUnslottedCSMACA extends BaseLink
 {
     parameters:
+        @class("twsn::LinkUnslottedCSMACA");
+        
         double ccaDur = 0.000128; // CCA duration (8 * symbolPeriod)
         double aUnitBP = 0.00032; // A unit backoff-period (20 * symbolPeriod)
         int aMaxBE = default(5);
