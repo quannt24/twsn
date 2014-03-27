@@ -48,6 +48,7 @@ class NetEMRP : public BaseNet
         /* Timers */
         cMessage *bcRelayInfoTimer;
         cMessage *waitRelayInfoTimer;
+        cMessage *waitEnergyInfoTimer;
 
         /** Override to use multiple initialization stages */
         virtual int numInitStages() const { return 2; }
@@ -70,6 +71,8 @@ class NetEMRP : public BaseNet
         /** Broadcast relay information. This method should only be called by a timer with a
          * random time point in an interval. */
         void broadcastRelayInfo();
+        /** Send energy information to a node (unicast) */
+        void sendEnergyInfo(netaddr_t desAddr);
 
         /**
          * Compare new relay info with current relay node; if it's better, select it as new relay node.
@@ -90,6 +93,17 @@ class NetEMRP : public BaseNet
          *  dRcBs: distance from relay candidate to base station
          */
         double assessRelay(double ener, double dRc, double dBs, double dRcBs);
+        /**
+         * Update energy of relay node when receive an energy reporting packet.
+         * Perform switch relay node or find new relay node if necessary.
+         * To discard current relay node and find new one (not guarantee new one is different from
+         * old one) assign rnAddr = 0 then call this method with eiPkt = NULL.
+         */
+        void updateRelayEnergy(NetEmrpEnergyInfoPkt *eiPkt);
+        /**
+         * Switch between relay/backup nodes
+         */
+        void switchRelayNode();
 
     public:
         NetEMRP();

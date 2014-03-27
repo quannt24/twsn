@@ -30,12 +30,10 @@ simple NetEMRP extends BaseNet
         // Timeout for waiting relay information after sending a relay request
         double waitRelayInfoTimeout @unit(s) = default(0.2 s);
         // Timeout for Waiting for packet of energy update of relay node.
-        // If updating info is not received before timeout, relay node will be changed (considered
+        // If updated info is not received before timeout, relay node will be changed (considered
         // as incident happended).
-        // This timeout must long enough for max CSMA/CA backoff time (of two nodes) plus sending
-        // time of relayed packet and energy info packet as:
-        // t = maxBackoff * 2 + maxXMACstrobeTime + sendingTime(relay packet + energy info packet)
         double waitEnergyInfoTimeout @unit(s) = default(0.2 s);
         // Differential amount of relay/backup nodes' energy that triggers switch nodes
-        double switchingEnergy @unit(J)= default(0.5J);
+        double switchingEnergy @unit(mWh) = default(0.2mWh);
+        double criticalEnergy @unit(mWh) = default(0.05mWh);
 }

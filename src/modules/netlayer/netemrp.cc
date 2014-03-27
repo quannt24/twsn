@@ -60,6 +60,10 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
             delete outPkt;
         }
         outPkt = NULL;
+    } else if (msg == waitEnergyInfoTimer) {
+        // Current relay node cannot report its energy information, replace it.
+        rnAddr = 0;
+        updateRelayEnergy(NULL);
     }
 }
 
@@ -69,11 +73,12 @@ void NetEMRP::handleUpperMsg(cMessage* msg)
 
     /* Encapsulate packet from upper layer and start sending procedures. */
     if (outPkt == NULL) {
+        // Note: Use mac address for routing. Front end address is only set here (setSrcNetAddr).
         AppPkt *apppkt = check_and_cast<AppPkt*>(msg);
-        apppkt->setSrcNetAddr(macAddr); // Note: Use mac address for routing
+        apppkt->setSrcNetAddr(macAddr);
 
         NetEmrpPkt *netpkt = new NetEmrpPkt();
-        netpkt->setSrcAddr(macAddr); // Note: Only set source mac address here
+        netpkt->setSrcAddr(macAddr);
 
         switch (apppkt->getRoutingType()) {
             case RT_TO_BS:
@@ -99,8 +104,13 @@ void NetEMRP::handleUpperMsg(cMessage* msg)
                 break;
         }
 
-        // TODO Set preamble flag
-        netpkt->setPreambleFlag(false);
+        // Set preamble flag
+        if (netpkt->getPktType() == EMRP_PAYLOAD_TO_BS) {
+            netpkt->setPreambleFlag(true);
+        } else {
+            netpkt->setPreambleFlag(false);
+        }
+
         netpkt->setByteLength(netpkt->getPktSize());
         netpkt->encapsulate(apppkt);
         outPkt = netpkt;
@@ -144,13 +154,66 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
 {
     NetEmrpPkt *pkt = check_and_cast<NetEmrpPkt*>(msg);
 
+    // Check hop limit
+    pkt->setHopLimit(pkt->getHopLimit() - 1);
+    if (pkt->getHopLimit() <= 0) {
+        if (pkt->getPktType() == EMRP_PAYLOAD_TO_BS && !par("isBaseStation").boolValue()) {
+            printError(INFO, "Hop limit exceeded. Dropping packet.");
+            delete pkt;
+            return;
+        }
+    }
+
+    // Process packet
+    AppPkt *apppkt = NULL;
+    NetEmrpRelayInfoPkt *ri = NULL;
     switch (pkt->getPktType()) {
         case EMRP_PAYLOAD_TO_AN:
-            // TODO Forward to upper layer
+            // Forward to upper layer
+            apppkt = check_and_cast<AppPkt*>(pkt->decapsulate());
+            sendUp(apppkt);
+            delete pkt;
             break;
 
         case EMRP_PAYLOAD_TO_BS:
-            // TODO Relay
+            if (par("isBaseStation").boolValue()) {
+                // Here is the destination, send packet to upper layer
+                AppPkt *apppkt = check_and_cast<AppPkt*>(pkt->decapsulate());
+                sendUp(apppkt);
+                // Send back a report about energy (like a ACK)
+                sendEnergyInfo(pkt->getSrcAddr());
+                delete pkt;
+            } else {
+                // Relay packet
+                if (bsAddr <= 0 && (rnAddr <= 0 || pkt->getSrcAddr() == rnAddr)) {
+                    // Here is a deadend, we should prevent loop here
+                    printError(INFO, "Cannot relay packet, deadend!");
+                    if (pkt->getSrcAddr() == rnAddr) {
+                        // Refresh relay node (with hope to break loop)
+                        rnAddr = 0;
+                        updateRelayEnergy(NULL);
+                    }
+                    delete pkt;
+                } else {
+                    // Send back a report about energy (like a ACK)
+                    sendEnergyInfo(pkt->getSrcAddr());
+
+                    // Relay to next hop
+                    pkt->setSrcAddr(macAddr);
+                    if (bsAddr > 0) {
+                        pkt->setPreambleFlag(false); // No need to send preamble
+                        pkt->setDesAddr(bsAddr);
+                    } else {
+                        pkt->setDesAddr(rnAddr);
+                    }
+                    sendDown(pkt);
+
+                    // Plan a timer for deadline of updating energy info
+                    if (!waitEnergyInfoTimer->isScheduled()) {
+                        scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimer);
+                    }
+                }
+            }
             break;
 
         case EMRP_REQ_RELAY:
@@ -160,11 +223,12 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
                 scheduleAt(simTime() + uniform(0, par("waitRelayInfoTimeout").doubleValue()),
                         bcRelayInfoTimer);
             }
+            delete pkt;
             break;
 
         case EMRP_RELAY_INFO:
             //printError(VERBOSE, "Relay info received");
-            NetEmrpRelayInfoPkt *ri = check_and_cast<NetEmrpRelayInfoPkt*>(pkt);
+            ri = check_and_cast<NetEmrpRelayInfoPkt*>(pkt);
             if (ri->getBsFlag() == true) {
                 bsAddr = ri->getSrcAddr();
                 printError(INFO, "Found new BS");
@@ -181,18 +245,19 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
                     }
                 }
             }
+            delete pkt;
             break;
 
         case EMRP_ENERGY_INFO:
+            updateRelayEnergy(check_and_cast<NetEmrpEnergyInfoPkt*>(pkt));
+            cancelEvent(waitEnergyInfoTimer);
+            delete pkt;
             break;
     }
-
-    delete msg;
 }
 
 void NetEMRP::handleLowerCtl(cMessage* msg)
 {
-    // TODO
     delete msg;
 }
 
@@ -217,6 +282,17 @@ void NetEMRP::broadcastRelayInfo()
     // TODO Set energy, pos, dBS
     pkt->setByteLength(pkt->getPktSize());
 
+    sendDown(pkt);
+}
+
+void NetEMRP::sendEnergyInfo(netaddr_t desAddr)
+{
+    NetEmrpEnergyInfoPkt *pkt = new NetEmrpEnergyInfoPkt();
+    pkt->setSrcAddr(macAddr);
+    pkt->setDesAddr(desAddr);
+    pkt->setPreambleFlag(false);
+    // TODO Set remaining energy
+    pkt->setByteLength(pkt->getPktSize());
     sendDown(pkt);
 }
 
@@ -302,6 +378,48 @@ double NetEMRP::assessRelay(double ener, double dRc, double dBs, double dRcBs)
     return ener / dRcBs * cosa;
 }
 
+void NetEMRP::updateRelayEnergy(NetEmrpEnergyInfoPkt* eiPkt)
+{
+    if (bsAddr != 0) return; // No need to update
+    if (eiPkt != NULL) enerRn = eiPkt->getRemainEnergy();
+
+    // Check critical energy value
+    if (enerRn < par("criticalEnergy").doubleValue() || rnAddr <= 0) {
+        if (enerBn < par("criticalEnergy").doubleValue() || bnAddr <= 0) {
+            // Find new relay/backup nodes
+            requestRelay();
+        } else {
+            // Switch to backup node
+            switchRelayNode();
+        }
+        return;
+    } else if (enerBn - enerRn > par("switchingEnergy").doubleValue()) {
+        switchRelayNode();
+    }
+}
+
+void NetEMRP::switchRelayNode()
+{
+    int tempi;
+    double tempd;
+
+    tempi = rnAddr;
+    rnAddr = bnAddr;
+    bnAddr = tempi;
+
+    tempd = enerRn;
+    enerRn = enerBn;
+    enerBn = tempd;
+
+    tempd = dBsRn;
+    dBsRn = dBsBn;
+    dBsBn = tempd;
+
+    tempd = dRn;
+    dRn = dBn;
+    dBn = tempd;
+}
+
 NetEMRP::NetEMRP()
 {
     bsAddr = 0;
@@ -319,12 +437,14 @@ NetEMRP::NetEMRP()
 
     bcRelayInfoTimer = new cMessage("reqRelayTimer");
     waitRelayInfoTimer = new cMessage("waitRelayInfoTimer");
+    waitEnergyInfoTimer = new cMessage("waitEnergyInfoTimer");
 }
 
 NetEMRP::~NetEMRP()
 {
     cancelAndDelete(bcRelayInfoTimer);
     cancelAndDelete(waitRelayInfoTimer);
+    cancelAndDelete(waitEnergyInfoTimer);
 }
 
 }  // namespace twsn
