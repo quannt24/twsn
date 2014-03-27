@@ -71,6 +71,7 @@ OBJS = \
     $O/util/coord.o \
     $O/base/messages/control/command_m.o \
     $O/base/messages/data/airframe_m.o \
+    $O/base/messages/data/apppkt_m.o \
     $O/base/messages/data/netpkt_m.o \
     $O/base/messages/data/macpkt_m.o \
     $O/messages/netemrppkt_m.o
@@ -79,6 +80,7 @@ OBJS = \
 MSGFILES = \
     base/messages/control/command.msg \
     base/messages/data/airframe.msg \
+    base/messages/data/apppkt.msg \
     base/messages/data/netpkt.msg \
     base/messages/data/macpkt.msg \
     messages/netemrppkt.msg
@@ -204,6 +206,9 @@ $O/base/messages/control/command_m.o: base/messages/control/command_m.cc \
 $O/base/messages/data/airframe_m.o: base/messages/data/airframe_m.cc \
 	base/messages/data/airframe_m.h \
 	util/twsndef.h
+$O/base/messages/data/apppkt_m.o: base/messages/data/apppkt_m.cc \
+	base/messages/data/apppkt_m.h \
+	util/twsndef.h
 $O/base/messages/data/macpkt_m.o: base/messages/data/macpkt_m.cc \
 	base/messages/data/macpkt_m.h \
 	util/twsndef.h
@@ -287,6 +292,7 @@ $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	util/twsndef.h
 $O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
 	base/messages/control/command_m.h \
+	base/messages/data/apppkt_m.h \
 	base/messages/data/netpkt_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \

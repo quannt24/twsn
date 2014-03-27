@@ -15,6 +15,7 @@
 
 #include "netemrp.h"
 #include "basemobility.h"
+#include "apppkt_m.h"
 
 namespace twsn {
 
@@ -50,43 +51,140 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
 {
     if (msg == bcRelayInfoTimer) {
         broadcastRelayInfo();
+    } else if (msg == waitRelayInfoTimer) {
+        if (bsAddr != 0 || rnAddr != 0) {
+            sendDown(outPkt);
+        } else {
+            // TODO Report failure
+            printError(INFO, "Cannot find relay node. Dropping packet");
+            delete outPkt;
+        }
+        outPkt = NULL;
     }
 }
 
 void NetEMRP::handleUpperMsg(cMessage* msg)
 {
-    // TODO
+    bool sendDelayed = false; // Delay sending to wait for relay information
+
+    /* Encapsulate packet from upper layer and start sending procedures. */
+    if (outPkt == NULL) {
+        AppPkt *apppkt = check_and_cast<AppPkt*>(msg);
+        apppkt->setSrcNetAddr(macAddr); // Note: Use mac address for routing
+
+        NetEmrpPkt *netpkt = new NetEmrpPkt();
+        netpkt->setSrcAddr(macAddr); // Note: Only set source mac address here
+
+        switch (apppkt->getRoutingType()) {
+            case RT_TO_BS:
+                netpkt->setPktType(EMRP_PAYLOAD_TO_BS);
+                if (bsAddr != 0) {
+                    netpkt->setDesAddr(bsAddr);
+                } else if (rnAddr != 0) {
+                    netpkt->setDesAddr(rnAddr);
+                } else {
+                    sendDelayed = true;
+                }
+                break;
+
+            case RT_BROADCAST:
+                netpkt->setPktType(EMRP_PAYLOAD_TO_AN);
+                netpkt->setDesAddr(NET_BROADCAST_ADDR);
+                break;
+
+            default:
+                // Default is unicast to an adjacent node
+                netpkt->setPktType(EMRP_PAYLOAD_TO_AN);
+                netpkt->setDesAddr(apppkt->getDesNetAddr());
+                break;
+        }
+
+        // TODO Set preamble flag
+        netpkt->setPreambleFlag(false);
+        netpkt->setByteLength(netpkt->getPktSize());
+        netpkt->encapsulate(apppkt);
+        outPkt = netpkt;
+
+        if (!sendDelayed) {
+            sendDown(outPkt);
+            outPkt = NULL;
+        } else {
+            // Find relay node
+            requestRelay();
+            // Wait for timeout to retry
+            scheduleAt(simTime() + par("waitRelayInfoTimeout").doubleValue(), waitRelayInfoTimer);
+        }
+    } else {
+        printError(ERROR, "Not ready for sending. Dropping packet");
+        delete msg;
+    }
 }
 
 void NetEMRP::handleUpperCtl(cMessage* msg)
 {
-    // TODO
+    Command *cmd = check_and_cast<Command*>(msg);
+
+    switch (cmd->getCmdId()) {
+        case CMD_DATA_NOTI:
+            if (outPkt == NULL) fetchPacketFromUpper();
+            delete cmd;
+            break;
+
+        default:
+            // Just forward to lower layer
+            if (cmd->getDes() != NETW)
+                sendCtlDown(cmd);
+            else
+                delete cmd; // Unknown command
+            break;
+    }
 }
 
 void NetEMRP::handleLowerMsg(cMessage* msg)
 {
     NetEmrpPkt *pkt = check_and_cast<NetEmrpPkt*>(msg);
 
-    if (pkt->getPktType() == EMRP_RELAY_INFO) {
-        //printError(VERBOSE, "Relay info received");
+    switch (pkt->getPktType()) {
+        case EMRP_PAYLOAD_TO_AN:
+            // TODO Forward to upper layer
+            break;
 
-        NetEmrpRelayInfoPkt *ri = check_and_cast<NetEmrpRelayInfoPkt*>(pkt);
-        if (ri->getBsFlag() == true) {
-            bsAddr = ri->getSrcAddr();
-            printError(INFO, "Found new BS");
-        } else {
-            // No need to consider relay node if having connection with BS
-            if (bsAddr <= 0) {
-                bool ret = considerRelay(ri);
-                if (ret) {
-                    printError(INFO, "Found new relay node");
-                } else {
-                    if (considerBackup(ri)) {
-                        printError(INFO, "Found new backup node");
+        case EMRP_PAYLOAD_TO_BS:
+            // TODO Relay
+            break;
+
+        case EMRP_REQ_RELAY:
+            if (!bcRelayInfoTimer->isScheduled()) {
+                // Broadcast relay information at a random time point in an interval equal
+                // 'waitRelayInfoTimeout'
+                scheduleAt(simTime() + uniform(0, par("waitRelayInfoTimeout").doubleValue()),
+                        bcRelayInfoTimer);
+            }
+            break;
+
+        case EMRP_RELAY_INFO:
+            //printError(VERBOSE, "Relay info received");
+            NetEmrpRelayInfoPkt *ri = check_and_cast<NetEmrpRelayInfoPkt*>(pkt);
+            if (ri->getBsFlag() == true) {
+                bsAddr = ri->getSrcAddr();
+                printError(INFO, "Found new BS");
+            } else {
+                // No need to consider relay node if having connection with BS
+                if (bsAddr <= 0) {
+                    bool ret = considerRelay(ri);
+                    if (ret) {
+                        printError(INFO, "Found new relay node");
+                    } else {
+                        if (considerBackup(ri)) {
+                            printError(INFO, "Found new backup node");
+                        }
                     }
                 }
             }
-        }
+            break;
+
+        case EMRP_ENERGY_INFO:
+            break;
     }
 
     delete msg;
@@ -95,6 +193,7 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
 void NetEMRP::handleLowerCtl(cMessage* msg)
 {
     // TODO
+    delete msg;
 }
 
 void NetEMRP::requestRelay()
@@ -216,12 +315,16 @@ NetEMRP::NetEMRP()
     enerBn = 0;
     dBsBn = 0;
 
+    outPkt = NULL;
+
     bcRelayInfoTimer = new cMessage("reqRelayTimer");
+    waitRelayInfoTimer = new cMessage("waitRelayInfoTimer");
 }
 
 NetEMRP::~NetEMRP()
 {
     cancelAndDelete(bcRelayInfoTimer);
+    cancelAndDelete(waitRelayInfoTimer);
 }
 
 }  // namespace twsn

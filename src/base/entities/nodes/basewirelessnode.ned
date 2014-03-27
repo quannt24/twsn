@@ -31,6 +31,7 @@ module BaseWirelessNode extends BaseEntity like INode
         string linkType = default("BaseLink");
         string linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
         string netType = default("BaseNet");
+        string netQueueType = default("DownQueue");
 
         @display("is=s");
     submodules:
@@ -46,6 +47,9 @@ module BaseWirelessNode extends BaseEntity like INode
         net: <netType> like INet {
             @display("p=150,350");
         }
+        netQueue: <netQueueType> like ILayer {
+            @display("p=150,450");
+        }
     connections:
         phy.upper <--> link.lower;
         phy.upperCtl <--> link.lowerCtl;
@@ -53,4 +57,6 @@ module BaseWirelessNode extends BaseEntity like INode
         link.upperCtl <--> linkQueue.lowerCtl;
         linkQueue.upper <--> net.lower;
         linkQueue.upperCtl <--> net.lowerCtl;
+        net.upper <--> netQueue.lower;
+        net.upperCtl <--> netQueue.lowerCtl;
 }

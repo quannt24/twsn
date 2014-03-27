@@ -31,7 +31,6 @@ class NetEMRP : public BaseNet
     protected:
         // MAC addresses for routing
         // Value 0 means connection info is not initialized.
-        int macAddr; // MAC address of this node
         int bsAddr;
         int rnAddr;
         int bnAddr;
@@ -44,8 +43,11 @@ class NetEMRP : public BaseNet
         double dBsBn;
         double dBn;
 
+        NetEmrpPkt *outPkt; // Packet going to be sent
+
         /* Timers */
         cMessage *bcRelayInfoTimer;
+        cMessage *waitRelayInfoTimer;
 
         /** Override to use multiple initialization stages */
         virtual int numInitStages() const { return 2; }

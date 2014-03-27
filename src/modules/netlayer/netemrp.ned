@@ -27,8 +27,8 @@ simple NetEMRP extends BaseNet
         
         // Interval for initializing network at start of simulation.
         double initInterval @unit(s) = default(10 s);
-        // Period for responsing for a relay request
-        double resRelayPeriod @unit(s) = default(0.2 s);
+        // Timeout for waiting relay information after sending a relay request
+        double waitRelayInfoTimeout @unit(s) = default(0.2 s);
         // Timeout for Waiting for packet of energy update of relay node.
         // If updating info is not received before timeout, relay node will be changed (considered
         // as incident happended).
