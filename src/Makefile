@@ -24,6 +24,7 @@ INCLUDE_PATH = \
     -Ibase/messages/control \
     -Ibase/messages/data \
     -Ibase/modules \
+    -Ibase/modules/energy \
     -Ibase/modules/linklayer \
     -Ibase/modules/mobility \
     -Ibase/modules/netlayer \
@@ -58,6 +59,7 @@ OBJS = \
     $O/base/channelmgr/channelmgr.o \
     $O/base/modules/baselayer.o \
     $O/base/modules/basesimple.o \
+    $O/base/modules/energy/baseenergy.o \
     $O/base/modules/linklayer/baselink.o \
     $O/base/modules/mobility/basemobility.o \
     $O/base/modules/netlayer/basenet.o \
@@ -165,6 +167,7 @@ clean:
 	$(Q)-rm -f base/messages/control/*_m.cc base/messages/control/*_m.h
 	$(Q)-rm -f base/messages/data/*_m.cc base/messages/data/*_m.h
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
+	$(Q)-rm -f base/modules/energy/*_m.cc base/modules/energy/*_m.h
 	$(Q)-rm -f base/modules/linklayer/*_m.cc base/modules/linklayer/*_m.h
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
 	$(Q)-rm -f base/modules/netlayer/*_m.cc base/modules/netlayer/*_m.h
@@ -187,7 +190,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc helpers/*.cc messages/*.cc modules/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc helpers/*.cc messages/*.cc modules/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -222,6 +225,10 @@ $O/base/modules/baselayer.o: base/modules/baselayer.cc \
 	util/twsndef.h
 $O/base/modules/basesimple.o: base/modules/basesimple.cc \
 	base/modules/basesimple.h \
+	util/twsndef.h
+$O/base/modules/energy/baseenergy.o: base/modules/energy/baseenergy.cc \
+	base/modules/basesimple.h \
+	base/modules/energy/baseenergy.h \
 	util/twsndef.h
 $O/base/modules/linklayer/baselink.o: base/modules/linklayer/baselink.cc \
 	base/messages/control/command_m.h \
