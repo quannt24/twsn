@@ -23,6 +23,7 @@ import twsn.base.entities.IEntity;
 moduleinterface INode extends IEntity
 {
     parameters:
+		string energyType;
         string phyType;
         string linkType;
         string netType;

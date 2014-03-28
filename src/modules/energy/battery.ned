@@ -13,19 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.entities.nodes;
+package twsn.modules.energy;
 
-import twsn.base.entities.nodes.BaseWirelessNode;
+import twsn.base.modules.energy.BaseEnergy;
 
-module TrackingBaseStation extends BaseWirelessNode
+//
+// Battery power source
+//
+simple Battery extends BaseEnergy
 {
     parameters:
-        energyType = default("LinePower");
-        phyType = default("BaseWirelessPhy");
-        linkType = default("LinkUnslottedCSMACA");
-        linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
-        netType = default("NetEMRP");
-
-        net.isBaseStation = true;
-        @display("i=device/server2");
+        hasLinePower = false;
+        initCapacity = default(1000 mWh);
 }

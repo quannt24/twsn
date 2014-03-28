@@ -23,8 +23,11 @@ import twsn.base.entities.nodes.BaseWirelessNode;
 module TrackingNode extends BaseWirelessNode
 {
     parameters:
+        energyType = default("Battery");
         phyType = default("BaseWirelessPhy");
         linkType = default("LinkUnslottedCSMACA");
         linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
         netType = default("NetEMRP");
+        
+        net.isBaseStation = false;
 }
