@@ -271,6 +271,11 @@ void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
 
     for (std::list<PhyEntry*>::iterator adjIt = adjList->begin(); adjIt != adjList->end(); adjIt++) {
         if ((*adjIt)->getModuleId() == frame->getReceiver()) {
+            // Check if receiver is having RX radio mode; if not, mark frame with error
+            BaseWirelessPhy *recvPhy = check_and_cast<BaseWirelessPhy*>(simulation.getModule(frame->getReceiver()));
+            if (recvPhy->getRadioMode() != RX) frame->setBitError(true);
+
+            // Send frame to receiver
             simtime_t txTime = ((double) frame->getBitLength()) / par("bitRate").doubleValue();
             channelMgr->holdAirFrame(phyEntry, frame);
             sendDirect(frame, 0, txTime, simulation.getModule(frame->getReceiver()), "radioIn");

@@ -111,6 +111,7 @@ class BaseWirelessPhy : public BasePhy
     public:
         BaseWirelessPhy();
         ~BaseWirelessPhy();
+        int getRadioMode() { return radioMode; }
 };
 
 }
