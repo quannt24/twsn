@@ -263,6 +263,7 @@ $O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessph
 	base/messages/data/airframe_m.h \
 	base/messages/data/macpkt_m.h \
 	base/modules/basesimple.h \
+	base/modules/energy/baseenergy.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/phylayer/basephy.h \
 	base/modules/phylayer/basewirelessphy.h \

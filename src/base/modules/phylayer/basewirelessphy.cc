@@ -16,6 +16,7 @@
 #include "basewirelessphy.h"
 #include "channelmgr.h"
 #include "basemobility.h"
+#include "baseenergy.h"
 #include "coord.h"
 #include "command_m.h"
 
@@ -341,7 +342,13 @@ void BaseWirelessPhy::switchRadioMode(int mode)
 void BaseWirelessPhy::setRadioMode(int mode)
 {
     // Draw energy before switching mode
-    draw();
+    BaseEnergy *ener = check_and_cast<BaseEnergy*>(getModuleByPath("^.energy"));
+    if (ener->par("hasLinePower").boolValue() || ener->getCapacity() > 0) {
+        draw(); // Check for capacity before call draw() to prevent infinite loop
+    } else {
+        radioMode = POWER_DOWN;
+        return;
+    }
 
     switch (mode) {
         case POWER_DOWN:
@@ -359,7 +366,7 @@ void BaseWirelessPhy::setRadioMode(int mode)
 void BaseWirelessPhy::draw()
 {
     double p = 0; // Power
-    double energy = 0; // Consumed energy in (mWh)
+    double drawAmount = 0; // Consumed energy in (mWh)
 
     // Calculate consumed energy
     switch (radioMode) {
@@ -373,15 +380,21 @@ void BaseWirelessPhy::draw()
             p = par("pTx").doubleValue();
             break;
     }
-    energy = p * (simTime() - pcTimestamp).dbl() / 3600;
+    drawAmount = p * (simTime() - pcTimestamp).dbl() / 3600;
 
-    // TODO Draw from power source
+    // Draw from power source
+    BaseEnergy *ener = check_and_cast<BaseEnergy*>(getModuleByPath("^.energy"));
+    ener->draw(drawAmount);
 
     // Update time stamp
     pcTimestamp = simTime();
-    // Set pcTimer
-    if (!pcTimer->isScheduled()) {
+
+    cancelEvent(pcTimer);
+    if (ener->par("hasLinePower").boolValue() || ener->getCapacity() > 0) {
+        // Reset pcTimer
         scheduleAt(simTime() + par("drawPeriod").doubleValue(), pcTimer);
+    } else {
+        setRadioMode(POWER_DOWN); // Run out of energy
     }
 }
 
