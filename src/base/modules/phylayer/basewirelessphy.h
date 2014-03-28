@@ -70,9 +70,9 @@ class BaseWirelessPhy : public BasePhy
         virtual void handleAirFrame(AirFrame *frame);
 
         /** Send data packet up */
-        virtual void sendUp(cPacket *pkt);
+        void sendUp(cPacket *pkt);
         /** Send control message up */
-        virtual void sendCtlUp(Command *cmd);
+        void sendCtlUp(Command *cmd);
 
         /** Perform CCA, return result after CCA delay. In simulation, this function simply set
          * a timer for calling senseChannel() after delay time. */

@@ -148,14 +148,20 @@ void ChannelMgr::holdAirFrame(PhyEntry *sender, AirFrame *frame)
     afList.push_back(frame);
 
     // Check if this frame has error because of interference
+    bool inRange = false;
     for (adjIt = sender->getAdjList()->begin(); adjIt != sender->getAdjList()->end(); adjIt++) {
         if ((*adjIt)->getModuleId() == frame->getReceiver()) {
+            inRange = true; // Receiver is in range of sender
             if ((*adjIt)->getChannelState() > 1) {
                 // If having interference (channel state > 1) at receiver
                 frame->setBitError(true);
             }
             break;
         }
+    }
+    // If receiver is not in range of sender, frame will have error
+    if (!inRange) {
+        frame->setBitError(true);
     }
 }
 
