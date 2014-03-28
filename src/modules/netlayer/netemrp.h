@@ -23,6 +23,9 @@
 
 namespace twsn {
 
+/** Dynamic created timer types */
+enum EmrpTimerType {TIMER_RES_RELAY};
+
 /**
  * Network layer using EMRP protocol
  */
@@ -46,7 +49,7 @@ class NetEMRP : public BaseNet
         NetEmrpPkt *outPkt; // Packet going to be sent
 
         /* Timers */
-        cMessage *bcRelayInfoTimer;
+        cMessage *reqRelayTimer;
         cMessage *waitRelayInfoTimer;
         cMessage *waitEnergyInfoTimer;
 
@@ -68,9 +71,8 @@ class NetEMRP : public BaseNet
 
         /** Broadcast request for info of base station/relay/backup node */
         void requestRelay();
-        /** Broadcast relay information. This method should only be called by a timer with a
-         * random time point in an interval. */
-        void broadcastRelayInfo();
+        /** Send relay information to specific node */
+        void sendRelayInfo(netaddr_t desAddr);
         /** Send energy information to a node (unicast) */
         void sendEnergyInfo(netaddr_t desAddr);
 
@@ -104,6 +106,21 @@ class NetEMRP : public BaseNet
          * Switch between relay/backup nodes
          */
         void switchRelayNode();
+
+        /**
+         * Decapsulate and send payload to upper layer. Network header will be deleted.
+         * This function is only for normal payload. Relayed payload should be handle by
+         * recvRelayedPayload().
+         */
+        void recvPayload(NetEmrpPkt *pkt);
+        /** Process relayed payload */
+        void recvRelayedPayload(NetEmrpPkt *pkt);
+        /** Handle relay request */
+        void recvRelayRequest(NetEmrpPkt *pkt);
+        /** Handle relay information */
+        void recvRelayInfo(NetEmrpPkt *pkt);
+        /** Handle updated energy information of relay node */
+        void recvEnergyInfo(NetEmrpPkt *pkt);
 
     public:
         NetEMRP();

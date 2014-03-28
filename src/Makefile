@@ -306,6 +306,7 @@ $O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
 	base/messages/data/netpkt_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
+	base/modules/energy/baseenergy.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
 	messages/netemrppkt_m.h \

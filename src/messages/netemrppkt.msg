@@ -18,11 +18,12 @@ cplusplus {{
 }}
 
 packet NetPkt;
+class noncobject netaddr_t;
 
 enum EmrpPktType {
     EMRP_PAYLOAD_TO_AN = 0; // Packet to be transmited to adjacent node (cluster head or a specific node)
     EMRP_PAYLOAD_TO_BS = 1; // Packet to be transmited to base station
-    EMRP_REQ_RELAY = 2; // Request for relay info
+    EMRP_RELAY_REQ = 2; // Request for relay info
     EMRP_RELAY_INFO = 3; // Relay info to response the request
     EMRP_ENERGY_INFO = 4; // Enegry info report after relay a packet
 };
@@ -63,4 +64,9 @@ packet NetEmrpEnergyInfoPkt extends NetEmrpPkt {
     // be 24 bytes
     //double consumedEnergy; // Predicted energy to send relayed packet (4 bytes)
     double remainEnergy; // Remain energy, 4 bytes
+}
+
+// Timer for sending back relay information to requesting node
+message ResponseRelayInfoTimer {
+    netaddr_t reqAddr; // Address of the node which requesting
 }

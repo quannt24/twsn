@@ -25,7 +25,7 @@
  * enum EmrpPktType {
  *     EMRP_PAYLOAD_TO_AN = 0; 
  *     EMRP_PAYLOAD_TO_BS = 1; 
- *     EMRP_REQ_RELAY = 2; 
+ *     EMRP_RELAY_REQ = 2; 
  *     EMRP_RELAY_INFO = 3; 
  *     EMRP_ENERGY_INFO = 4; 
  * };
@@ -34,7 +34,7 @@
 enum EmrpPktType {
     EMRP_PAYLOAD_TO_AN = 0,
     EMRP_PAYLOAD_TO_BS = 1,
-    EMRP_REQ_RELAY = 2,
+    EMRP_RELAY_REQ = 2,
     EMRP_RELAY_INFO = 3,
     EMRP_ENERGY_INFO = 4
 };
@@ -175,6 +175,44 @@ class NetEmrpEnergyInfoPkt : public ::NetEmrpPkt
 
 inline void doPacking(cCommBuffer *b, NetEmrpEnergyInfoPkt& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, NetEmrpEnergyInfoPkt& obj) {obj.parsimUnpack(b);}
+
+/**
+ * Class generated from <tt>messages/netemrppkt.msg</tt> by opp_msgc.
+ * <pre>
+ * message ResponseRelayInfoTimer {
+ *     netaddr_t reqAddr; 
+ * }
+ * </pre>
+ */
+class ResponseRelayInfoTimer : public ::cMessage
+{
+  protected:
+    netaddr_t reqAddr_var;
+
+  private:
+    void copy(const ResponseRelayInfoTimer& other);
+
+  protected:
+    // protected and unimplemented operator==(), to prevent accidental usage
+    bool operator==(const ResponseRelayInfoTimer&);
+
+  public:
+    ResponseRelayInfoTimer(const char *name=NULL, int kind=0);
+    ResponseRelayInfoTimer(const ResponseRelayInfoTimer& other);
+    virtual ~ResponseRelayInfoTimer();
+    ResponseRelayInfoTimer& operator=(const ResponseRelayInfoTimer& other);
+    virtual ResponseRelayInfoTimer *dup() const {return new ResponseRelayInfoTimer(*this);}
+    virtual void parsimPack(cCommBuffer *b);
+    virtual void parsimUnpack(cCommBuffer *b);
+
+    // field getter/setter methods
+    virtual netaddr_t& getReqAddr();
+    virtual const netaddr_t& getReqAddr() const {return const_cast<ResponseRelayInfoTimer*>(this)->getReqAddr();}
+    virtual void setReqAddr(const netaddr_t& reqAddr);
+};
+
+inline void doPacking(cCommBuffer *b, ResponseRelayInfoTimer& obj) {obj.parsimPack(b);}
+inline void doUnpacking(cCommBuffer *b, ResponseRelayInfoTimer& obj) {obj.parsimUnpack(b);}
 
 
 #endif // _NETEMRPPKT_M_H_

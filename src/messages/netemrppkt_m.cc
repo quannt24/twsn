@@ -35,7 +35,7 @@ EXECUTE_ON_STARTUP(
     if (!e) enums.getInstance()->add(e = new cEnum("EmrpPktType"));
     e->insert(EMRP_PAYLOAD_TO_AN, "EMRP_PAYLOAD_TO_AN");
     e->insert(EMRP_PAYLOAD_TO_BS, "EMRP_PAYLOAD_TO_BS");
-    e->insert(EMRP_REQ_RELAY, "EMRP_REQ_RELAY");
+    e->insert(EMRP_RELAY_REQ, "EMRP_RELAY_REQ");
     e->insert(EMRP_RELAY_INFO, "EMRP_RELAY_INFO");
     e->insert(EMRP_ENERGY_INFO, "EMRP_ENERGY_INFO");
 );
@@ -836,6 +836,241 @@ void *NetEmrpEnergyInfoPktDescriptor::getFieldStructPointer(void *object, int fi
     }
     NetEmrpEnergyInfoPkt *pp = (NetEmrpEnergyInfoPkt *)object; (void)pp;
     switch (field) {
+        default: return NULL;
+    }
+}
+
+Register_Class(ResponseRelayInfoTimer);
+
+ResponseRelayInfoTimer::ResponseRelayInfoTimer(const char *name, int kind) : cMessage(name,kind)
+{
+}
+
+ResponseRelayInfoTimer::ResponseRelayInfoTimer(const ResponseRelayInfoTimer& other) : cMessage(other)
+{
+    copy(other);
+}
+
+ResponseRelayInfoTimer::~ResponseRelayInfoTimer()
+{
+}
+
+ResponseRelayInfoTimer& ResponseRelayInfoTimer::operator=(const ResponseRelayInfoTimer& other)
+{
+    if (this==&other) return *this;
+    cMessage::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void ResponseRelayInfoTimer::copy(const ResponseRelayInfoTimer& other)
+{
+    this->reqAddr_var = other.reqAddr_var;
+}
+
+void ResponseRelayInfoTimer::parsimPack(cCommBuffer *b)
+{
+    cMessage::parsimPack(b);
+    doPacking(b,this->reqAddr_var);
+}
+
+void ResponseRelayInfoTimer::parsimUnpack(cCommBuffer *b)
+{
+    cMessage::parsimUnpack(b);
+    doUnpacking(b,this->reqAddr_var);
+}
+
+netaddr_t& ResponseRelayInfoTimer::getReqAddr()
+{
+    return reqAddr_var;
+}
+
+void ResponseRelayInfoTimer::setReqAddr(const netaddr_t& reqAddr)
+{
+    this->reqAddr_var = reqAddr;
+}
+
+class ResponseRelayInfoTimerDescriptor : public cClassDescriptor
+{
+  public:
+    ResponseRelayInfoTimerDescriptor();
+    virtual ~ResponseRelayInfoTimerDescriptor();
+
+    virtual bool doesSupport(cObject *obj) const;
+    virtual const char *getProperty(const char *propertyname) const;
+    virtual int getFieldCount(void *object) const;
+    virtual const char *getFieldName(void *object, int field) const;
+    virtual int findField(void *object, const char *fieldName) const;
+    virtual unsigned int getFieldTypeFlags(void *object, int field) const;
+    virtual const char *getFieldTypeString(void *object, int field) const;
+    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
+    virtual int getArraySize(void *object, int field) const;
+
+    virtual std::string getFieldAsString(void *object, int field, int i) const;
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
+
+    virtual const char *getFieldStructName(void *object, int field) const;
+    virtual void *getFieldStructPointer(void *object, int field, int i) const;
+};
+
+Register_ClassDescriptor(ResponseRelayInfoTimerDescriptor);
+
+ResponseRelayInfoTimerDescriptor::ResponseRelayInfoTimerDescriptor() : cClassDescriptor("ResponseRelayInfoTimer", "cMessage")
+{
+}
+
+ResponseRelayInfoTimerDescriptor::~ResponseRelayInfoTimerDescriptor()
+{
+}
+
+bool ResponseRelayInfoTimerDescriptor::doesSupport(cObject *obj) const
+{
+    return dynamic_cast<ResponseRelayInfoTimer *>(obj)!=NULL;
+}
+
+const char *ResponseRelayInfoTimerDescriptor::getProperty(const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->getProperty(propertyname) : NULL;
+}
+
+int ResponseRelayInfoTimerDescriptor::getFieldCount(void *object) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? 1+basedesc->getFieldCount(object) : 1;
+}
+
+unsigned int ResponseRelayInfoTimerDescriptor::getFieldTypeFlags(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeFlags(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static unsigned int fieldTypeFlags[] = {
+        FD_ISCOMPOUND,
+    };
+    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+}
+
+const char *ResponseRelayInfoTimerDescriptor::getFieldName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldNames[] = {
+        "reqAddr",
+    };
+    return (field>=0 && field<1) ? fieldNames[field] : NULL;
+}
+
+int ResponseRelayInfoTimerDescriptor::findField(void *object, const char *fieldName) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    int base = basedesc ? basedesc->getFieldCount(object) : 0;
+    if (fieldName[0]=='r' && strcmp(fieldName, "reqAddr")==0) return base+0;
+    return basedesc ? basedesc->findField(object, fieldName) : -1;
+}
+
+const char *ResponseRelayInfoTimerDescriptor::getFieldTypeString(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeString(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldTypeStrings[] = {
+        "netaddr_t",
+    };
+    return (field>=0 && field<1) ? fieldTypeStrings[field] : NULL;
+}
+
+const char *ResponseRelayInfoTimerDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldProperty(object, field, propertyname);
+        field -= basedesc->getFieldCount(object);
+    }
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+int ResponseRelayInfoTimerDescriptor::getArraySize(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getArraySize(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    ResponseRelayInfoTimer *pp = (ResponseRelayInfoTimer *)object; (void)pp;
+    switch (field) {
+        default: return 0;
+    }
+}
+
+std::string ResponseRelayInfoTimerDescriptor::getFieldAsString(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldAsString(object,field,i);
+        field -= basedesc->getFieldCount(object);
+    }
+    ResponseRelayInfoTimer *pp = (ResponseRelayInfoTimer *)object; (void)pp;
+    switch (field) {
+        case 0: {std::stringstream out; out << pp->getReqAddr(); return out.str();}
+        default: return "";
+    }
+}
+
+bool ResponseRelayInfoTimerDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->setFieldAsString(object,field,i,value);
+        field -= basedesc->getFieldCount(object);
+    }
+    ResponseRelayInfoTimer *pp = (ResponseRelayInfoTimer *)object; (void)pp;
+    switch (field) {
+        default: return false;
+    }
+}
+
+const char *ResponseRelayInfoTimerDescriptor::getFieldStructName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldStructNames[] = {
+        "netaddr_t",
+    };
+    return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
+}
+
+void *ResponseRelayInfoTimerDescriptor::getFieldStructPointer(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructPointer(object, field, i);
+        field -= basedesc->getFieldCount(object);
+    }
+    ResponseRelayInfoTimer *pp = (ResponseRelayInfoTimer *)object; (void)pp;
+    switch (field) {
+        case 0: return (void *)(&pp->getReqAddr()); break;
         default: return NULL;
     }
 }
