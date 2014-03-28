@@ -15,6 +15,7 @@
 
 #include "worldhelper.h"
 #include "basemobility.h"
+#include "basenet.h"
 
 namespace twsn {
 
@@ -27,28 +28,43 @@ void WorldHelper::arrangeNodes()
     double wsnHeight = wsn->par("height");
     int wsnRows = wsn->par("rows");
     int wsnCols = wsn->par("cols");
-    int numNodes = wsn->par("numNodes"); // Number of sensor nodes
+    int numNodes = wsn->par("numNodes");
     cModule *node;
     BaseMobility *mob;
 
-    int i = 0;
+    int i;
     for (i = 0; i < numNodes; i++) {
         node = wsn->getSubmodule("node", i);
         mob = check_and_cast<BaseMobility*>(node->getSubmodule("mobility"));
 
         //std::cerr << (i % wsnCols) * (wsnWidth / wsnCols) + intuniform(0, wsnWidth / wsnCols) << ' ';
         //std::cerr << (i / wsnCols % wsnRows) * (wsnHeight / wsnRows) + intuniform(0, wsnHeight / wsnRows) << endl;
-        mob->setCoordX((i % wsnCols) * (wsnWidth / wsnCols) + intuniform(0, wsnWidth / wsnCols));
-        mob->setCoordY((i / wsnCols % wsnRows) * (wsnHeight / wsnRows) + intuniform(0, wsnHeight / wsnRows));
+        mob->setCoordX((i % wsnCols) * (wsnWidth / wsnCols) + intuniform(0, wsnWidth / wsnCols * 3 / 4));
+        mob->setCoordY((i / wsnCols % wsnRows) * (wsnHeight / wsnRows) + intuniform(0, wsnHeight / wsnRows * 3 / 4));
         mob->setRow(i / wsnCols % wsnRows);
         mob->setCol(i % wsnCols);
         mob->updateDisplay(); // Update display of sensor node
     }
 }
 
+void WorldHelper::informNodes()
+{
+    cModule *wsn = getModuleByPath("^");
+    BaseMobility *bsMob = check_and_cast<BaseMobility*>(getModuleByPath("^.bs.mobility"));
+    BaseNet *nodeNetLayer;
+    int numNodes = wsn->par("numNodes");
+    int i;
+
+    for (i = 0; i < numNodes; i++) {
+        nodeNetLayer = check_and_cast<BaseNet*>(wsn->getSubmodule("node", i)->getSubmodule("net"));
+        nodeNetLayer->setBsPos(bsMob->getCoord());
+    }
+}
+
 void WorldHelper::initialize()
 {
     arrangeNodes();
+    informNodes();
 }
 
 }

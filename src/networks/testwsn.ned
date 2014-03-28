@@ -16,34 +16,31 @@
 package twsn.networks;
 
 import twsn.base.networks.BaseWSN;
-import twsn.base.entities.IEntity;
 import twsn.base.entities.nodes.INode;
 import twsn.helpers.WorldHelper;
 
-network TrackingWSN extends BaseWSN
+network TestWSN extends BaseWSN
 {
     parameters:
-        width = default(400 m);
-        height = default(400 m);
-        rows = default(20);
-        cols = default(20);
-        
+        width = default(50 m);
+        height = default(50 m);
+        rows = default(2);
+        cols = default(2);
+
+        // Sensor node type
         string nodeType = default("TrackingNode");
+        int numNodes = default(4); // Number of sensor nodes
+        // Base station type
         string bsType = default("TrackingBaseStation");
-        string targetType = default("AcousticTarget");
-        
-        int numNodes = default(400);
-        int numTargets = default(1);
 
     submodules:
-        node[numNodes]: <nodeType> like INode; // Position of nodes will be arranged by helper
+        node[numNodes]: <nodeType> like INode;
         bs: <bsType> like INode {
             parameters:
-            	mobility.posX = 0;
-            	mobility.posY = 0;
-        };
-        target[numTargets]: <targetType> like IEntity;
-        
+                mobility.posX = 0;
+                mobility.posY = 0;
+        }
+
         // Helpers should be declared after all entities
         worldHelper: WorldHelper {
             @display("p=-20,10");

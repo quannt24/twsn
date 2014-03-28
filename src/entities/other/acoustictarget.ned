@@ -13,20 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.modules.mobility;
+package twsn.entities.other;
 
-import twsn.base.modules.mobility.BaseMobility;
+import twsn.base.entities.BaseEntity;
 
 //
-// Mobility module with predefined discrete moving path
+// Target to be tracked
 //
-simple MobilityPath extends BaseMobility
+module AcousticTarget extends BaseEntity
 {
     parameters:
-        @class("twsn::MobilityPath");
-        
-        // File that storing moving path
-        // Each line of path file contain coordination of one point in form: "x y" (without ")
-        string pathFile;
-        double movingTimeStep @unit(s) = default(0.25 s); // Time for "jumping to next point" in the path
+        mobilityType = default("MobilityPath");
+
+        @display("i=old/bwgen");
 }

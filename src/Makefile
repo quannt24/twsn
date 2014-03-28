@@ -33,6 +33,7 @@ INCLUDE_PATH = \
     -Ibase/networks \
     -Ientities \
     -Ientities/nodes \
+    -Ientities/other \
     -Ihelpers \
     -Imessages \
     -Imodules \
@@ -40,6 +41,7 @@ INCLUDE_PATH = \
     -Imodules/linklayer \
     -Imodules/mobility \
     -Imodules/netlayer \
+    -Imodules/other \
     -Inetworks \
     -Iutil
 
@@ -177,6 +179,7 @@ clean:
 	$(Q)-rm -f base/networks/*_m.cc base/networks/*_m.h
 	$(Q)-rm -f entities/*_m.cc entities/*_m.h
 	$(Q)-rm -f entities/nodes/*_m.cc entities/nodes/*_m.h
+	$(Q)-rm -f entities/other/*_m.cc entities/other/*_m.h
 	$(Q)-rm -f helpers/*_m.cc helpers/*_m.h
 	$(Q)-rm -f messages/*_m.cc messages/*_m.h
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
@@ -184,6 +187,7 @@ clean:
 	$(Q)-rm -f modules/linklayer/*_m.cc modules/linklayer/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
 	$(Q)-rm -f modules/netlayer/*_m.cc modules/netlayer/*_m.h
+	$(Q)-rm -f modules/other/*_m.cc modules/other/*_m.h
 	$(Q)-rm -f networks/*_m.cc networks/*_m.h
 	$(Q)-rm -f util/*_m.cc util/*_m.h
 
@@ -192,7 +196,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc helpers/*.cc messages/*.cc modules/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc messages/*.cc modules/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -276,8 +280,11 @@ $O/base/modules/queue/downqueue.o: base/modules/queue/downqueue.cc \
 	base/modules/queue/downqueue.h \
 	util/twsndef.h
 $O/helpers/worldhelper.o: helpers/worldhelper.cc \
+	base/messages/control/command_m.h \
+	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/mobility/basemobility.h \
+	base/modules/netlayer/basenet.h \
 	helpers/worldhelper.h \
 	util/coord.h \
 	util/twsndef.h

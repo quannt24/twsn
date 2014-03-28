@@ -28,7 +28,11 @@ namespace twsn {
 class WorldHelper : public BaseSimple
 {
     private:
+        /** Arrange sensor nodes */
         void arrangeNodes();
+        /** Inform position of base station to all nodes */
+        void informNodes();
+
     protected:
         virtual void initialize();
 };
