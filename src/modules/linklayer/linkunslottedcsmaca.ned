@@ -25,9 +25,15 @@ simple LinkUnslottedCSMACA extends BaseLink
     parameters:
         @class("twsn::LinkUnslottedCSMACA");
         
-        double ccaDur = 0.000128; // CCA duration (8 * symbolPeriod)
-        double aUnitBP = 0.00032; // A unit backoff-period (20 * symbolPeriod)
-        int aMaxBE = default(5);
-		int macMaxNB = default(5);
-		int macMinBE = default(3);
+        double symbolPeriod @unit(s) 		= 0.000016 s;
+        double ccaDur @unit(s) 				= default(8 * symbolPeriod);
+        
+        int aMaxBE 							= default(5);
+        int aMaxSIFSFrameSize @unit(byte) 	= default(18 byte);
+        double aMinSIFSPeriod @unit(s) 		= default(12 * symbolPeriod);
+        double aMinLIFSPeriod @unit(s) 		= default(40 * symbolPeriod);
+        double aTurnaroundTime @unit(s) 	= default(12 * symbolPeriod);
+        double aUnitBP @unit(s) 			= default(20 * symbolPeriod);
+		int macMaxNB 						= default(4); // 0 ~ 5, default 4
+		int macMinBE 						= default(3); // 0 ~ 3, default 3
 }
