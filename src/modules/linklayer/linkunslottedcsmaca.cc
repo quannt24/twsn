@@ -124,7 +124,10 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
         case CMD_LIN_CCA_RESULT:
             if (((CmdCCAR*) cmd)->getClearChannel()) {
                 if (outPkt != NULL) {
-                    transmitPkt();
+                    sendDown(outPkt);
+                    /* outPkt still holds value here only to mark that there is a packet being sent
+                     * and it is not ready to send next packet. Do not use outPkt after this point,
+                     * it will be set to NULL after receive CMD_READY from physical layer. */
                 }
             } else {
                 // Channel is busy, update variables and backoff again
@@ -134,19 +137,19 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
             break;
 
         case CMD_READY:
+        {
+            // Reset outPkt pointer so that we can send next packet
+            outPkt = NULL;
             // Fetch next packet from queue TODO After IFS
-            if (outPkt == NULL) {
-                fetchPacketFromUpper(); // TODO and fetchTimer is not scheduled
-                // Switch radio transceiver to listen mode
-                Command *rxcmd = new Command();
-                rxcmd->setSrc(LINK);
-                rxcmd->setDes(PHYS);
-                rxcmd->setCmdId(CMD_PHY_RX);
-                sendCtlDown(rxcmd);
-            } else {
-                startSending();
-            }
+            fetchPacketFromUpper(); // TODO and fetchTimer is not scheduled
+            // Switch radio transceiver to listen mode
+            Command *rxcmd = new Command();
+            rxcmd->setSrc(LINK);
+            rxcmd->setDes(PHYS);
+            rxcmd->setCmdId(CMD_PHY_RX);
+            sendCtlDown(rxcmd);
             delete cmd;
+        }
             break;
 
         default:
@@ -178,12 +181,6 @@ void LinkUnslottedCSMACA::performCCA()
     cmd->setDes(PHYS);
     cmd->setDuration(par("ccaDur").doubleValue());
     sendCtlDown(cmd);
-}
-
-void LinkUnslottedCSMACA::transmitPkt()
-{
-    sendDown(outPkt);
-    outPkt = NULL;
 }
 
 void LinkUnslottedCSMACA::nextRound()

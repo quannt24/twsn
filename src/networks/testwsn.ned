@@ -22,23 +22,22 @@ import twsn.helpers.WorldHelper;
 network TestWSN extends BaseWSN
 {
     parameters:
-        width = default(50 m);
-        height = default(50 m);
-        rows = default(2);
-        cols = default(2);
+        width = default(400 m);
+        height = default(400 m);
+        rows = default(20);
+        cols = default(20);
 
-        // Sensor node type
-        string nodeType = default("TrackingNode");
-        int numNodes = default(4); // Number of sensor nodes
-        // Base station type
-        string bsType = default("TrackingBaseStation");
+        string nodeType = default("TrackingNode"); // Sensor node type
+        string bsType = default("TrackingBaseStation"); // Base station type
+        
+        int numNodes = default(400);
 
     submodules:
         node[numNodes]: <nodeType> like INode;
         bs: <bsType> like INode {
             parameters:
-                mobility.posX = 0;
-                mobility.posY = 0;
+                mobility.posX = width / 2;
+                mobility.posY = height;
         }
 
         // Helpers should be declared after all entities

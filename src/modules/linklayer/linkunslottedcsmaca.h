@@ -58,9 +58,6 @@ class LinkUnslottedCSMACA : public BaseLink
         void backoff();
         /** Request physical layer to perform CCA for a specific duration */
         void performCCA();
-        /** Send packet to physcal layer to transmit. This function should only called after
-         * receive CMD_DATA_FETCH from physical layer */
-        void transmitPkt();
         /** Update variables and begin next round */
         void nextRound();
 
