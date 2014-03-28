@@ -249,7 +249,7 @@ void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
         // We do not simulate overhearing
     }
 
-    /* Set timer for calling finishTx() */
+    /* Set timer for calling finishTx(), simulate transmission process */
     scheduleAt(simTime() + txTime, finishTxTimer);
 }
 
@@ -266,9 +266,21 @@ void BaseWirelessPhy::finishTx()
 
 void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
 {
-    simtime_t txTime = ((double) frame->getBitLength()) / par("bitRate").doubleValue();
-    channelMgr->holdAirFrame(phyEntry, frame);
-    sendDirect(frame, 0, txTime, simulation.getModule(frame->getReceiver()), "radioIn");
+    // Check if receiver is an adjacent node
+    std::list<PhyEntry*> *adjList = phyEntry->getAdjList();
+
+    for (std::list<PhyEntry*>::iterator adjIt = adjList->begin(); adjIt != adjList->end(); adjIt++) {
+        if ((*adjIt)->getModuleId() == frame->getReceiver()) {
+            simtime_t txTime = ((double) frame->getBitLength()) / par("bitRate").doubleValue();
+            channelMgr->holdAirFrame(phyEntry, frame);
+            sendDirect(frame, 0, txTime, simulation.getModule(frame->getReceiver()), "radioIn");
+            return;
+        }
+    }
+
+    // Receiver is out-ranged. Transmission is still simulated, but frame will be dropped here.
+    printError(ERROR, "Cannot send to an out-ranged node. Dropping frame.");
+    delete frame;
 }
 
 void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
