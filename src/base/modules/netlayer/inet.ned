@@ -25,4 +25,5 @@ moduleinterface INet extends ILayer
     parameters:
         // Flag for distinguishing between base station and sensor node
         bool isBaseStation;
+        @display("i=block/layer");
 }

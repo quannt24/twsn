@@ -24,6 +24,7 @@ moduleinterface IPhy
 		// Bit rate
         int bitRate @unit(bps);
 
+        @display("i=block/rxtx");
     gates:
         inout upper; // For data packets from the MAC layer
         inout upperCtl; // For control messages from the MAC layer        

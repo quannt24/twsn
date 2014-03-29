@@ -29,4 +29,6 @@ moduleinterface ILink extends ILayer
         int maxFrameSize;
         // Max packet size (in bytes) for upper layer
         int maxPacketSize;
+        
+        @display("i=block/layer");
 }

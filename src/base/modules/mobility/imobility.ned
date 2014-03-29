@@ -30,4 +30,6 @@ moduleinterface IMobility
         // Parameters for moving Entity
         double startMovingTime; // Time for start moving (from start of simulation)
         bool stopSimWhenFinishMoving;
+        
+        @display("i=block/cogwheel");
 }

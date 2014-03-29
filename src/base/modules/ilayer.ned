@@ -20,6 +20,8 @@ package twsn.base.modules;
 //
 moduleinterface ILayer
 {
+    @display("i=block/layer");
+
     gates:
         inout upper @loose; // For data packets from/to the upper layer
         inout upperCtl @loose; // For control messages from/to the upper layer

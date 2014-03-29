@@ -24,5 +24,7 @@ moduleinterface IEnergy
 	    // If module having line power source (infinite)
         bool hasLinePower;
         // Initial capacity, use -1 to represent infinite capacity (e.g. line power)
-        double initCapacity @unit(mWh); 
+        double initCapacity @unit(mWh);
+        
+        @display("i=block/plug");
 }

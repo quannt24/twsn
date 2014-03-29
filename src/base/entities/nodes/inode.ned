@@ -27,4 +27,5 @@ moduleinterface INode extends IEntity
         string phyType;
         string linkType;
         string netType;
+        string appType;
 }
