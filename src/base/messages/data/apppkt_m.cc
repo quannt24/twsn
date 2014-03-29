@@ -29,10 +29,11 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+namespace twsn {
 
 EXECUTE_ON_STARTUP(
-    cEnum *e = cEnum::find("RoutingType");
-    if (!e) enums.getInstance()->add(e = new cEnum("RoutingType"));
+    cEnum *e = cEnum::find("twsn::RoutingType");
+    if (!e) enums.getInstance()->add(e = new cEnum("twsn::RoutingType"));
     e->insert(RT_TO_AN, "RT_TO_AN");
     e->insert(RT_TO_BS, "RT_TO_BS");
     e->insert(RT_BROADCAST, "RT_BROADCAST");
@@ -89,22 +90,22 @@ void AppPkt::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->pktSize_var);
 }
 
-netaddr_t& AppPkt::getSrcNetAddr()
+twsn::netaddr_t& AppPkt::getSrcNetAddr()
 {
     return srcNetAddr_var;
 }
 
-void AppPkt::setSrcNetAddr(const netaddr_t& srcNetAddr)
+void AppPkt::setSrcNetAddr(const twsn::netaddr_t& srcNetAddr)
 {
     this->srcNetAddr_var = srcNetAddr;
 }
 
-netaddr_t& AppPkt::getDesNetAddr()
+twsn::netaddr_t& AppPkt::getDesNetAddr()
 {
     return desNetAddr_var;
 }
 
-void AppPkt::setDesNetAddr(const netaddr_t& desNetAddr)
+void AppPkt::setDesNetAddr(const twsn::netaddr_t& desNetAddr)
 {
     this->desNetAddr_var = desNetAddr;
 }
@@ -154,7 +155,7 @@ class AppPktDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(AppPktDescriptor);
 
-AppPktDescriptor::AppPktDescriptor() : cClassDescriptor("AppPkt", "cPacket")
+AppPktDescriptor::AppPktDescriptor() : cClassDescriptor("twsn::AppPkt", "cPacket")
 {
 }
 
@@ -311,8 +312,8 @@ const char *AppPktDescriptor::getFieldStructName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldStructNames[] = {
-        "netaddr_t",
-        "netaddr_t",
+        "twsn::netaddr_t",
+        "twsn::netaddr_t",
         NULL,
         NULL,
     };
@@ -335,4 +336,5 @@ void *AppPktDescriptor::getFieldStructPointer(void *object, int field, int i) co
     }
 }
 
+}; // end namespace twsn
 

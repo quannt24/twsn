@@ -29,10 +29,11 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+namespace twsn {
 
 EXECUTE_ON_STARTUP(
-    cEnum *e = cEnum::find("EmrpPktType");
-    if (!e) enums.getInstance()->add(e = new cEnum("EmrpPktType"));
+    cEnum *e = cEnum::find("twsn::EmrpPktType");
+    if (!e) enums.getInstance()->add(e = new cEnum("twsn::EmrpPktType"));
     e->insert(EMRP_PAYLOAD_TO_AN, "EMRP_PAYLOAD_TO_AN");
     e->insert(EMRP_PAYLOAD_TO_BS, "EMRP_PAYLOAD_TO_BS");
     e->insert(EMRP_RELAY_REQ, "EMRP_RELAY_REQ");
@@ -42,14 +43,14 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(NetEmrpPkt);
 
-NetEmrpPkt::NetEmrpPkt(const char *name, int kind) : NetPkt(name,kind)
+NetEmrpPkt::NetEmrpPkt(const char *name, int kind) : twsn::NetPkt(name,kind)
 {
     this->setPktSize(19);
 
     this->pktType_var = EMRP_PAYLOAD_TO_AN;
 }
 
-NetEmrpPkt::NetEmrpPkt(const NetEmrpPkt& other) : NetPkt(other)
+NetEmrpPkt::NetEmrpPkt(const NetEmrpPkt& other) : twsn::NetPkt(other)
 {
     copy(other);
 }
@@ -61,7 +62,7 @@ NetEmrpPkt::~NetEmrpPkt()
 NetEmrpPkt& NetEmrpPkt::operator=(const NetEmrpPkt& other)
 {
     if (this==&other) return *this;
-    NetPkt::operator=(other);
+    twsn::NetPkt::operator=(other);
     copy(other);
     return *this;
 }
@@ -73,13 +74,13 @@ void NetEmrpPkt::copy(const NetEmrpPkt& other)
 
 void NetEmrpPkt::parsimPack(cCommBuffer *b)
 {
-    NetPkt::parsimPack(b);
+    twsn::NetPkt::parsimPack(b);
     doPacking(b,this->pktType_var);
 }
 
 void NetEmrpPkt::parsimUnpack(cCommBuffer *b)
 {
-    NetPkt::parsimUnpack(b);
+    twsn::NetPkt::parsimUnpack(b);
     doUnpacking(b,this->pktType_var);
 }
 
@@ -118,7 +119,7 @@ class NetEmrpPktDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(NetEmrpPktDescriptor);
 
-NetEmrpPktDescriptor::NetEmrpPktDescriptor() : cClassDescriptor("NetEmrpPkt", "NetPkt")
+NetEmrpPktDescriptor::NetEmrpPktDescriptor() : cClassDescriptor("twsn::NetEmrpPkt", "twsn::NetPkt")
 {
 }
 
@@ -280,7 +281,7 @@ void *NetEmrpPktDescriptor::getFieldStructPointer(void *object, int field, int i
 
 Register_Class(NetEmrpRelayInfoPkt);
 
-NetEmrpRelayInfoPkt::NetEmrpRelayInfoPkt(const char *name, int kind) : NetEmrpPkt(name,kind)
+NetEmrpRelayInfoPkt::NetEmrpRelayInfoPkt(const char *name, int kind) : twsn::NetEmrpPkt(name,kind)
 {
     this->setPktSize(35);
     this->setPktType(EMRP_RELAY_INFO);
@@ -292,7 +293,7 @@ NetEmrpRelayInfoPkt::NetEmrpRelayInfoPkt(const char *name, int kind) : NetEmrpPk
     this->dBs_var = 0;
 }
 
-NetEmrpRelayInfoPkt::NetEmrpRelayInfoPkt(const NetEmrpRelayInfoPkt& other) : NetEmrpPkt(other)
+NetEmrpRelayInfoPkt::NetEmrpRelayInfoPkt(const NetEmrpRelayInfoPkt& other) : twsn::NetEmrpPkt(other)
 {
     copy(other);
 }
@@ -304,7 +305,7 @@ NetEmrpRelayInfoPkt::~NetEmrpRelayInfoPkt()
 NetEmrpRelayInfoPkt& NetEmrpRelayInfoPkt::operator=(const NetEmrpRelayInfoPkt& other)
 {
     if (this==&other) return *this;
-    NetEmrpPkt::operator=(other);
+    twsn::NetEmrpPkt::operator=(other);
     copy(other);
     return *this;
 }
@@ -320,7 +321,7 @@ void NetEmrpRelayInfoPkt::copy(const NetEmrpRelayInfoPkt& other)
 
 void NetEmrpRelayInfoPkt::parsimPack(cCommBuffer *b)
 {
-    NetEmrpPkt::parsimPack(b);
+    twsn::NetEmrpPkt::parsimPack(b);
     doPacking(b,this->bsFlag_var);
     doPacking(b,this->energy_var);
     doPacking(b,this->posX_var);
@@ -330,7 +331,7 @@ void NetEmrpRelayInfoPkt::parsimPack(cCommBuffer *b)
 
 void NetEmrpRelayInfoPkt::parsimUnpack(cCommBuffer *b)
 {
-    NetEmrpPkt::parsimUnpack(b);
+    twsn::NetEmrpPkt::parsimUnpack(b);
     doUnpacking(b,this->bsFlag_var);
     doUnpacking(b,this->energy_var);
     doUnpacking(b,this->posX_var);
@@ -413,7 +414,7 @@ class NetEmrpRelayInfoPktDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(NetEmrpRelayInfoPktDescriptor);
 
-NetEmrpRelayInfoPktDescriptor::NetEmrpRelayInfoPktDescriptor() : cClassDescriptor("NetEmrpRelayInfoPkt", "NetEmrpPkt")
+NetEmrpRelayInfoPktDescriptor::NetEmrpRelayInfoPktDescriptor() : cClassDescriptor("twsn::NetEmrpRelayInfoPkt", "twsn::NetEmrpPkt")
 {
 }
 
@@ -603,7 +604,7 @@ void *NetEmrpRelayInfoPktDescriptor::getFieldStructPointer(void *object, int fie
 
 Register_Class(NetEmrpEnergyInfoPkt);
 
-NetEmrpEnergyInfoPkt::NetEmrpEnergyInfoPkt(const char *name, int kind) : NetEmrpPkt(name,kind)
+NetEmrpEnergyInfoPkt::NetEmrpEnergyInfoPkt(const char *name, int kind) : twsn::NetEmrpPkt(name,kind)
 {
     this->setPktSize(23);
     this->setPktType(EMRP_ENERGY_INFO);
@@ -611,7 +612,7 @@ NetEmrpEnergyInfoPkt::NetEmrpEnergyInfoPkt(const char *name, int kind) : NetEmrp
     this->remainEnergy_var = 0;
 }
 
-NetEmrpEnergyInfoPkt::NetEmrpEnergyInfoPkt(const NetEmrpEnergyInfoPkt& other) : NetEmrpPkt(other)
+NetEmrpEnergyInfoPkt::NetEmrpEnergyInfoPkt(const NetEmrpEnergyInfoPkt& other) : twsn::NetEmrpPkt(other)
 {
     copy(other);
 }
@@ -623,7 +624,7 @@ NetEmrpEnergyInfoPkt::~NetEmrpEnergyInfoPkt()
 NetEmrpEnergyInfoPkt& NetEmrpEnergyInfoPkt::operator=(const NetEmrpEnergyInfoPkt& other)
 {
     if (this==&other) return *this;
-    NetEmrpPkt::operator=(other);
+    twsn::NetEmrpPkt::operator=(other);
     copy(other);
     return *this;
 }
@@ -635,13 +636,13 @@ void NetEmrpEnergyInfoPkt::copy(const NetEmrpEnergyInfoPkt& other)
 
 void NetEmrpEnergyInfoPkt::parsimPack(cCommBuffer *b)
 {
-    NetEmrpPkt::parsimPack(b);
+    twsn::NetEmrpPkt::parsimPack(b);
     doPacking(b,this->remainEnergy_var);
 }
 
 void NetEmrpEnergyInfoPkt::parsimUnpack(cCommBuffer *b)
 {
-    NetEmrpPkt::parsimUnpack(b);
+    twsn::NetEmrpPkt::parsimUnpack(b);
     doUnpacking(b,this->remainEnergy_var);
 }
 
@@ -680,7 +681,7 @@ class NetEmrpEnergyInfoPktDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(NetEmrpEnergyInfoPktDescriptor);
 
-NetEmrpEnergyInfoPktDescriptor::NetEmrpEnergyInfoPktDescriptor() : cClassDescriptor("NetEmrpEnergyInfoPkt", "NetEmrpPkt")
+NetEmrpEnergyInfoPktDescriptor::NetEmrpEnergyInfoPktDescriptor() : cClassDescriptor("twsn::NetEmrpEnergyInfoPkt", "twsn::NetEmrpPkt")
 {
 }
 
@@ -880,12 +881,12 @@ void ResponseRelayInfoTimer::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->reqAddr_var);
 }
 
-netaddr_t& ResponseRelayInfoTimer::getReqAddr()
+twsn::netaddr_t& ResponseRelayInfoTimer::getReqAddr()
 {
     return reqAddr_var;
 }
 
-void ResponseRelayInfoTimer::setReqAddr(const netaddr_t& reqAddr)
+void ResponseRelayInfoTimer::setReqAddr(const twsn::netaddr_t& reqAddr)
 {
     this->reqAddr_var = reqAddr;
 }
@@ -915,7 +916,7 @@ class ResponseRelayInfoTimerDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(ResponseRelayInfoTimerDescriptor);
 
-ResponseRelayInfoTimerDescriptor::ResponseRelayInfoTimerDescriptor() : cClassDescriptor("ResponseRelayInfoTimer", "cMessage")
+ResponseRelayInfoTimerDescriptor::ResponseRelayInfoTimerDescriptor() : cClassDescriptor("twsn::ResponseRelayInfoTimer", "cMessage")
 {
 }
 
@@ -1055,7 +1056,7 @@ const char *ResponseRelayInfoTimerDescriptor::getFieldStructName(void *object, i
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldStructNames[] = {
-        "netaddr_t",
+        "twsn::netaddr_t",
     };
     return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
 }
@@ -1075,4 +1076,5 @@ void *ResponseRelayInfoTimerDescriptor::getFieldStructPointer(void *object, int 
     }
 }
 
+}; // end namespace twsn
 

@@ -18,6 +18,7 @@
 // }}
 
 
+namespace twsn {
 
 /**
  * Enum generated from <tt>messages/netemrppkt.msg</tt> by opp_msgc.
@@ -48,7 +49,7 @@ enum EmrpPktType {
  * }
  * </pre>
  */
-class NetEmrpPkt : public ::NetPkt
+class NetEmrpPkt : public ::twsn::NetPkt
 {
   protected:
     int pktType_var;
@@ -92,7 +93,7 @@ inline void doUnpacking(cCommBuffer *b, NetEmrpPkt& obj) {obj.parsimUnpack(b);}
  * }
  * </pre>
  */
-class NetEmrpRelayInfoPkt : public ::NetEmrpPkt
+class NetEmrpRelayInfoPkt : public ::twsn::NetEmrpPkt
 {
   protected:
     bool bsFlag_var;
@@ -147,7 +148,7 @@ inline void doUnpacking(cCommBuffer *b, NetEmrpRelayInfoPkt& obj) {obj.parsimUnp
  * }
  * </pre>
  */
-class NetEmrpEnergyInfoPkt : public ::NetEmrpPkt
+class NetEmrpEnergyInfoPkt : public ::twsn::NetEmrpPkt
 {
   protected:
     double remainEnergy_var;
@@ -187,7 +188,7 @@ inline void doUnpacking(cCommBuffer *b, NetEmrpEnergyInfoPkt& obj) {obj.parsimUn
 class ResponseRelayInfoTimer : public ::cMessage
 {
   protected:
-    netaddr_t reqAddr_var;
+    twsn::netaddr_t reqAddr_var;
 
   private:
     void copy(const ResponseRelayInfoTimer& other);
@@ -206,13 +207,14 @@ class ResponseRelayInfoTimer : public ::cMessage
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual netaddr_t& getReqAddr();
-    virtual const netaddr_t& getReqAddr() const {return const_cast<ResponseRelayInfoTimer*>(this)->getReqAddr();}
-    virtual void setReqAddr(const netaddr_t& reqAddr);
+    virtual twsn::netaddr_t& getReqAddr();
+    virtual const twsn::netaddr_t& getReqAddr() const {return const_cast<ResponseRelayInfoTimer*>(this)->getReqAddr();}
+    virtual void setReqAddr(const twsn::netaddr_t& reqAddr);
 };
 
 inline void doPacking(cCommBuffer *b, ResponseRelayInfoTimer& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, ResponseRelayInfoTimer& obj) {obj.parsimUnpack(b);}
 
+}; // end namespace twsn
 
 #endif // _NETEMRPPKT_M_H_

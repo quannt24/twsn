@@ -16,6 +16,9 @@
 cplusplus {{
 	#include "twsndef.h"
 }}
+
+namespace twsn;
+
 class noncobject netaddr_t;
 
 enum RoutingType {

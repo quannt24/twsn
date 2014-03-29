@@ -29,6 +29,7 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+namespace twsn {
 
 Register_Class(NetPkt);
 
@@ -85,22 +86,22 @@ void NetPkt::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->pktSize_var);
 }
 
-netaddr_t& NetPkt::getSrcAddr()
+twsn::netaddr_t& NetPkt::getSrcAddr()
 {
     return srcAddr_var;
 }
 
-void NetPkt::setSrcAddr(const netaddr_t& srcAddr)
+void NetPkt::setSrcAddr(const twsn::netaddr_t& srcAddr)
 {
     this->srcAddr_var = srcAddr;
 }
 
-netaddr_t& NetPkt::getDesAddr()
+twsn::netaddr_t& NetPkt::getDesAddr()
 {
     return desAddr_var;
 }
 
-void NetPkt::setDesAddr(const netaddr_t& desAddr)
+void NetPkt::setDesAddr(const twsn::netaddr_t& desAddr)
 {
     this->desAddr_var = desAddr;
 }
@@ -160,7 +161,7 @@ class NetPktDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(NetPktDescriptor);
 
-NetPktDescriptor::NetPktDescriptor() : cClassDescriptor("NetPkt", "cPacket")
+NetPktDescriptor::NetPktDescriptor() : cClassDescriptor("twsn::NetPkt", "cPacket")
 {
 }
 
@@ -323,8 +324,8 @@ const char *NetPktDescriptor::getFieldStructName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldStructNames[] = {
-        "netaddr_t",
-        "netaddr_t",
+        "twsn::netaddr_t",
+        "twsn::netaddr_t",
         NULL,
         NULL,
         NULL,
@@ -348,4 +349,5 @@ void *NetPktDescriptor::getFieldStructPointer(void *object, int field, int i) co
     }
 }
 
+}; // end namespace twsn
 

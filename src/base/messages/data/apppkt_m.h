@@ -18,6 +18,7 @@
 // }}
 
 
+namespace twsn {
 
 /**
  * Enum generated from <tt>base/messages/data/apppkt.msg</tt> by opp_msgc.
@@ -51,8 +52,8 @@ enum RoutingType {
 class AppPkt : public ::cPacket
 {
   protected:
-    netaddr_t srcNetAddr_var;
-    netaddr_t desNetAddr_var;
+    twsn::netaddr_t srcNetAddr_var;
+    twsn::netaddr_t desNetAddr_var;
     int routingType_var;
     int pktSize_var;
 
@@ -73,12 +74,12 @@ class AppPkt : public ::cPacket
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual netaddr_t& getSrcNetAddr();
-    virtual const netaddr_t& getSrcNetAddr() const {return const_cast<AppPkt*>(this)->getSrcNetAddr();}
-    virtual void setSrcNetAddr(const netaddr_t& srcNetAddr);
-    virtual netaddr_t& getDesNetAddr();
-    virtual const netaddr_t& getDesNetAddr() const {return const_cast<AppPkt*>(this)->getDesNetAddr();}
-    virtual void setDesNetAddr(const netaddr_t& desNetAddr);
+    virtual twsn::netaddr_t& getSrcNetAddr();
+    virtual const twsn::netaddr_t& getSrcNetAddr() const {return const_cast<AppPkt*>(this)->getSrcNetAddr();}
+    virtual void setSrcNetAddr(const twsn::netaddr_t& srcNetAddr);
+    virtual twsn::netaddr_t& getDesNetAddr();
+    virtual const twsn::netaddr_t& getDesNetAddr() const {return const_cast<AppPkt*>(this)->getDesNetAddr();}
+    virtual void setDesNetAddr(const twsn::netaddr_t& desNetAddr);
     virtual int getRoutingType() const;
     virtual void setRoutingType(int routingType);
     virtual int getPktSize() const;
@@ -88,5 +89,6 @@ class AppPkt : public ::cPacket
 inline void doPacking(cCommBuffer *b, AppPkt& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, AppPkt& obj) {obj.parsimUnpack(b);}
 
+}; // end namespace twsn
 
 #endif // _APPPKT_M_H_

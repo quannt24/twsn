@@ -29,6 +29,7 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+namespace twsn {
 
 Register_Class(AirFrame);
 
@@ -77,22 +78,22 @@ void AirFrame::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->frameSize_var);
 }
 
-moduleid_t& AirFrame::getSender()
+twsn::moduleid_t& AirFrame::getSender()
 {
     return sender_var;
 }
 
-void AirFrame::setSender(const moduleid_t& sender)
+void AirFrame::setSender(const twsn::moduleid_t& sender)
 {
     this->sender_var = sender;
 }
 
-moduleid_t& AirFrame::getReceiver()
+twsn::moduleid_t& AirFrame::getReceiver()
 {
     return receiver_var;
 }
 
-void AirFrame::setReceiver(const moduleid_t& receiver)
+void AirFrame::setReceiver(const twsn::moduleid_t& receiver)
 {
     this->receiver_var = receiver;
 }
@@ -132,7 +133,7 @@ class AirFrameDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(AirFrameDescriptor);
 
-AirFrameDescriptor::AirFrameDescriptor() : cClassDescriptor("AirFrame", "cPacket")
+AirFrameDescriptor::AirFrameDescriptor() : cClassDescriptor("twsn::AirFrame", "cPacket")
 {
 }
 
@@ -283,8 +284,8 @@ const char *AirFrameDescriptor::getFieldStructName(void *object, int field) cons
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldStructNames[] = {
-        "moduleid_t",
-        "moduleid_t",
+        "twsn::moduleid_t",
+        "twsn::moduleid_t",
         NULL,
     };
     return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
@@ -306,4 +307,5 @@ void *AirFrameDescriptor::getFieldStructPointer(void *object, int field, int i) 
     }
 }
 
+}; // end namespace twsn
 

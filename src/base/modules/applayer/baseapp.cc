@@ -11,21 +11,12 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-//
+// 
 
-cplusplus {{
-	#include "twsndef.h"
-}}
+#include "baseapp.h"
 
-namespace twsn;
+namespace twsn {
 
-class noncobject moduleid_t;
+Define_Module(BaseApp);
 
-//
-// Air frame for wireless physical layer
-//
-packet AirFrame {
-    moduleid_t sender;
-    moduleid_t receiver;
-    int frameSize = 6; // Default physical header is 6 bytes (IEEE 802.15.4 standard)
-}
+}  // namespace twsn

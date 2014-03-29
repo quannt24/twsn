@@ -14,6 +14,7 @@
 #endif
 
 
+namespace twsn {
 
 /**
  * Enum generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
@@ -130,7 +131,7 @@ inline void doUnpacking(cCommBuffer *b, Command& obj) {obj.parsimUnpack(b);}
  * }
  * </pre>
  */
-class CmdCCA : public ::Command
+class CmdCCA : public ::twsn::Command
 {
   protected:
     double duration_var;
@@ -170,7 +171,7 @@ inline void doUnpacking(cCommBuffer *b, CmdCCA& obj) {obj.parsimUnpack(b);}
  * }
  * </pre>
  */
-class CmdCCAR : public ::Command
+class CmdCCAR : public ::twsn::Command
 {
   protected:
     bool clearChannel_var;
@@ -199,5 +200,6 @@ class CmdCCAR : public ::Command
 inline void doPacking(cCommBuffer *b, CmdCCAR& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, CmdCCAR& obj) {obj.parsimUnpack(b);}
 
+}; // end namespace twsn
 
 #endif // _COMMAND_M_H_

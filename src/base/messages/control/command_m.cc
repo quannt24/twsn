@@ -29,10 +29,11 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+namespace twsn {
 
 EXECUTE_ON_STARTUP(
-    cEnum *e = cEnum::find("CmdLevel");
-    if (!e) enums.getInstance()->add(e = new cEnum("CmdLevel"));
+    cEnum *e = cEnum::find("twsn::CmdLevel");
+    if (!e) enums.getInstance()->add(e = new cEnum("twsn::CmdLevel"));
     e->insert(UNKNOWN, "UNKNOWN");
     e->insert(PHYS, "PHYS");
     e->insert(LINK, "LINK");
@@ -42,8 +43,8 @@ EXECUTE_ON_STARTUP(
 );
 
 EXECUTE_ON_STARTUP(
-    cEnum *e = cEnum::find("CmdID");
-    if (!e) enums.getInstance()->add(e = new cEnum("CmdID"));
+    cEnum *e = cEnum::find("twsn::CmdID");
+    if (!e) enums.getInstance()->add(e = new cEnum("twsn::CmdID"));
     e->insert(CMD_DATA_NOTI, "CMD_DATA_NOTI");
     e->insert(CMD_DATA_FETCH, "CMD_DATA_FETCH");
     e->insert(CMD_READY, "CMD_READY");
@@ -159,7 +160,7 @@ class CommandDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(CommandDescriptor);
 
-CommandDescriptor::CommandDescriptor() : cClassDescriptor("Command", "cMessage")
+CommandDescriptor::CommandDescriptor() : cClassDescriptor("twsn::Command", "cMessage")
 {
 }
 
@@ -335,7 +336,7 @@ void *CommandDescriptor::getFieldStructPointer(void *object, int field, int i) c
 
 Register_Class(CmdCCA);
 
-CmdCCA::CmdCCA(const char *name, int kind) : Command(name,kind)
+CmdCCA::CmdCCA(const char *name, int kind) : twsn::Command(name,kind)
 {
     this->setSrc(LINK);
     this->setDes(PHYS);
@@ -344,7 +345,7 @@ CmdCCA::CmdCCA(const char *name, int kind) : Command(name,kind)
     this->duration_var = 0.000128;
 }
 
-CmdCCA::CmdCCA(const CmdCCA& other) : Command(other)
+CmdCCA::CmdCCA(const CmdCCA& other) : twsn::Command(other)
 {
     copy(other);
 }
@@ -356,7 +357,7 @@ CmdCCA::~CmdCCA()
 CmdCCA& CmdCCA::operator=(const CmdCCA& other)
 {
     if (this==&other) return *this;
-    Command::operator=(other);
+    twsn::Command::operator=(other);
     copy(other);
     return *this;
 }
@@ -368,13 +369,13 @@ void CmdCCA::copy(const CmdCCA& other)
 
 void CmdCCA::parsimPack(cCommBuffer *b)
 {
-    Command::parsimPack(b);
+    twsn::Command::parsimPack(b);
     doPacking(b,this->duration_var);
 }
 
 void CmdCCA::parsimUnpack(cCommBuffer *b)
 {
-    Command::parsimUnpack(b);
+    twsn::Command::parsimUnpack(b);
     doUnpacking(b,this->duration_var);
 }
 
@@ -413,7 +414,7 @@ class CmdCCADescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(CmdCCADescriptor);
 
-CmdCCADescriptor::CmdCCADescriptor() : cClassDescriptor("CmdCCA", "Command")
+CmdCCADescriptor::CmdCCADescriptor() : cClassDescriptor("twsn::CmdCCA", "twsn::Command")
 {
 }
 
@@ -575,7 +576,7 @@ void *CmdCCADescriptor::getFieldStructPointer(void *object, int field, int i) co
 
 Register_Class(CmdCCAR);
 
-CmdCCAR::CmdCCAR(const char *name, int kind) : Command(name,kind)
+CmdCCAR::CmdCCAR(const char *name, int kind) : twsn::Command(name,kind)
 {
     this->setSrc(PHYS);
     this->setDes(LINK);
@@ -584,7 +585,7 @@ CmdCCAR::CmdCCAR(const char *name, int kind) : Command(name,kind)
     this->clearChannel_var = 0;
 }
 
-CmdCCAR::CmdCCAR(const CmdCCAR& other) : Command(other)
+CmdCCAR::CmdCCAR(const CmdCCAR& other) : twsn::Command(other)
 {
     copy(other);
 }
@@ -596,7 +597,7 @@ CmdCCAR::~CmdCCAR()
 CmdCCAR& CmdCCAR::operator=(const CmdCCAR& other)
 {
     if (this==&other) return *this;
-    Command::operator=(other);
+    twsn::Command::operator=(other);
     copy(other);
     return *this;
 }
@@ -608,13 +609,13 @@ void CmdCCAR::copy(const CmdCCAR& other)
 
 void CmdCCAR::parsimPack(cCommBuffer *b)
 {
-    Command::parsimPack(b);
+    twsn::Command::parsimPack(b);
     doPacking(b,this->clearChannel_var);
 }
 
 void CmdCCAR::parsimUnpack(cCommBuffer *b)
 {
-    Command::parsimUnpack(b);
+    twsn::Command::parsimUnpack(b);
     doUnpacking(b,this->clearChannel_var);
 }
 
@@ -653,7 +654,7 @@ class CmdCCARDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(CmdCCARDescriptor);
 
-CmdCCARDescriptor::CmdCCARDescriptor() : cClassDescriptor("CmdCCAR", "Command")
+CmdCCARDescriptor::CmdCCARDescriptor() : cClassDescriptor("twsn::CmdCCAR", "twsn::Command")
 {
 }
 
@@ -813,4 +814,5 @@ void *CmdCCARDescriptor::getFieldStructPointer(void *object, int field, int i) c
     }
 }
 
+}; // end namespace twsn
 

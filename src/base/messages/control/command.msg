@@ -13,6 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+namespace twsn;
+
 // Level of module sending/receiving command
 enum CmdLevel {
     UNKNOWN = 0;

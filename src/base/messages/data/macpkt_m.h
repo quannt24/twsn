@@ -18,6 +18,7 @@
 // }}
 
 
+namespace twsn {
 
 /**
  * Enum generated from <tt>base/messages/data/macpkt.msg</tt> by opp_msgc.
@@ -52,8 +53,8 @@ class MacPkt : public ::cPacket
 {
   protected:
     int pktType_var;
-    macaddr_t srcAddr_var;
-    macaddr_t desAddr_var;
+    twsn::macaddr_t srcAddr_var;
+    twsn::macaddr_t desAddr_var;
     int pktSize_var;
 
   private:
@@ -75,12 +76,12 @@ class MacPkt : public ::cPacket
     // field getter/setter methods
     virtual int getPktType() const;
     virtual void setPktType(int pktType);
-    virtual macaddr_t& getSrcAddr();
-    virtual const macaddr_t& getSrcAddr() const {return const_cast<MacPkt*>(this)->getSrcAddr();}
-    virtual void setSrcAddr(const macaddr_t& srcAddr);
-    virtual macaddr_t& getDesAddr();
-    virtual const macaddr_t& getDesAddr() const {return const_cast<MacPkt*>(this)->getDesAddr();}
-    virtual void setDesAddr(const macaddr_t& desAddr);
+    virtual twsn::macaddr_t& getSrcAddr();
+    virtual const twsn::macaddr_t& getSrcAddr() const {return const_cast<MacPkt*>(this)->getSrcAddr();}
+    virtual void setSrcAddr(const twsn::macaddr_t& srcAddr);
+    virtual twsn::macaddr_t& getDesAddr();
+    virtual const twsn::macaddr_t& getDesAddr() const {return const_cast<MacPkt*>(this)->getDesAddr();}
+    virtual void setDesAddr(const twsn::macaddr_t& desAddr);
     virtual int getPktSize() const;
     virtual void setPktSize(int pktSize);
 };
@@ -88,5 +89,6 @@ class MacPkt : public ::cPacket
 inline void doPacking(cCommBuffer *b, MacPkt& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, MacPkt& obj) {obj.parsimUnpack(b);}
 
+}; // end namespace twsn
 
 #endif // _MACPKT_M_H_

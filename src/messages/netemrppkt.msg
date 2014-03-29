@@ -17,6 +17,8 @@ cplusplus {{
 	#include "netpkt_m.h"
 }}
 
+namespace twsn;
+
 packet NetPkt;
 class noncobject netaddr_t;
 

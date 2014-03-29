@@ -29,10 +29,11 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+namespace twsn {
 
 EXECUTE_ON_STARTUP(
-    cEnum *e = cEnum::find("MacPktType");
-    if (!e) enums.getInstance()->add(e = new cEnum("MacPktType"));
+    cEnum *e = cEnum::find("twsn::MacPktType");
+    if (!e) enums.getInstance()->add(e = new cEnum("twsn::MacPktType"));
     e->insert(MAC_PKT_PAYLOAD, "MAC_PKT_PAYLOAD");
     e->insert(MAC_PKT_CTL, "MAC_PKT_CTL");
     e->insert(MAC_PKT_PREAMBLE, "MAC_PKT_PREAMBLE");
@@ -100,22 +101,22 @@ void MacPkt::setPktType(int pktType)
     this->pktType_var = pktType;
 }
 
-macaddr_t& MacPkt::getSrcAddr()
+twsn::macaddr_t& MacPkt::getSrcAddr()
 {
     return srcAddr_var;
 }
 
-void MacPkt::setSrcAddr(const macaddr_t& srcAddr)
+void MacPkt::setSrcAddr(const twsn::macaddr_t& srcAddr)
 {
     this->srcAddr_var = srcAddr;
 }
 
-macaddr_t& MacPkt::getDesAddr()
+twsn::macaddr_t& MacPkt::getDesAddr()
 {
     return desAddr_var;
 }
 
-void MacPkt::setDesAddr(const macaddr_t& desAddr)
+void MacPkt::setDesAddr(const twsn::macaddr_t& desAddr)
 {
     this->desAddr_var = desAddr;
 }
@@ -155,7 +156,7 @@ class MacPktDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(MacPktDescriptor);
 
-MacPktDescriptor::MacPktDescriptor() : cClassDescriptor("MacPkt", "cPacket")
+MacPktDescriptor::MacPktDescriptor() : cClassDescriptor("twsn::MacPkt", "cPacket")
 {
 }
 
@@ -313,8 +314,8 @@ const char *MacPktDescriptor::getFieldStructName(void *object, int field) const
     }
     static const char *fieldStructNames[] = {
         NULL,
-        "macaddr_t",
-        "macaddr_t",
+        "twsn::macaddr_t",
+        "twsn::macaddr_t",
         NULL,
     };
     return (field>=0 && field<4) ? fieldStructNames[field] : NULL;
@@ -336,4 +337,5 @@ void *MacPktDescriptor::getFieldStructPointer(void *object, int field, int i) co
     }
 }
 
+}; // end namespace twsn
 

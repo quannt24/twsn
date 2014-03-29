@@ -18,6 +18,7 @@
 // }}
 
 
+namespace twsn {
 
 /**
  * Class generated from <tt>base/messages/data/netpkt.msg</tt> by opp_msgc.
@@ -34,8 +35,8 @@
 class NetPkt : public ::cPacket
 {
   protected:
-    netaddr_t srcAddr_var;
-    netaddr_t desAddr_var;
+    twsn::netaddr_t srcAddr_var;
+    twsn::netaddr_t desAddr_var;
     bool preambleFlag_var;
     int hopLimit_var;
     int pktSize_var;
@@ -57,12 +58,12 @@ class NetPkt : public ::cPacket
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual netaddr_t& getSrcAddr();
-    virtual const netaddr_t& getSrcAddr() const {return const_cast<NetPkt*>(this)->getSrcAddr();}
-    virtual void setSrcAddr(const netaddr_t& srcAddr);
-    virtual netaddr_t& getDesAddr();
-    virtual const netaddr_t& getDesAddr() const {return const_cast<NetPkt*>(this)->getDesAddr();}
-    virtual void setDesAddr(const netaddr_t& desAddr);
+    virtual twsn::netaddr_t& getSrcAddr();
+    virtual const twsn::netaddr_t& getSrcAddr() const {return const_cast<NetPkt*>(this)->getSrcAddr();}
+    virtual void setSrcAddr(const twsn::netaddr_t& srcAddr);
+    virtual twsn::netaddr_t& getDesAddr();
+    virtual const twsn::netaddr_t& getDesAddr() const {return const_cast<NetPkt*>(this)->getDesAddr();}
+    virtual void setDesAddr(const twsn::netaddr_t& desAddr);
     virtual bool getPreambleFlag() const;
     virtual void setPreambleFlag(bool preambleFlag);
     virtual int getHopLimit() const;
@@ -74,5 +75,6 @@ class NetPkt : public ::cPacket
 inline void doPacking(cCommBuffer *b, NetPkt& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, NetPkt& obj) {obj.parsimUnpack(b);}
 
+}; // end namespace twsn
 
 #endif // _NETPKT_M_H_

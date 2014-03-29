@@ -11,21 +11,17 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-//
+// 
 
-cplusplus {{
-	#include "twsndef.h"
-}}
+package twsn.base.modules.applayer;
 
-namespace twsn;
-
-class noncobject moduleid_t;
+import twsn.base.modules.BaseLayer;
 
 //
-// Air frame for wireless physical layer
+// Base application layer
 //
-packet AirFrame {
-    moduleid_t sender;
-    moduleid_t receiver;
-    int frameSize = 6; // Default physical header is 6 bytes (IEEE 802.15.4 standard)
+simple BaseApp extends BaseLayer like IApp
+{
+    parameters:
+        @class("twsn::BaseApp");
 }

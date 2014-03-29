@@ -18,6 +18,7 @@
 // }}
 
 
+namespace twsn {
 
 /**
  * Class generated from <tt>base/messages/data/airframe.msg</tt> by opp_msgc.
@@ -32,8 +33,8 @@
 class AirFrame : public ::cPacket
 {
   protected:
-    moduleid_t sender_var;
-    moduleid_t receiver_var;
+    twsn::moduleid_t sender_var;
+    twsn::moduleid_t receiver_var;
     int frameSize_var;
 
   private:
@@ -53,12 +54,12 @@ class AirFrame : public ::cPacket
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual moduleid_t& getSender();
-    virtual const moduleid_t& getSender() const {return const_cast<AirFrame*>(this)->getSender();}
-    virtual void setSender(const moduleid_t& sender);
-    virtual moduleid_t& getReceiver();
-    virtual const moduleid_t& getReceiver() const {return const_cast<AirFrame*>(this)->getReceiver();}
-    virtual void setReceiver(const moduleid_t& receiver);
+    virtual twsn::moduleid_t& getSender();
+    virtual const twsn::moduleid_t& getSender() const {return const_cast<AirFrame*>(this)->getSender();}
+    virtual void setSender(const twsn::moduleid_t& sender);
+    virtual twsn::moduleid_t& getReceiver();
+    virtual const twsn::moduleid_t& getReceiver() const {return const_cast<AirFrame*>(this)->getReceiver();}
+    virtual void setReceiver(const twsn::moduleid_t& receiver);
     virtual int getFrameSize() const;
     virtual void setFrameSize(int frameSize);
 };
@@ -66,5 +67,6 @@ class AirFrame : public ::cPacket
 inline void doPacking(cCommBuffer *b, AirFrame& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, AirFrame& obj) {obj.parsimUnpack(b);}
 
+}; // end namespace twsn
 
 #endif // _AIRFRAME_M_H_
