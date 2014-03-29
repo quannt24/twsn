@@ -27,5 +27,5 @@ module TrackingBaseStation extends BaseWirelessNode
         netType = default("NetEMRP");
 
         net.isBaseStation = true;
-        @display("i=device/server2");
+        @display("i=device/server2;is=l");
 }

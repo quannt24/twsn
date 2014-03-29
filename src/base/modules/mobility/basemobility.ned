@@ -32,8 +32,8 @@ simple BaseMobility extends BaseSimple like IMobility
         double posY @unit(m) = default(0);
 
         // Parameters for moving Entity
-        double startMovingTime = default(0); // Time for start moving (from start of simulation)
-        bool stopSimWhenFinishMoving = default(false);
+        double startMovingTime @unit(s) = default(0); // Time for start moving (from start of simulation)
+        bool stopSimWhenFinishMoving = default(false); // Stop simulation when finish moving
         
         @display("i=block/cogwheel");
 }

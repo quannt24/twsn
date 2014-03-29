@@ -21,5 +21,6 @@ package twsn.base.channelmgr;
 simple ChannelMgr
 {
     parameters:
-    	@class("twsn::ChannelMgr");
+        @class("twsn::ChannelMgr");
+        @display("i=block/network");
 }

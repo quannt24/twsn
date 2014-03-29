@@ -39,8 +39,8 @@ network TrackingWSN extends BaseWSN
         node[numNodes]: <nodeType> like INode; // Position of nodes will be arranged by helper
         bs: <bsType> like INode {
             parameters:
-            	mobility.posX = 0;
-            	mobility.posY = 0;
+            	mobility.posX = width / 2;
+            	mobility.posY = height;
         };
         target[numTargets]: <targetType> like IEntity;
         

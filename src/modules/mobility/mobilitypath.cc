@@ -31,7 +31,7 @@ void MobilityPath::initialize()
         // Note: because of file reading, total number of read lines may be increase at end of file.
         // Therefore we discard the last.
         if (pathLen < 1) {
-            EV<< "Target: path error";
+            printError(ERROR, "Path error");
             return;
         }
 
