@@ -31,6 +31,13 @@ void BaseWirelessPhy::initialize()
     BasePhy::initialize();
     radioMode = par("initRadioMode").longValue();
     pcTimestamp = simTime();
+
+    std::ostringstream oss;
+    oss << par("txRange").doubleValue();
+    std::string str = oss.str();
+    str.copy(rangeStr, str.length());
+    rangeStr[str.length()] = '\0';
+
     scheduleAt(simTime() + par("drawPeriod").doubleValue(), pcTimer);
 }
 
@@ -231,6 +238,10 @@ void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
     /* Calculate transmission time */
     simtime_t txTime = ((double) frame->getBitLength()) / par("bitRate").doubleValue();
 
+    /* Set timer for calling finishTx(), simulate transmission process */
+    scheduleAt(simTime() + txTime, finishTxTimer);
+    updateNodeDisplay();
+
     /* Send air frame containing MAC packet to each receiver */
     if (pkt->getDesAddr() == MAC_BROADCAST_ADDR) {
         // Send to all adjacent nodes
@@ -248,14 +259,13 @@ void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
         sendAirFrame(frame);
         // We do not simulate overhearing
     }
-
-    /* Set timer for calling finishTx(), simulate transmission process */
-    scheduleAt(simTime() + txTime, finishTxTimer);
 }
 
 void BaseWirelessPhy::finishTx()
 {
     channelMgr->stopTx(phyEntry);
+    updateNodeDisplay();
+
     // Send ready command to upper layer
     Command *cmd = new Command();
     cmd->setSrc(PHYS);
@@ -377,6 +387,36 @@ void BaseWirelessPhy::setRadioMode(int mode)
         default:
             printError(ERROR, "Unexpected radio mode");
             break;
+    }
+
+    updateNodeDisplay();
+}
+
+void BaseWirelessPhy::updateNodeDisplay()
+{
+    cDisplayString &ds = getParentModule()->getDisplayString();
+
+    // Set color according to radio mode
+    switch (radioMode) {
+        case TX:
+            ds.setTagArg("i", 1, "green");
+            break;
+        case RX:
+            ds.setTagArg("i", 1, "yellow");
+            break;
+        case IDLE:
+            ds.setTagArg("i", 1, "white");
+            break;
+        default:
+            ds.setTagArg("i", 1, "black");
+            break;
+    }
+
+    // Draw range if transmitting
+    if (finishTxTimer->isScheduled()) {
+        ds.setTagArg("r", 0, rangeStr);
+    } else {
+        ds.removeTag("r");
     }
 }
 

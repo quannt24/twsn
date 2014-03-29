@@ -41,6 +41,7 @@ class BaseWirelessPhy : public BasePhy
 
         int radioMode; // Current radio mode
         simtime_t pcTimestamp; // Power consumption time stamp
+        char rangeStr[20];
 
         /* Timer */
         cMessage *finishTxTimer; // Simulate end of transmission
@@ -70,9 +71,9 @@ class BaseWirelessPhy : public BasePhy
         virtual void handleAirFrame(AirFrame *frame);
 
         /** Send data packet up */
-        void sendUp(cPacket *pkt);
+        virtual void sendUp(cPacket *pkt);
         /** Send control message up */
-        void sendCtlUp(Command *cmd);
+        virtual void sendCtlUp(Command *cmd);
 
         /** Perform CCA, return result after CCA delay. In simulation, this function simply set
          * a timer for calling senseChannel() after delay time. */
@@ -104,6 +105,8 @@ class BaseWirelessPhy : public BasePhy
         virtual void switchRadioMode(int mode);
         /** Set radio mode. This function has effect immediately */
         virtual void setRadioMode(int mode);
+        /** Update node display according to working state */
+        virtual void updateNodeDisplay();
 
         /** Calculate using time (based on pcTimestamp) and draw energy */
         virtual void draw();
