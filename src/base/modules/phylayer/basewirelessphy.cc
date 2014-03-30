@@ -390,6 +390,14 @@ void BaseWirelessPhy::setRadioMode(int mode)
     }
 
     updateNodeDisplay();
+
+    // Cancel timers
+    cancelEvent(fetchTimer);
+    cancelEvent(switchTxTimer);
+    cancelEvent(switchRxTimer);
+    cancelEvent(switchIdleTimer);
+    cancelEvent(pcTimer);
+    cancelEvent(ccaTimer);
 }
 
 void BaseWirelessPhy::updateNodeDisplay()
