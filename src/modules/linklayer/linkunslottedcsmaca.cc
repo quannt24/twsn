@@ -40,6 +40,8 @@ void LinkUnslottedCSMACA::handleSelfMsg(cMessage* msg)
         cmd->setDes(PHYS);
         cmd->setCmdId(CMD_PHY_RX);
         sendCtlDown(cmd);
+    } else if (msg == fetchTimer) {
+        fetchPacketFromUpper();
     }
 }
 
@@ -73,7 +75,10 @@ void LinkUnslottedCSMACA::handleUpperCtl(cMessage* msg)
 
     switch (cmd->getCmdId()) {
         case CMD_DATA_NOTI:
-            if (outPkt == NULL) fetchPacketFromUpper(); // TODO and fetchTimer is not scheduled
+            if (outPkt == NULL && !fetchTimer->isScheduled()) {
+                // Fetch timer also help bypass continuous notification
+                scheduleAt(simTime(), fetchTimer); // TODO IFS
+            }
             delete cmd;
             break;
 
@@ -141,7 +146,9 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
             // Reset outPkt pointer so that we can send next packet
             outPkt = NULL;
             // Fetch next packet from queue TODO After IFS
-            fetchPacketFromUpper(); // TODO and fetchTimer is not scheduled
+            if (!fetchTimer->isScheduled()) {
+                scheduleAt(simTime(), fetchTimer);
+            }
             // Switch radio transceiver to listen mode
             Command *rxcmd = new Command();
             rxcmd->setSrc(LINK);
@@ -202,12 +209,14 @@ LinkUnslottedCSMACA::LinkUnslottedCSMACA()
     outPkt = NULL;
     backoffTimer = new cMessage("backoffTimer");
     listenTimer = new cMessage("listenTimer");
+    fetchTimer = new cMessage("fetchTimer");
 }
 
 LinkUnslottedCSMACA::~LinkUnslottedCSMACA()
 {
     cancelAndDelete(backoffTimer);
     cancelAndDelete(listenTimer);
+    cancelAndDelete(fetchTimer);
 }
 
 }  // namespace twsn

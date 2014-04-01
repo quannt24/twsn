@@ -14,6 +14,7 @@
 // 
 
 #include "apptrackingsensor.h"
+#include "apppkt_m.h"
 
 namespace twsn {
 
@@ -67,6 +68,12 @@ void AppTrackingSensor::handleSenseMsg(SenseMsg* msg)
     oss << meaList.front().getMeasuredDistance() << '\0';
 
     getParentModule()->bubble(oss.str().c_str());
+
+    // Test routing to BS
+    AppPkt *pkt = new AppPkt();
+    pkt->setRoutingType(RT_TO_BS);
+    pkt->setByteLength(pkt->getPktSize());
+    sendDown(pkt);
 
     delete msg;
 }

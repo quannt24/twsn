@@ -306,6 +306,7 @@ $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	util/twsndef.h
 $O/modules/applayer/apptrackingsensor.o: modules/applayer/apptrackingsensor.cc \
 	base/messages/control/command_m.h \
+	base/messages/data/apppkt_m.h \
 	base/modules/applayer/baseapp.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \

@@ -39,6 +39,7 @@ class LinkUnslottedCSMACA : public BaseLink
         /* Timers */
         cMessage *backoffTimer; // End of backoff
         cMessage *listenTimer; // Start listen
+        cMessage *fetchTimer; // Timer for fetching packet from queue
 
         virtual void initialize();
         /** Handle self message */
