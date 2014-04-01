@@ -36,8 +36,8 @@ INCLUDE_PATH = \
     -Ientities/nodes \
     -Ientities/other \
     -Ihelpers \
-    -Imessages \
     -Imodules \
+    -Imodules/applayer \
     -Imodules/energy \
     -Imodules/linklayer \
     -Imodules/mobility \
@@ -72,16 +72,22 @@ OBJS = \
     $O/base/modules/phylayer/basewirelessphy.o \
     $O/base/modules/queue/downqueue.o \
     $O/helpers/worldhelper.o \
+    $O/modules/applayer/apptrackingsensor.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
     $O/modules/mobility/mobilitypath.o \
     $O/modules/netlayer/netemrp.o \
+    $O/modules/other/acousticgenerator.o \
+    $O/modules/other/acousticsensor.o \
     $O/util/coord.o \
+    $O/util/measurement.o \
+    $O/util/gaussiannoise.o \
     $O/base/messages/control/command_m.o \
     $O/base/messages/data/airframe_m.o \
     $O/base/messages/data/apppkt_m.o \
     $O/base/messages/data/netpkt_m.o \
     $O/base/messages/data/macpkt_m.o \
-    $O/messages/netemrppkt_m.o
+    $O/modules/netlayer/netemrppkt_m.o \
+    $O/modules/other/sensemsg_m.o
 
 # Message files
 MSGFILES = \
@@ -90,7 +96,8 @@ MSGFILES = \
     base/messages/data/apppkt.msg \
     base/messages/data/netpkt.msg \
     base/messages/data/macpkt.msg \
-    messages/netemrppkt.msg
+    modules/netlayer/netemrppkt.msg \
+    modules/other/sensemsg.msg
 
 #------------------------------------------------------------------------------
 
@@ -184,8 +191,8 @@ clean:
 	$(Q)-rm -f entities/nodes/*_m.cc entities/nodes/*_m.h
 	$(Q)-rm -f entities/other/*_m.cc entities/other/*_m.h
 	$(Q)-rm -f helpers/*_m.cc helpers/*_m.h
-	$(Q)-rm -f messages/*_m.cc messages/*_m.h
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
+	$(Q)-rm -f modules/applayer/*_m.cc modules/applayer/*_m.h
 	$(Q)-rm -f modules/energy/*_m.cc modules/energy/*_m.h
 	$(Q)-rm -f modules/linklayer/*_m.cc modules/linklayer/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
@@ -199,7 +206,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc messages/*.cc modules/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -297,9 +304,15 @@ $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	helpers/worldhelper.h \
 	util/coord.h \
 	util/twsndef.h
-$O/messages/netemrppkt_m.o: messages/netemrppkt_m.cc \
-	base/messages/data/netpkt_m.h \
-	messages/netemrppkt_m.h \
+$O/modules/applayer/apptrackingsensor.o: modules/applayer/apptrackingsensor.cc \
+	base/messages/control/command_m.h \
+	base/modules/applayer/baseapp.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	modules/applayer/apptrackingsensor.h \
+	modules/other/sensemsg_m.h \
+	util/coord.h \
+	util/measurement.h \
 	util/twsndef.h
 $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmaca.cc \
 	base/messages/control/command_m.h \
@@ -325,11 +338,43 @@ $O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
 	base/modules/energy/baseenergy.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
-	messages/netemrppkt_m.h \
 	modules/netlayer/netemrp.h \
+	modules/netlayer/netemrppkt_m.h \
 	util/coord.h \
+	util/twsndef.h
+$O/modules/netlayer/netemrppkt_m.o: modules/netlayer/netemrppkt_m.cc \
+	base/messages/data/netpkt_m.h \
+	modules/netlayer/netemrppkt_m.h \
+	util/twsndef.h
+$O/modules/other/acousticgenerator.o: modules/other/acousticgenerator.cc \
+	base/modules/basesimple.h \
+	base/modules/mobility/basemobility.h \
+	modules/other/acousticgenerator.h \
+	modules/other/sensemsg_m.h \
+	util/coord.h \
+	util/measurement.h \
+	util/twsndef.h
+$O/modules/other/acousticsensor.o: modules/other/acousticsensor.cc \
+	base/modules/basesimple.h \
+	base/modules/mobility/basemobility.h \
+	modules/other/acousticsensor.h \
+	modules/other/sensemsg_m.h \
+	util/coord.h \
+	util/gaussiannoise.h \
+	util/measurement.h \
+	util/twsndef.h
+$O/modules/other/sensemsg_m.o: modules/other/sensemsg_m.cc \
+	modules/other/sensemsg_m.h \
+	util/coord.h \
+	util/measurement.h \
 	util/twsndef.h
 $O/util/coord.o: util/coord.cc \
 	util/coord.h \
+	util/twsndef.h
+$O/util/gaussiannoise.o: util/gaussiannoise.cc \
+	util/gaussiannoise.h
+$O/util/measurement.o: util/measurement.cc \
+	util/coord.h \
+	util/measurement.h \
 	util/twsndef.h
 

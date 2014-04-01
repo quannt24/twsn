@@ -13,18 +13,34 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.entities.nodes;
+#ifndef __TWSN_APPTRACKINGSENSOR_H_
+#define __TWSN_APPTRACKINGSENSOR_H_
 
-import twsn.base.entities.IEntity;
+#include <omnetpp.h>
+#include "baseapp.h"
+#include "sensemsg_m.h"
 
-//
-// Interface for network node
-//
-moduleinterface INode extends IEntity
+namespace twsn {
+
+/**
+ * Application for tracking sensor node
+ */
+class AppTrackingSensor : public BaseApp
 {
-    parameters:
-		string energyType;
-        string phyType;
-        string linkType;
-        string netType;
-}
+    private:
+        cMessage *senseTimer; // Self message for start sensing
+
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+        virtual void handleSelfMsg(cMessage *msg);
+        virtual void handleSenseMsg(SenseMsg *msg);
+
+    public:
+        AppTrackingSensor();
+        ~AppTrackingSensor();
+};
+
+}  // namespace twsn
+
+#endif

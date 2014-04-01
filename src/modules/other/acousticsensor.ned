@@ -13,18 +13,23 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.entities.nodes;
+package twsn.modules.other;
 
-import twsn.base.entities.IEntity;
+import twsn.base.modules.BaseSimple;
 
 //
-// Interface for network node
+// Acoustic sensor for tracking
 //
-moduleinterface INode extends IEntity
+simple AcousticSensor extends BaseSimple
 {
     parameters:
-		string energyType;
-        string phyType;
-        string linkType;
-        string netType;
+        @class("twsn::AcousticSensor");
+        
+        // Delay for processing signal before return sense result
+        double responseDelay = default(0.05);
+        @display("i=block/wrx");
+
+    gates:
+        input senseIn @directIn; // Gate for receiving target's signal
+        inout appGate;
 }

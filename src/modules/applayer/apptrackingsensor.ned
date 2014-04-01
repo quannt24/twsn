@@ -13,18 +13,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.entities.nodes;
+package twsn.modules.applayer;
 
-import twsn.base.entities.IEntity;
+import twsn.base.modules.applayer.BaseApp;
 
 //
-// Interface for network node
+// Application for tracking sensor node
 //
-moduleinterface INode extends IEntity
+simple AppTrackingSensor extends BaseApp
 {
     parameters:
-		string energyType;
-        string phyType;
-        string linkType;
-        string netType;
+        @class("twsn::AppTrackingSensor");
+        
+        double senseInterval = default(0.5);
+
+    gates:
+        inout ssGate;
 }

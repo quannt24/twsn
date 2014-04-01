@@ -16,21 +16,22 @@
 package twsn.networks;
 
 import twsn.base.networks.BaseWSN;
+import twsn.base.entities.IEntity;
 import twsn.base.entities.nodes.INode;
 import twsn.helpers.WorldHelper;
 
 network TestWSN extends BaseWSN
 {
     parameters:
-        width = default(400 m);
-        height = default(400 m);
-        rows = default(20);
-        cols = default(20);
+        width = default(50 m);
+        height = default(50 m);
+        rows = default(2);
+        cols = default(2);
 
-        string nodeType = default("TrackingNode"); // Sensor node type
+        string nodeType = default("BaseWirelessNode"); // Sensor node type
         string bsType = default("TrackingBaseStation"); // Base station type
         
-        int numNodes = default(400);
+        int numNodes = default(4);
 
     submodules:
         node[numNodes]: <nodeType> like INode;

@@ -13,18 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.entities.nodes;
+#ifndef __TWSN_ACOUSTICGENERATOR_H_
+#define __TWSN_ACOUSTICGENERATOR_H_
 
-import twsn.base.entities.IEntity;
+#include <omnetpp.h>
+#include "basesimple.h"
 
-//
-// Interface for network node
-//
-moduleinterface INode extends IEntity
+namespace twsn {
+
+/**
+ * Acoustic signal generator
+ */
+class AcousticGenerator : public BaseSimple
 {
-    parameters:
-		string energyType;
-        string phyType;
-        string linkType;
-        string netType;
-}
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+};
+
+}  // namespace twsn
+
+#endif

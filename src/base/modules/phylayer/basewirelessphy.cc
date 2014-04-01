@@ -391,13 +391,16 @@ void BaseWirelessPhy::setRadioMode(int mode)
 
     updateNodeDisplay();
 
-    // Cancel timers
-    cancelEvent(fetchTimer);
-    cancelEvent(switchTxTimer);
-    cancelEvent(switchRxTimer);
-    cancelEvent(switchIdleTimer);
-    cancelEvent(pcTimer);
-    cancelEvent(ccaTimer);
+    if (radioMode == POWER_DOWN) {
+        getParentModule()->bubble("POWER_DOWN");
+        // Cancel timers
+        cancelEvent(fetchTimer);
+        cancelEvent(switchTxTimer);
+        cancelEvent(switchRxTimer);
+        cancelEvent(switchIdleTimer);
+        cancelEvent(pcTimer);
+        cancelEvent(ccaTimer);
+    }
 }
 
 void BaseWirelessPhy::updateNodeDisplay()

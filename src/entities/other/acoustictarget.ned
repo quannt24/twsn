@@ -16,6 +16,7 @@
 package twsn.entities.other;
 
 import twsn.base.entities.BaseEntity;
+import twsn.modules.other.AcousticGenerator;
 
 //
 // Target to be tracked
@@ -26,4 +27,7 @@ module AcousticTarget extends BaseEntity
         mobilityType = default("MobilityPath");
 
         @display("i=old/bwgen");
+
+    submodules:
+        generator: AcousticGenerator;
 }

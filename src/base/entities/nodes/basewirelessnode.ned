@@ -21,7 +21,6 @@ import twsn.base.modules.phylayer.IWirelessPhy;
 import twsn.base.modules.ILayer;
 import twsn.base.modules.linklayer.ILink;
 import twsn.base.modules.netlayer.INet;
-import twsn.base.modules.applayer.IApp;
 
 //
 // Base module for all wireless nodes
@@ -36,7 +35,6 @@ module BaseWirelessNode extends BaseEntity like INode
         string linkQueueType = default("DownQueue"); // Queue buffer upon link layer
         string netType = default("BaseNet");
         string netQueueType = default("DownQueue"); // Queue buffer upon network layer
-        string appType = default("BaseApp");
 
         @display("is=s");
 
@@ -59,9 +57,6 @@ module BaseWirelessNode extends BaseEntity like INode
         netQueue: <netQueueType> like ILayer {
             @display("p=150,450");
         }
-        app: <appType> like IApp {
-            @display("p=150,550");
-        }
 
     connections:
         phy.upper <--> link.lower;
@@ -72,6 +67,4 @@ module BaseWirelessNode extends BaseEntity like INode
         linkQueue.upperCtl <--> net.lowerCtl;
         net.upper <--> netQueue.lower;
         net.upperCtl <--> netQueue.lowerCtl;
-        netQueue.upper <--> app.lower;
-        netQueue.upperCtl <--> app.lowerCtl;
 }

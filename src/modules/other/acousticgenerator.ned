@@ -13,18 +13,22 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.entities.nodes;
+package twsn.modules.other;
 
-import twsn.base.entities.IEntity;
+import twsn.base.modules.BaseSimple;
 
 //
-// Interface for network node
+// Acoustic signal generator
 //
-moduleinterface INode extends IEntity
+simple AcousticGenerator extends BaseSimple
 {
     parameters:
-		string energyType;
-        string phyType;
-        string linkType;
-        string netType;
+        @class("twsn::AcousticGenerator");
+        
+        double ssRange @unit(m);
+        
+        @display("i=block/wtx");
+        
+    gates:
+        input reqIn @directIn; // Gate for receiving sensing request
 }

@@ -16,6 +16,8 @@
 package twsn.entities.nodes;
 
 import twsn.base.entities.nodes.BaseWirelessNode;
+import twsn.modules.applayer.AppTrackingSensor;
+import twsn.modules.other.AcousticSensor;
 
 //
 // Sensor node for tracking
@@ -28,6 +30,18 @@ module TrackingNode extends BaseWirelessNode
         linkType = default("LinkUnslottedCSMACA");
         linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
         netType = default("NetEMRP");
-        
+
         net.isBaseStation = false;
+
+    submodules:
+        app: AppTrackingSensor {
+            @display("p=150,550");
+        }
+        sensor: AcousticSensor {
+            @display("p=50,550");
+        }
+    connections:
+        netQueue.upper <--> app.lower;
+        netQueue.upperCtl <--> app.lowerCtl;
+        app.ssGate <--> sensor.appGate;
 }
