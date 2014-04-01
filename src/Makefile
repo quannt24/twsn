@@ -71,6 +71,7 @@ OBJS = \
     $O/base/modules/phylayer/basephy.o \
     $O/base/modules/phylayer/basewirelessphy.o \
     $O/base/modules/queue/downqueue.o \
+    $O/helpers/decohelper.o \
     $O/helpers/worldhelper.o \
     $O/modules/applayer/apptrackingsensor.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
@@ -295,6 +296,10 @@ $O/base/modules/queue/downqueue.o: base/modules/queue/downqueue.cc \
 	base/modules/basesimple.h \
 	base/modules/queue/downqueue.h \
 	util/twsndef.h
+$O/helpers/decohelper.o: helpers/decohelper.cc \
+	base/modules/basesimple.h \
+	helpers/decohelper.h \
+	util/twsndef.h
 $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	base/messages/control/command_m.h \
 	base/modules/baselayer.h \
@@ -339,6 +344,7 @@ $O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
 	base/modules/energy/baseenergy.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
+	helpers/decohelper.h \
 	modules/netlayer/netemrp.h \
 	modules/netlayer/netemrppkt_m.h \
 	util/coord.h \

@@ -17,6 +17,7 @@
 #include "baseenergy.h"
 #include "basemobility.h"
 #include "apppkt_m.h"
+#include "decohelper.h"
 
 namespace twsn {
 
@@ -268,8 +269,14 @@ bool NetEMRP::considerRelay(NetEmrpRelayInfoPkt *ri)
         double a2 = assessRelay(ri->getEnergy(), dRc, dBs, ri->getDBs());
 
         if (a2 > a1) {
-            rnAddr = ri->getSrcAddr();
+            // Current relay node becomes backup node
+            bnAddr = rnAddr;
+            enerBn = enerRn;
+            dBsBn = dBsRn;
+            dBn = dRn;
 
+            // Store information of new relay node
+            rnAddr = ri->getSrcAddr();
             enerRn = ri->getEnergy();
             dBsRn = ri->getDBs();
             dRn = dRc;
@@ -347,6 +354,8 @@ void NetEMRP::updateRelayEnergy(NetEmrpEnergyInfoPkt* eiPkt)
     } else if (enerBn - enerRn > par("switchingEnergy").doubleValue()) {
         switchRelayNode();
     }
+
+    updateDecoration();
 }
 
 void NetEMRP::switchRelayNode()
@@ -451,6 +460,8 @@ void NetEMRP::recvRelayInfo(NetEmrpPkt* pkt)
         }
     }
     delete pkt;
+
+    updateDecoration();
 }
 
 void NetEMRP::recvEnergyInfo(NetEmrpPkt* pkt)
@@ -458,6 +469,22 @@ void NetEMRP::recvEnergyInfo(NetEmrpPkt* pkt)
     updateRelayEnergy(check_and_cast<NetEmrpEnergyInfoPkt*>(pkt));
     cancelEvent(waitEnergyInfoTimer);
     delete pkt;
+}
+
+void NetEMRP::updateDecoration()
+{
+    DecoHelper *dh = (DecoHelper*) getModuleByPath("decoHelper");
+    if (dh == NULL) return;
+
+    dh->disconnect(getParentModule());
+    if (bsAddr > 0) {
+        dh->dConnect(getParentModule(), simulation.getModule(bsAddr)->getParentModule(), "ls=#9999ff,1,s");
+    } else if (rnAddr > 0) {
+        dh->dConnect(getParentModule(), simulation.getModule(rnAddr)->getParentModule(), "ls=#9999ff,1,s");
+    }
+    if (bnAddr > 0) {
+        dh->dConnect(getParentModule(), simulation.getModule(bnAddr)->getParentModule(), "ls=#ff9999,1,da");
+    }
 }
 
 NetEMRP::NetEMRP()

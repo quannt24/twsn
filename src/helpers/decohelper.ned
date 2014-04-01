@@ -13,14 +13,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.channelmgr;
+package twsn.helpers;
+
+import twsn.base.modules.BaseSimple;
 
 //
-// Central module for simulating wireless channel
+// Helper module for decoration
 //
-simple ChannelMgr
+simple DecoHelper extends BaseSimple
 {
     parameters:
-        @class("twsn::ChannelMgr");
+        @class("twsn::DecoHelper");
+        
+        // If enable = false, decoration will be hided
+        bool enable = default(true);
+        
         @display("i=block/network2");
 }

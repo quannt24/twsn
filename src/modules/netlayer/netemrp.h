@@ -122,6 +122,9 @@ class NetEMRP : public BaseNet
         /** Handle updated energy information of relay node */
         void recvEnergyInfo(NetEmrpPkt *pkt);
 
+        /** Update decoration */
+        void updateDecoration();
+
     public:
         NetEMRP();
         ~NetEMRP();

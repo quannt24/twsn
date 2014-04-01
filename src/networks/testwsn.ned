@@ -18,7 +18,7 @@ package twsn.networks;
 import twsn.base.networks.BaseWSN;
 import twsn.base.entities.IEntity;
 import twsn.base.entities.nodes.INode;
-import twsn.helpers.WorldHelper;
+import twsn.helpers.*;
 
 network TestWSN extends BaseWSN
 {
@@ -43,6 +43,9 @@ network TestWSN extends BaseWSN
 
         // Helpers should be declared after all entities
         worldHelper: WorldHelper {
-            @display("p=-20,10");
+            @display("p=-20,40");
+        }
+        decoHelper: DecoHelper {
+            @display("p=-20,70");
         }
 }

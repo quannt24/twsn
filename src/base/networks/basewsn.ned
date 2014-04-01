@@ -21,6 +21,6 @@ network BaseWSN extends BaseNetwork
 {
     submodules:
         channelMgr: ChannelMgr {
-            @display("p=-20,40");
+            @display("p=-20,10");
         }
 }
