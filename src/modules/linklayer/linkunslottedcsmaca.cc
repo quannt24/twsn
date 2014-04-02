@@ -142,21 +142,8 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
             break;
 
         case CMD_READY:
-        {
-            // Reset outPkt pointer so that we can send next packet
-            outPkt = NULL;
-            // Fetch next packet from queue TODO After IFS
-            if (!fetchTimer->isScheduled()) {
-                scheduleAt(simTime(), fetchTimer);
-            }
-            // Switch radio transceiver to listen mode
-            Command *rxcmd = new Command();
-            rxcmd->setSrc(LINK);
-            rxcmd->setDes(PHYS);
-            rxcmd->setCmdId(CMD_PHY_RX);
-            sendCtlDown(rxcmd);
+            reset();
             delete cmd;
-        }
             break;
 
         default:
@@ -201,7 +188,25 @@ void LinkUnslottedCSMACA::nextRound()
     } else {
         // TODO Report failure
         EV << "LinkUnslottedCSMACA: Transmission failure\n";
+        delete outPkt;
+        reset();
     }
+}
+
+void LinkUnslottedCSMACA::reset()
+{
+    // Reset outPkt pointer so that we can send next packet
+    outPkt = NULL;
+    // Fetch next packet from queue TODO After IFS
+    if (!fetchTimer->isScheduled()) {
+        scheduleAt(simTime(), fetchTimer);
+    }
+    // Switch radio transceiver to listen mode
+    Command *rxcmd = new Command();
+    rxcmd->setSrc(LINK);
+    rxcmd->setDes(PHYS);
+    rxcmd->setCmdId(CMD_PHY_RX);
+    sendCtlDown(rxcmd);
 }
 
 LinkUnslottedCSMACA::LinkUnslottedCSMACA()

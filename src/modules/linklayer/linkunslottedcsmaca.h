@@ -61,6 +61,8 @@ class LinkUnslottedCSMACA : public BaseLink
         void performCCA();
         /** Update variables and begin next round */
         void nextRound();
+        /** Reset outPkt and switch to RX mode */
+        void reset();
 
     public:
         LinkUnslottedCSMACA();
