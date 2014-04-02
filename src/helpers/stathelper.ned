@@ -25,8 +25,13 @@ simple StatHelper extends BaseSimple
     parameters:
         @class("twsn::StatHelper");
 
+		// Measurement error of distance
         @signal[sigMeaError](type="double");
-        @statistic[meaError](title="Measured error"; source="sigMeaError"; record=histogram);
+        @statistic[meaError](title="Measured error"; source="sigMeaError"; record=vector,histogram);
+        
+        // Estimation error of distance
+        @signal[sigEstError](type="double");
+        @statistic[estError](title="Estimation error"; source="sigEstError"; record=vector,histogram);
         
         @display("i=block/table2");
 }

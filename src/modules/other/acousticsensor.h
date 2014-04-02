@@ -31,8 +31,6 @@ class AcousticSensor : public BaseSimple
 {
     private:
         GaussianNoise *noise;
-        int nSensedTarget; // Number of sensed targets
-        int nMeasurement; // Number of measurements currently created
         /* Measurement list, storing measurements of a sensing action. This list will be cleared
          * before executing new sensing. */
         std::list<Measurement> meaList;

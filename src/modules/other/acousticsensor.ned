@@ -27,6 +27,10 @@ simple AcousticSensor extends BaseSimple
         
         // Delay for processing signal before return sense result
         double responseDelay = default(0.05);
+        // Standard deviation rate of noise (standard distribution)
+        // Range from 0 to 1. Value 0 means no noise
+        double sigmaRate = default(0.1);
+        
         @display("i=block/wrx");
 
     gates:

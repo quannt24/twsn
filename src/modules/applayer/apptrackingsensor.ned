@@ -25,7 +25,7 @@ simple AppTrackingSensor extends BaseApp
     parameters:
         @class("twsn::AppTrackingSensor");
         
-        double senseInterval = default(0.5);
+        double sensePeriod = default(0.5);
 
     gates:
         inout ssGate;

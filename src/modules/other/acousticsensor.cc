@@ -32,9 +32,10 @@ void AcousticSensor::startSense()
 
     mob1 = check_and_cast<BaseMobility*>(getModuleByPath("^.mobility"));
     // Clear old result
-    nSensedTarget = 0;
-    nMeasurement = 0;
     meaList.clear();
+
+    // Set timer to send result to application. If cannot sense any target, the meaList will be empty.
+    scheduleAt(simTime() + par("responseDelay").doubleValue(), responseTimer);
 
     for (i = 0; i < numTargets; i++) {
         tar = check_and_cast<cCompoundModule*>(wsn->getSubmodule("target", i));
@@ -43,8 +44,6 @@ void AcousticSensor::startSense()
 
         // If the sensor is in range of one target, send request
         if (d <= tar->getSubmodule("generator")->par("ssRange").doubleValue()) {
-            nSensedTarget++; // Count number of sensed targets
-
             // Send request
             SenseAction *action = new SenseAction("SenseAction");
             action->setSensorId(this->getId());
@@ -67,18 +66,14 @@ void AcousticSensor::processSignal(SenseSignal* ss)
     // Coordinate of the node is set by application
 
     meaList.push_back(mea);
-    nMeasurement++;
-    if (nMeasurement == nSensedTarget) {
-        // All signals are received, set delay timer to send result to application
-        scheduleAt(simTime() + par("responseDelay").doubleValue(), responseTimer);
-    }
     delete ss;
 }
 
 void AcousticSensor::initialize()
 {
     // Configure noise
-    noise = new GaussianNoise(0, getModuleByPath("target[0].generator")->par("ssRange").doubleValue() / 20);
+    noise = new GaussianNoise(0,
+            getModuleByPath("target[0].generator")->par("ssRange").doubleValue() * par("sigmaRate").doubleValue());
 }
 
 void AcousticSensor::handleMessage(cMessage *msg)
@@ -119,9 +114,6 @@ void AcousticSensor::handleMessage(cMessage *msg)
 AcousticSensor::AcousticSensor()
 {
     noise = NULL;
-    nSensedTarget = 0;
-    nMeasurement = 0;
-
     responseTimer = new cMessage("responseTimer");
 }
 

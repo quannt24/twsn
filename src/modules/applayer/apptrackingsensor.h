@@ -28,7 +28,13 @@ namespace twsn {
 class AppTrackingSensor : public BaseApp
 {
     private:
+        // Tracking filter // TODO expand to multi-target
+        double fR, fVr; // Filtered R and Vr (changing speed of R)
         cMessage *senseTimer; // Self message for start sensing
+
+        void initFilterR();
+        /** Filter for R; update fR, fVr with estimated values using Critically Damped g-h filter */
+        void filterR(std::list<Measurement> &meaList);
 
     protected:
         virtual void initialize();

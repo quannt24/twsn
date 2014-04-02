@@ -1,13 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
     <inputs name="/TWSN/simulations/results/Config2-*.vec"/>
     <inputs name="/TWSN/simulations/results/Config2-*.sca"/>
   </inputs>
   <datasets>
-    <datasets name="R"/>
+    <datasets name="R">
+      <items xsi:type="scave:Add" filterPattern="estError:histogram" type="HISTOGRAM"/>
+      <items xsi:type="scave:Add" filterPattern="meaError:histogram" type="HISTOGRAM"/>
+      <items xsi:type="scave:HistogramChart" name="Error of distance distribution">
+        <properties name="Graph.Title" value="Error of distance distribution"/>
+        <properties name="Bars.Baseline" value="-100.0"/>
+        <properties name="Hist.Bar" value="Outline"/>
+        <properties name="Hist.Data" value="Count"/>
+        <properties name="Hist.ShowOverflowCell" value="true"/>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="estError:vector" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="meaError:vector" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Estimation error of distance over time" lineNameFormat="">
+        <filters xsi:type="scave:Select" filterPattern="estError:vector" type="VECTOR"/>
+        <properties name="Graph.Title" value="Estimation error of distance over time"/>
+        <properties name="Y.Axis.Min" value="-20.0"/>
+        <properties name="Y.Axis.Max" value="20.0"/>
+        <properties name="Symbols.Size" value="2"/>
+        <properties name="Line.Type" value="Dots"/>
+      </items>
+      <items xsi:type="scave:LineChart" name="Measurement error of distance over time" lineNameFormat="">
+        <filters xsi:type="scave:Select" filterPattern="meaError:vector" type="VECTOR"/>
+        <properties name="Graph.Title" value="Measurement error of distance over time"/>
+        <properties name="Y.Axis.Min" value="-20.0"/>
+        <properties name="Y.Axis.Max" value="20.0"/>
+        <properties name="Symbols.Size" value="2"/>
+        <properties name="Line.Type" value="Dots"/>
+      </items>
+    </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.6"/>
   </chartSheets>
 </scave:Analysis>

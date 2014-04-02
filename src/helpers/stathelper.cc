@@ -23,6 +23,7 @@ void StatHelper::initialize()
 {
     // Register signals
     sigMeaError = registerSignal("sigMeaError");
+    sigEstError = registerSignal("sigEstError");
 }
 
 void StatHelper::recMeaError(double err)
@@ -33,6 +34,8 @@ void StatHelper::recMeaError(double err)
 
 void StatHelper::recEstError(double err)
 {
+    Enter_Method_Silent("recEstError");
+    emit(sigEstError, err);
 }
 
 }  // namespace twsn

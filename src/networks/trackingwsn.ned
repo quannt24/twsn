@@ -48,7 +48,7 @@ network TrackingWSN extends BaseWSN
         
         // Helpers should be declared after all entities
         worldHelper: WorldHelper {
-            @display("p=-20,10");
+            @display("p=-20,40");
         }
         decoHelper: DecoHelper {
             @display("p=-20,70");

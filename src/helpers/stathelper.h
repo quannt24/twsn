@@ -29,6 +29,7 @@ class StatHelper : public BaseSimple
     private:
         /* Statistic signals */
         simsignal_t sigMeaError;
+        simsignal_t sigEstError;
 
     protected:
         virtual void initialize();

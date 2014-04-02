@@ -21,13 +21,46 @@ namespace twsn {
 
 Define_Module(AppTrackingSensor);
 
+void AppTrackingSensor::initFilterR()
+{
+    // TODO expand to multi-target
+    fR = 0;
+    fVr = 0;
+}
+
+void AppTrackingSensor::filterR(std::list<Measurement> &meaList)
+{
+    // TODO expand to multi-target
+    double md = meaList.front().getMeasuredDistance(); // Measured distance
+    double td = meaList.front().getTrueDistance();
+    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+    sh->recMeaError(md - td);
+
+    double sensePeriod = par("sensePeriod").doubleValue();
+
+    // Predict
+    double pVr = fVr; // Predicted Vr
+    double pR = fR + sensePeriod * fVr;
+
+    // Update
+    fVr = pVr + 0.25 * (md - pR) / sensePeriod;
+    fR = pR + 0.75 * (md - pR);
+
+    if (fR <= 0) {
+        fR = 0;
+    } else {
+        // fR = 0 seem to be initial value, we ignore these estimated value
+        sh->recEstError(fR - td);
+    }
+}
+
 void AppTrackingSensor::initialize()
 {
     BaseApp::initialized();
 
     // Start sensing, simulate unsynchronized sensing
     if (!senseTimer->isScheduled()) {
-        scheduleAt(simTime() + uniform(0, par("senseInterval").doubleValue()), senseTimer);
+        scheduleAt(simTime() + uniform(0, par("sensePeriod").doubleValue()), senseTimer);
     }
 }
 
@@ -56,7 +89,7 @@ void AppTrackingSensor::handleSelfMsg(cMessage* msg)
         send(ssStartMsg, "ssGate$o");
 
         // Schedule next sensing
-        scheduleAt(simTime() + par("senseInterval").doubleValue(), senseTimer);
+        scheduleAt(simTime() + par("sensePeriod").doubleValue(), senseTimer);
     }
 }
 
@@ -65,27 +98,19 @@ void AppTrackingSensor::handleSenseMsg(SenseMsg* msg)
     SenseResult *sr = check_and_cast<SenseResult*>(msg);
     std::list<Measurement> meaList = sr->getMeaList();
 
-    double md = meaList.front().getMeasuredDistance(); // Measured distance
-    double td = meaList.front().getTrueDistance();
-    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-    sh->recMeaError(md - td);
-
-    std::ostringstream oss;
-    oss << meaList.front().getMeasuredDistance() << '\0';
-
-    getParentModule()->bubble(oss.str().c_str());
-
-    // Test routing to BS
-    /*AppPkt *pkt = new AppPkt();
-    pkt->setRoutingType(RT_TO_BS);
-    pkt->setByteLength(pkt->getPktSize());
-    sendDown(pkt);*/
+    if (meaList.size() > 0) {
+        filterR(meaList);
+    } else {
+        // No target sensed, reset (initialize) filter
+        initFilterR();
+    }
 
     delete msg;
 }
 
 AppTrackingSensor::AppTrackingSensor()
 {
+    initFilterR();
     senseTimer = new cMessage("SenseTimer");
 }
 
