@@ -20,6 +20,7 @@ class Measurement
     private:
         int tarId; // Target ID
         double measuredDistance; // Measured distance (not true distance)
+        double trueDistance; // True distance from node to target (for reference)
         Coord tarCoord; // True position of target (for reference)
         Coord nodeCoord; // Position of sensor node
         double nodeEnergy; // Remaining energy of sensor
@@ -34,12 +35,19 @@ class Measurement
 
         int getTarId() { return tarId; }
         void setTarId(int tarId) { this->tarId = tarId; }
+
         double getMeasuredDistance() { return measuredDistance; }
         void setMeasuredDistance(double measuredDistance) { this->measuredDistance = measuredDistance; }
+
+        double getTrueDistance() const { return trueDistance; }
+        void setTrueDistance(double trueDistance) { this->trueDistance = trueDistance; }
+
         Coord getTarCoord() { return tarCoord; }
         void setTarCoord(Coord coord) { this->tarCoord = coord; }
+
         Coord getNodeCoord() { return nodeCoord; }
         void setNodeCoord(Coord coord) {this->nodeCoord = coord; }
+
         double getNodeEnergy() { return nodeEnergy; }
         void setNodeEnergy(double nodeEnergy) { this->nodeEnergy = nodeEnergy; }
 };

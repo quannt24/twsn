@@ -15,6 +15,7 @@
 
 #include "apptrackingsensor.h"
 #include "apppkt_m.h"
+#include "stathelper.h"
 
 namespace twsn {
 
@@ -64,16 +65,21 @@ void AppTrackingSensor::handleSenseMsg(SenseMsg* msg)
     SenseResult *sr = check_and_cast<SenseResult*>(msg);
     std::list<Measurement> meaList = sr->getMeaList();
 
+    double md = meaList.front().getMeasuredDistance(); // Measured distance
+    double td = meaList.front().getTrueDistance();
+    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+    sh->recMeaError(md - td);
+
     std::ostringstream oss;
     oss << meaList.front().getMeasuredDistance() << '\0';
 
     getParentModule()->bubble(oss.str().c_str());
 
     // Test routing to BS
-    AppPkt *pkt = new AppPkt();
+    /*AppPkt *pkt = new AppPkt();
     pkt->setRoutingType(RT_TO_BS);
     pkt->setByteLength(pkt->getPktSize());
-    sendDown(pkt);
+    sendDown(pkt);*/
 
     delete msg;
 }

@@ -71,6 +71,7 @@ OBJS = \
     $O/base/modules/phylayer/basephy.o \
     $O/base/modules/phylayer/basewirelessphy.o \
     $O/base/modules/queue/downqueue.o \
+    $O/helpers/stathelper.o \
     $O/helpers/decohelper.o \
     $O/helpers/worldhelper.o \
     $O/modules/applayer/apptrackingsensor.o \
@@ -300,6 +301,10 @@ $O/helpers/decohelper.o: helpers/decohelper.cc \
 	base/modules/basesimple.h \
 	helpers/decohelper.h \
 	util/twsndef.h
+$O/helpers/stathelper.o: helpers/stathelper.cc \
+	base/modules/basesimple.h \
+	helpers/stathelper.h \
+	util/twsndef.h
 $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	base/messages/control/command_m.h \
 	base/modules/baselayer.h \
@@ -315,6 +320,7 @@ $O/modules/applayer/apptrackingsensor.o: modules/applayer/apptrackingsensor.cc \
 	base/modules/applayer/baseapp.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
+	helpers/stathelper.h \
 	modules/applayer/apptrackingsensor.h \
 	modules/other/sensemsg_m.h \
 	util/coord.h \

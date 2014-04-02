@@ -42,8 +42,8 @@ void AcousticGenerator::handleMessage(cMessage *msg)
     SenseSignal *sig = new SenseSignal();
     //sig->setTarId(getId());
     sig->setDistance(distance(tarMob->getCoord(), ssMob->getCoord())); // True distance
-    //sig->setX(tarMob->getCoordX());
-    //sig->setY(tarMob->getCoordY());
+    sig->setX(tarMob->getCoordX());
+    sig->setY(tarMob->getCoordY());
 
     sendDirect(sig, simulation.getModule(sa->getSensorId()), "senseIn");
 

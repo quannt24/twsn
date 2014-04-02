@@ -62,7 +62,8 @@ void AcousticSensor::processSignal(SenseSignal* ss)
     Measurement mea;
     //mea.setTarId(ss->getTarId());
     mea.setMeasuredDistance(md);
-    //mea.setTarCoord(Coord(ss->getX(), ss->getY()));
+    mea.setTrueDistance(ss->getDistance());
+    mea.setTarCoord(Coord(ss->getX(), ss->getY()));
     // Coordinate of the node is set by application
 
     meaList.push_back(mea);

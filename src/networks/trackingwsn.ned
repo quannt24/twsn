@@ -20,6 +20,7 @@ import twsn.base.entities.IEntity;
 import twsn.base.entities.nodes.INode;
 import twsn.helpers.WorldHelper;
 import twsn.helpers.DecoHelper;
+import twsn.helpers.StatHelper;
 
 network TrackingWSN extends BaseWSN
 {
@@ -51,5 +52,8 @@ network TrackingWSN extends BaseWSN
         }
         decoHelper: DecoHelper {
             @display("p=-20,70");
+        }
+        statHelper: StatHelper {
+            @display("p=-20,100");
         }
 }
