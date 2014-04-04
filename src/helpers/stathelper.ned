@@ -30,8 +30,8 @@ simple StatHelper extends BaseSimple
         @statistic[meaError](title="Measured error"; source="sigMeaError"; record=vector,histogram);
         
         // Estimation error of distance
-        @signal[sigEstError](type="double");
-        @statistic[estError](title="Estimation error"; source="sigEstError"; record=vector,histogram);
+        @signal[sigPosError](type="double");
+        @statistic[posError](title="Positioning error"; source="sigPosError"; record=vector,histogram);
         
         @display("i=block/table2");
 }

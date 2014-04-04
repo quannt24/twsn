@@ -23,7 +23,7 @@ void StatHelper::initialize()
 {
     // Register signals
     sigMeaError = registerSignal("sigMeaError");
-    sigEstError = registerSignal("sigEstError");
+    sigPosError = registerSignal("sigPosError");
 }
 
 void StatHelper::recMeaError(double err)
@@ -32,10 +32,10 @@ void StatHelper::recMeaError(double err)
     emit(sigMeaError, err);
 }
 
-void StatHelper::recEstError(double err)
+void StatHelper::recPosError(double err)
 {
-    Enter_Method_Silent("recEstError");
-    emit(sigEstError, err);
+    Enter_Method_Silent("recPosError");
+    emit(sigPosError, err);
 }
 
 }  // namespace twsn

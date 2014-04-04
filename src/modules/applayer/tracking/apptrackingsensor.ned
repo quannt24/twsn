@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.modules.applayer;
+package twsn.modules.applayer.tracking;
 
 import twsn.base.modules.applayer.BaseApp;
 
@@ -26,6 +26,18 @@ simple AppTrackingSensor extends BaseApp
         @class("twsn::AppTrackingSensor");
         
         double sensePeriod = default(0.5);
+        
+        // Collect measurement interval
+        double collMeaInterval = default(0.2);
+        // Report measurement interval (should shorter than collMeaInterval
+        double repMeaInterval = default(0.19);
+        // Time point for CH broadcasts a synchronization beacon, relative to sensePeriod.
+        // This point should be near the end of sensePeriod and long enough for beacon arrives
+        // before next sensing cycle.
+        double chBeaconTime = default(0.4);
+        
+        // Minimum number of measurement required to estimate target position
+        int minNumMeasurement = default(3);
 
     gates:
         inout ssGate;

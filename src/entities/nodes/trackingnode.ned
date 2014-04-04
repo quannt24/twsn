@@ -16,7 +16,7 @@
 package twsn.entities.nodes;
 
 import twsn.base.entities.nodes.BaseWirelessNode;
-import twsn.modules.applayer.AppTrackingSensor;
+import twsn.modules.applayer.tracking.AppTrackingSensor;
 import twsn.modules.other.AcousticSensor;
 
 //

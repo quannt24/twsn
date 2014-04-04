@@ -29,7 +29,7 @@ class StatHelper : public BaseSimple
     private:
         /* Statistic signals */
         simsignal_t sigMeaError;
-        simsignal_t sigEstError;
+        simsignal_t sigPosError; // Positioning error produced by tracking algorithm
 
     protected:
         virtual void initialize();
@@ -37,8 +37,8 @@ class StatHelper : public BaseSimple
     public:
         /** Record measurement error (measurement of distance) */
         void recMeaError(double err);
-        /** Record estimation (filtered) error (measurement of distance) */
-        void recEstError(double err);
+        /** Record positioning error produced by tracking algorithm */
+        void recPosError(double err);
 };
 
 }  // namespace twsn

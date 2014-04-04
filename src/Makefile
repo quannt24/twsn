@@ -38,6 +38,7 @@ INCLUDE_PATH = \
     -Ihelpers \
     -Imodules \
     -Imodules/applayer \
+    -Imodules/applayer/tracking \
     -Imodules/energy \
     -Imodules/linklayer \
     -Imodules/mobility \
@@ -74,12 +75,13 @@ OBJS = \
     $O/helpers/stathelper.o \
     $O/helpers/decohelper.o \
     $O/helpers/worldhelper.o \
-    $O/modules/applayer/apptrackingsensor.o \
+    $O/modules/applayer/tracking/apptrackingsensor.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
     $O/modules/mobility/mobilitypath.o \
     $O/modules/netlayer/netemrp.o \
     $O/modules/other/acousticgenerator.o \
     $O/modules/other/acousticsensor.o \
+    $O/util/matrix.o \
     $O/util/coord.o \
     $O/util/measurement.o \
     $O/util/gaussiannoise.o \
@@ -88,6 +90,7 @@ OBJS = \
     $O/base/messages/data/apppkt_m.o \
     $O/base/messages/data/netpkt_m.o \
     $O/base/messages/data/macpkt_m.o \
+    $O/modules/applayer/tracking/apptrackingpkt_m.o \
     $O/modules/netlayer/netemrppkt_m.o \
     $O/modules/other/sensemsg_m.o
 
@@ -98,6 +101,7 @@ MSGFILES = \
     base/messages/data/apppkt.msg \
     base/messages/data/netpkt.msg \
     base/messages/data/macpkt.msg \
+    modules/applayer/tracking/apptrackingpkt.msg \
     modules/netlayer/netemrppkt.msg \
     modules/other/sensemsg.msg
 
@@ -195,6 +199,7 @@ clean:
 	$(Q)-rm -f helpers/*_m.cc helpers/*_m.h
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
 	$(Q)-rm -f modules/applayer/*_m.cc modules/applayer/*_m.h
+	$(Q)-rm -f modules/applayer/tracking/*_m.cc modules/applayer/tracking/*_m.h
 	$(Q)-rm -f modules/energy/*_m.cc modules/energy/*_m.h
 	$(Q)-rm -f modules/linklayer/*_m.cc modules/linklayer/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
@@ -208,7 +213,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/applayer/tracking/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -314,17 +319,29 @@ $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	helpers/worldhelper.h \
 	util/coord.h \
 	util/twsndef.h
-$O/modules/applayer/apptrackingsensor.o: modules/applayer/apptrackingsensor.cc \
+$O/modules/applayer/tracking/apptrackingpkt_m.o: modules/applayer/tracking/apptrackingpkt_m.cc \
+	base/messages/data/apppkt_m.h \
+	modules/applayer/tracking/apptrackingpkt_m.h \
+	util/coord.h \
+	util/measurement.h \
+	util/targetpos.h \
+	util/twsndef.h
+$O/modules/applayer/tracking/apptrackingsensor.o: modules/applayer/tracking/apptrackingsensor.cc \
 	base/messages/control/command_m.h \
 	base/messages/data/apppkt_m.h \
 	base/modules/applayer/baseapp.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
+	base/modules/energy/baseenergy.h \
+	base/modules/mobility/basemobility.h \
 	helpers/stathelper.h \
-	modules/applayer/apptrackingsensor.h \
+	modules/applayer/tracking/apptrackingpkt_m.h \
+	modules/applayer/tracking/apptrackingsensor.h \
 	modules/other/sensemsg_m.h \
 	util/coord.h \
+	util/matrix.h \
 	util/measurement.h \
+	util/targetpos.h \
 	util/twsndef.h
 $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmaca.cc \
 	base/messages/control/command_m.h \
@@ -386,6 +403,8 @@ $O/util/coord.o: util/coord.cc \
 	util/twsndef.h
 $O/util/gaussiannoise.o: util/gaussiannoise.cc \
 	util/gaussiannoise.h
+$O/util/matrix.o: util/matrix.cc \
+	util/matrix.h
 $O/util/measurement.o: util/measurement.cc \
 	util/coord.h \
 	util/measurement.h \
