@@ -51,6 +51,7 @@ class BaseWirelessPhy : public BasePhy
         cMessage *switchIdleTimer; // Simulate delay to switch to IDLE mode
         cMessage *pcTimer; // Power consumption timer (simulate continuous draw)
         cMessage *ccaTimer; // Simulating CCA delay
+        cMessage *txTimer;
 
         /** Override to use multiple initialization stages */
         virtual int numInitStages () const { return 2; };

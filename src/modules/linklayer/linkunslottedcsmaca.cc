@@ -129,6 +129,14 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
         case CMD_LIN_CCA_RESULT:
             if (((CmdCCAR*) cmd)->getClearChannel()) {
                 if (outPkt != NULL) {
+                    // Switch radio to TX mode
+                    Command *txcmd = new Command();
+                    txcmd->setSrc(LINK);
+                    txcmd->setDes(PHYS);
+                    txcmd->setCmdId(CMD_PHY_TX);
+                    sendCtlDown(txcmd);
+
+                    // Transmit
                     sendDown(outPkt);
                     /* outPkt still holds value here only to mark that there is a packet being sent
                      * and it is not ready to send next packet. Do not use outPkt after this point,

@@ -94,6 +94,8 @@ void BaseWirelessPhy::handleSelfMsg(cMessage* msg)
         draw();
     } else if (msg == ccaTimer) {
         senseChannel();
+    } else if (msg == txTimer) {
+        txMacPkt(check_and_cast<MacPkt*>((MacPkt*) msg->getContextPointer()));
     }
 }
 
@@ -103,8 +105,16 @@ void BaseWirelessPhy::handleUpperMsg(cMessage* msg)
      * be deleted. To make sure the packet is transmitted (or canceled with report), link layer
      * must follow normal sending procedures instead of sending the packet immediately. */
 
-    if (radioMode == TX && !finishTxTimer->isScheduled()) {
-        txMacPkt(check_and_cast<MacPkt*>(msg));
+    if (!finishTxTimer->isScheduled()) {
+        if (radioMode == TX) {
+            txMacPkt(check_and_cast<MacPkt*>(msg));
+        } else {
+            // Switch to TX mode then transmit
+            if (!switchTxTimer->isScheduled()) switchRadioMode(TX);
+            // Transmit when switched to TX
+            txTimer->setContextPointer(msg); // Save packet pointer for later use
+            scheduleAt(switchTxTimer->getArrivalTime(), txTimer);
+        }
     } else {
         delete msg;
     }
@@ -132,22 +142,13 @@ void BaseWirelessPhy::handleUpperCtl(cMessage* msg)
             break;
 
         case CMD_DATA_NOTI:
-            if (radioMode == TX) {
-                if (!finishTxTimer->isScheduled()) {
-                    // It is ready for sending. Send a fetch command immediately
-                    fetchPacket();
-                } else {
-                    // Fetch data when current tx completes
-                    if (!fetchTimer->isScheduled()) {
-                        scheduleAt(finishTxTimer->getArrivalTime(), fetchTimer);
-                    }
-                }
+            if (!finishTxTimer->isScheduled()) {
+                // It is ready for sending. Send a fetch command immediately
+                fetchPacket();
             } else {
-                // Switch to TX mode. If receiving a frame, it may be interfered.
-                switchRadioMode(TX);
                 // Fetch data when current tx completes
                 if (!fetchTimer->isScheduled()) {
-                    scheduleAt(switchTxTimer->getArrivalTime(), fetchTimer);
+                    scheduleAt(finishTxTimer->getArrivalTime(), fetchTimer);
                 }
             }
             break;
@@ -188,10 +189,15 @@ void BaseWirelessPhy::sendCtlUp(Command* cmd)
 
 void BaseWirelessPhy::performCCA(double duration)
 {
-    if (radioMode == TX || radioMode == RX) {
+    if (radioMode == RX) {
         scheduleAt(simTime() + duration, ccaTimer);
     } else {
-        printError(ERROR, "Cannot perform CCA when radio is not in TX or RX modes");
+        // CCA is only valid in RX mode, send back a busy result
+        CmdCCAR *cmd = new CmdCCAR();
+        cmd->setClearChannel(false);
+        sendCtlUp(cmd);
+
+        printError(WARNING, "Cannot perform CCA when radio is not in RX mode");
     }
 }
 
@@ -478,6 +484,7 @@ BaseWirelessPhy::BaseWirelessPhy()
     switchIdleTimer = new cMessage("switchIdleTimer");
     pcTimer = new cMessage("PcTimer");
     ccaTimer = new cMessage("CCATimer");
+    txTimer = new cMessage("txTimer");
 }
 
 BaseWirelessPhy::~BaseWirelessPhy()
@@ -489,6 +496,7 @@ BaseWirelessPhy::~BaseWirelessPhy()
     cancelAndDelete(switchIdleTimer);
     cancelAndDelete(pcTimer);
     cancelAndDelete(ccaTimer);
+    cancelAndDelete(txTimer);
 }
 
 }
