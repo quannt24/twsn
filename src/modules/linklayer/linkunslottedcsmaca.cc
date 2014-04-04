@@ -26,6 +26,9 @@ void LinkUnslottedCSMACA::initialize()
     aMaxBE = par("aMaxBE").longValue();
     macMaxNB = par("macMaxNB").longValue();
     macMinBE = par("macMinBE").longValue();
+
+    ifsLen = par("aMinLIFSPeriod").longValue();
+
     scheduleAt(0, listenTimer);
 }
 
@@ -77,7 +80,7 @@ void LinkUnslottedCSMACA::handleUpperCtl(cMessage* msg)
         case CMD_DATA_NOTI:
             if (outPkt == NULL && !fetchTimer->isScheduled()) {
                 // Fetch timer also help bypass continuous notification
-                scheduleAt(simTime(), fetchTimer); // TODO IFS
+                scheduleAt(simTime(), fetchTimer);
             }
             delete cmd;
             break;
@@ -128,28 +131,17 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
 
         case CMD_LIN_CCA_RESULT:
             if (((CmdCCAR*) cmd)->getClearChannel()) {
-                if (outPkt != NULL) {
-                    // Switch radio to TX mode
-                    Command *txcmd = new Command();
-                    txcmd->setSrc(LINK);
-                    txcmd->setDes(PHYS);
-                    txcmd->setCmdId(CMD_PHY_TX);
-                    sendCtlDown(txcmd);
-
-                    // Transmit
-                    sendDown(outPkt);
-                    /* outPkt still holds value here only to mark that there is a packet being sent
-                     * and it is not ready to send next packet. Do not use outPkt after this point,
-                     * it will be set to NULL after receive CMD_READY from physical layer. */
-                }
+                // CCA success, send packet to physical layer
+                sendPkt();
             } else {
                 // Channel is busy, update variables and backoff again
-                nextRound();
+                deferPkt();
             }
             delete cmd;
             break;
 
         case CMD_READY:
+            // Reset outPkt and switch to RX
             reset();
             delete cmd;
             break;
@@ -185,7 +177,32 @@ void LinkUnslottedCSMACA::performCCA()
     sendCtlDown(cmd);
 }
 
-void LinkUnslottedCSMACA::nextRound()
+void LinkUnslottedCSMACA::sendPkt()
+{
+    if (outPkt != NULL) {
+        // Switch radio to TX mode
+        Command *txcmd = new Command();
+        txcmd->setSrc(LINK);
+        txcmd->setDes(PHYS);
+        txcmd->setCmdId(CMD_PHY_TX);
+        sendCtlDown(txcmd);
+
+        // Transmit
+        sendDown(outPkt);
+        /* outPkt still holds value here only to mark that there is a packet being sent
+         * and it is not ready to send next packet. Do not use outPkt after this point,
+         * it will be set to NULL after receive CMD_READY from physical layer. */
+
+        // Prepare IFS
+        if (outPkt->getByteLength() <= par("aMaxSIFSFrameSize").longValue()) {
+            ifsLen = par("aMinSIFSPeriod").longValue();
+        } else {
+            ifsLen = par("aMinLIFSPeriod").longValue();
+        }
+    }
+}
+
+void LinkUnslottedCSMACA::deferPkt()
 {
     nb++;
     be++;
@@ -205,9 +222,9 @@ void LinkUnslottedCSMACA::reset()
 {
     // Reset outPkt pointer so that we can send next packet
     outPkt = NULL;
-    // Fetch next packet from queue TODO After IFS
+    // Fetch next packet from queue after IFS
     if (!fetchTimer->isScheduled()) {
-        scheduleAt(simTime(), fetchTimer);
+        scheduleAt(simTime() + ifsLen, fetchTimer);
     }
     // Switch radio transceiver to listen mode
     Command *rxcmd = new Command();

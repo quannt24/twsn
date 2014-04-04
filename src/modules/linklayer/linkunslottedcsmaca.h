@@ -36,10 +36,14 @@ class LinkUnslottedCSMACA : public BaseLink
         int nb; // Number of current backoff
         int be; // Backoff exponent
 
+        double ifsLen; // Length of interframe spacing (IFS)
+
         /* Timers */
         cMessage *backoffTimer; // End of backoff
         cMessage *listenTimer; // Start listen
-        cMessage *fetchTimer; // Timer for fetching packet from queue
+        /* Timer for fetching packet from queue, this timer also for implementing IFS,
+         * do not cancel it if you are not sure. */
+        cMessage *fetchTimer;
 
         virtual void initialize();
         /** Handle self message */
@@ -59,9 +63,11 @@ class LinkUnslottedCSMACA : public BaseLink
         void backoff();
         /** Request physical layer to perform CCA for a specific duration */
         void performCCA();
-        /** Update variables and begin next round */
-        void nextRound();
-        /** Reset outPkt and switch to RX mode */
+        /** Send packet to physical layer, leaded by a command for switching to TX mode */
+        void sendPkt();
+        /** Defer sending of packet, update variables and begin next round */
+        void deferPkt();
+        /** Reset outPkt and switch to RX mode. Fetch next packet after IFS. */
         void reset();
 
     public:
