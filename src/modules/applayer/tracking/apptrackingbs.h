@@ -31,6 +31,10 @@ class AppTrackingBS : public BaseApp
         std::list<TargetTrace> traceList;
         int numTrace; // Number of trace tracked (including noise)
 
+        /** Process newly added target position */
+        void processTarPos(TargetPos &tarPos);
+        /** Clean up junk traces */
+        void cleanJunk();
         /** Output paths to files */
         void output();
 

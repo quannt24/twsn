@@ -21,6 +21,69 @@ namespace twsn {
 
 Define_Module(AppTrackingBS);
 
+void AppTrackingBS::processTarPos(TargetPos &tp)
+{
+    if (traceList.size() == 0) {
+        // Add new trace with this TargetPos
+        TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
+        trace.setId(numTrace);
+        trace.addTargetPos(tp);
+        traceList.push_back(trace);
+        numTrace++;
+        std::cerr << "First trace, ID " << trace.getId() << endl;
+    } else {
+        // Add TargetPos to most likely trace
+        double mostLikely = -1; // Unacceptable
+        TargetTrace *mostLikelyTrace = NULL;
+        double likely;
+
+        int id = 0;
+        int mostLikelyId = 0;
+        for (std::list<TargetTrace>::iterator it = traceList.begin(); it != traceList.end(); it++) {
+            likely = (*it).checkLikelihood(tp, par("distanceThreshold").doubleValue(),
+                    par("timeThreshold").doubleValue());
+            if (likely >= 0) {
+                if (mostLikely < 0 || likely < mostLikely) {
+                    mostLikely = likely;
+                    mostLikelyTrace = &(*it);
+                    mostLikelyId = id;
+                }
+            }
+            id++;
+        }
+
+        if (mostLikelyTrace != NULL) {
+            mostLikelyTrace->addTargetPos(tp);
+            std::cerr << "Add to trace ID " << mostLikelyId << endl;
+        } else {
+            // Add new trace with this TargetPos
+            TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
+            trace.setId(numTrace);
+            trace.addTargetPos(tp);
+            traceList.push_back(trace);
+            numTrace++;
+            std::cerr << "New trace, ID " << trace.getId() << endl;
+        }
+    }
+}
+
+void AppTrackingBS::cleanJunk()
+{
+    std::list<TargetTrace>::iterator ttIt = traceList.begin();
+
+    while (ttIt != traceList.end()) {
+        double lastTimestamp = (*ttIt).getPath().back().getTimestamp();
+
+        if (simTime() - lastTimestamp > par("minJunkTraceOld").doubleValue()
+                && (*ttIt).getPathLen() <= par("maxJunkTraceLen").longValue()) {
+            std::cerr << "Cleaning trace ID " << (*ttIt).getId() << endl;
+            ttIt = traceList.erase(ttIt);
+        } else {
+            ttIt++;
+        }
+    }
+}
+
 void AppTrackingBS::output()
 {
     cConfigurationEx *configEx = ev.getConfigEx();
@@ -74,59 +137,26 @@ void AppTrackingBS::handleLowerMsg(cMessage* msg)
 
     if (pkt->getPktType() == AT_TARGET_POSITION) {
         AT_TargetPosPkt *tpPkt = check_and_cast<AT_TargetPosPkt*>(msg);
-
         TargetPos tp = tpPkt->getTargetPos();
-
-        if (traceList.size() == 0) {
-            // Add new trace with this TargetPos
-            TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
-            trace.setId(numTrace);
-            trace.addTargetPos(tp);
-            traceList.push_back(trace);
-            numTrace++;
-            std::cerr << "First trace, ID " << trace.getId() << endl;
-        } else {
-            // Add TargetPos to most likely trace
-            double mostLikely = -1; // Unacceptable
-            TargetTrace *mostLikelyTrace = NULL;
-            double likely;
-
-            int id = 0;
-            int mostLikelyId = 0;
-            for (std::list<TargetTrace>::iterator it = traceList.begin(); it != traceList.end(); it++) {
-                likely = (*it).checkLikelihood(tp,
-                        par("distanceThreshold").doubleValue(),
-                        par("timeThreshold").doubleValue());
-                if (likely >= 0) {
-                    if (mostLikely < 0 || likely < mostLikely) {
-                        mostLikely = likely;
-                        mostLikelyTrace = &(*it);
-                        mostLikelyId = id;
-                    }
-                }
-                id++;
-            }
-
-            if (mostLikelyTrace != NULL) {
-                mostLikelyTrace->addTargetPos(tp);
-                std::cerr << "Add to trace ID " << mostLikelyId << endl;
-            } else {
-                // Add new trace with this TargetPos
-                TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
-                trace.setId(numTrace);
-                trace.addTargetPos(tp);
-                traceList.push_back(trace);
-                numTrace++;
-                std::cerr << "New trace, ID " << trace.getId() << endl;
-            }
-        }
+        processTarPos(tp);
+        cleanJunk();
     }
-
     delete msg;
 }
 
 void AppTrackingBS::finish()
 {
+    // Clean junk without considering old
+    std::list<TargetTrace>::iterator ttIt = traceList.begin();
+    while (ttIt != traceList.end()) {
+        if ((*ttIt).getPathLen() <= par("maxJunkTraceLen").longValue()) {
+            std::cerr << "Cleaning trace ID " << (*ttIt).getId() << endl;
+            ttIt = traceList.erase(ttIt);
+        } else {
+            ttIt++;
+        }
+    }
+
     output();
 }
 

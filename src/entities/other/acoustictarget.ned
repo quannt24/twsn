@@ -29,5 +29,7 @@ module AcousticTarget extends BaseEntity
         @display("i=old/bwgen");
 
     submodules:
-        generator: AcousticGenerator;
+        generator: AcousticGenerator {
+            @display("p=150,50");
+        }
 }
