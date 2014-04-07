@@ -13,16 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules.applayer;
+package twsn.modules.applayer.tracking;
 
-import twsn.base.modules.BaseLayer;
+import twsn.base.modules.applayer.BaseApp;
 
 //
-// Base application layer
+// Application layer of tracking Base Station
 //
-simple BaseApp extends BaseLayer like IApp
+simple AppTrackingBS extends BaseApp
 {
     parameters:
-        @class("twsn::BaseApp");
-        @display("i=block/app");
+        @class("twsn::AppTrackingBS");
 }

@@ -16,7 +16,7 @@
 package twsn.entities.nodes;
 
 import twsn.base.entities.nodes.BaseWirelessNode;
-import twsn.base.modules.applayer.BaseApp;
+import twsn.modules.applayer.tracking.AppTrackingBS;
 
 module TrackingBaseStation extends BaseWirelessNode
 {
@@ -31,7 +31,7 @@ module TrackingBaseStation extends BaseWirelessNode
         @display("i=device/server2;is=l");
 
     submodules:
-        app: BaseApp {
+        app: AppTrackingBS {
             @display("p=150,550");
         }
 

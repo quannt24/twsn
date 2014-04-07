@@ -13,16 +13,32 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package twsn.base.modules.applayer;
+#ifndef __TWSN_APPTRACKINGBS_H_
+#define __TWSN_APPTRACKINGBS_H_
 
-import twsn.base.modules.BaseLayer;
+#include <omnetpp.h>
+#include "baseapp.h"
+#include "targettrace.h"
 
-//
-// Base application layer
-//
-simple BaseApp extends BaseLayer like IApp
+namespace twsn {
+
+/**
+ * Application layer of tracking Base Station
+ */
+class AppTrackingBS : public BaseApp
 {
-    parameters:
-        @class("twsn::BaseApp");
-        @display("i=block/app");
-}
+    private:
+        std::list<TargetTrace> traceList;
+        int numTrace; // Number of trace tracked (including noise)
+
+        /** Output paths to files */
+        void output();
+
+    protected:
+        virtual void initialize();
+        virtual void handleLowerMsg(cMessage *msg);
+        virtual void finish();
+};
+
+}  // namespace twsn
+#endif

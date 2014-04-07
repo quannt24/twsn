@@ -75,7 +75,9 @@ OBJS = \
     $O/helpers/stathelper.o \
     $O/helpers/decohelper.o \
     $O/helpers/worldhelper.o \
+    $O/modules/applayer/tracking/apptrackingbs.o \
     $O/modules/applayer/tracking/apptrackingsensor.o \
+    $O/modules/applayer/tracking/targettrace.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
     $O/modules/mobility/mobilitypath.o \
     $O/modules/netlayer/netemrp.o \
@@ -319,12 +321,25 @@ $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	helpers/worldhelper.h \
 	util/coord.h \
 	util/twsndef.h
+$O/modules/applayer/tracking/apptrackingbs.o: modules/applayer/tracking/apptrackingbs.cc \
+	base/messages/control/command_m.h \
+	base/messages/data/apppkt_m.h \
+	base/modules/applayer/baseapp.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	modules/applayer/tracking/apptrackingbs.h \
+	modules/applayer/tracking/apptrackingpkt_m.h \
+	modules/applayer/tracking/targetpos.h \
+	modules/applayer/tracking/targettrace.h \
+	util/coord.h \
+	util/measurement.h \
+	util/twsndef.h
 $O/modules/applayer/tracking/apptrackingpkt_m.o: modules/applayer/tracking/apptrackingpkt_m.cc \
 	base/messages/data/apppkt_m.h \
 	modules/applayer/tracking/apptrackingpkt_m.h \
+	modules/applayer/tracking/targetpos.h \
 	util/coord.h \
 	util/measurement.h \
-	util/targetpos.h \
 	util/twsndef.h
 $O/modules/applayer/tracking/apptrackingsensor.o: modules/applayer/tracking/apptrackingsensor.cc \
 	base/messages/control/command_m.h \
@@ -337,11 +352,16 @@ $O/modules/applayer/tracking/apptrackingsensor.o: modules/applayer/tracking/appt
 	helpers/stathelper.h \
 	modules/applayer/tracking/apptrackingpkt_m.h \
 	modules/applayer/tracking/apptrackingsensor.h \
+	modules/applayer/tracking/targetpos.h \
 	modules/other/sensemsg_m.h \
 	util/coord.h \
 	util/matrix.h \
 	util/measurement.h \
-	util/targetpos.h \
+	util/twsndef.h
+$O/modules/applayer/tracking/targettrace.o: modules/applayer/tracking/targettrace.cc \
+	modules/applayer/tracking/targetpos.h \
+	modules/applayer/tracking/targettrace.h \
+	util/coord.h \
 	util/twsndef.h
 $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmaca.cc \
 	base/messages/control/command_m.h \
