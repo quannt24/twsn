@@ -79,7 +79,7 @@ void AppTrackingBS::handleLowerMsg(cMessage* msg)
 
         if (traceList.size() == 0) {
             // Add new trace with this TargetPos
-            TargetTrace trace;
+            TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
             trace.setId(numTrace);
             trace.addTargetPos(tp);
             traceList.push_back(trace);
@@ -94,7 +94,9 @@ void AppTrackingBS::handleLowerMsg(cMessage* msg)
             int id = 0;
             int mostLikelyId = 0;
             for (std::list<TargetTrace>::iterator it = traceList.begin(); it != traceList.end(); it++) {
-                likely = (*it).checkLikelihood(tp, 30); // TODO thresholds
+                likely = (*it).checkLikelihood(tp,
+                        par("distanceThreshold").doubleValue(),
+                        par("timeThreshold").doubleValue());
                 if (likely >= 0) {
                     if (mostLikely < 0 || likely < mostLikely) {
                         mostLikely = likely;
@@ -110,7 +112,7 @@ void AppTrackingBS::handleLowerMsg(cMessage* msg)
                 std::cerr << "Add to trace ID " << mostLikelyId << endl;
             } else {
                 // Add new trace with this TargetPos
-                TargetTrace trace;
+                TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
                 trace.setId(numTrace);
                 trace.addTargetPos(tp);
                 traceList.push_back(trace);

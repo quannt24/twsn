@@ -18,10 +18,22 @@ class TargetTrace
     private:
         int id;
         std::list<TargetPos> path;
-        double predictedVx, predictedVy; // Predicted velocity. Unit m/s
+        double pVx, pVy; // Predicted velocity. Unit m/s
+        double theta; // Theta for Critically Damped g-h filter (<1)
+        double minDeltaT; // Minimum delta t allowed to update velocity
 
     public:
-        TargetTrace();
+        /**
+         * TargetTrace use Critically Damped g-h filter to estimate tracking path.
+         * 'theta' parameter (0 <= theta <= 1) specify fading speed of value of history data. When
+         * theta = 0, the history data is not used; when theta = 1, we use only history data to
+         * predict next position. Default value is 0.5.
+         * 'minDeltaT' is the threshold of difference between timestamps of two consecutive
+         * TargetPos for updating velocity. If the difference is too small, it will multiply the
+         * error in estimation of velocity. This parameter should be specified based on particular
+         * system.
+         */
+        TargetTrace(double theta = 0.5, double minDeltaT = 0.2);
 
         int getId() const { return id; }
         void setId(int id) { this->id = id; }

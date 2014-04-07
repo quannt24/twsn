@@ -24,4 +24,12 @@ simple AppTrackingBS extends BaseApp
 {
     parameters:
         @class("twsn::AppTrackingBS");
+        // Theta parameter for Critically Damped g-h filter
+        double theta = default(0.5);
+        // Min delta t for updating estimated velocity
+        double minDeltaT @unit(s) = default(0.2 s);
+        // Distance (compared to predicted position) threshold for adding a position to a trace
+        double distanceThreshold @unit(m) = default(20 m);
+        // Time (compared to timestamp of most recent tracked position) threshold for adding a position to a trace
+        double timeThreshold @unit(s) = default(2 s);
 }
