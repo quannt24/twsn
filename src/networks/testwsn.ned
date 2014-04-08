@@ -28,7 +28,7 @@ network TestWSN extends BaseWSN
         rows = default(2);
         cols = default(2);
 
-        string nodeType = default("BaseWirelessNode"); // Sensor node type
+        string nodeType = default("Node802154"); // Sensor node type
         string bsType = default("TrackingBaseStation"); // Base station type
         
         int numNodes = default(4);

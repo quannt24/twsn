@@ -16,26 +16,18 @@
 package twsn.entities.nodes;
 
 import twsn.base.entities.nodes.BaseWirelessNode;
-import twsn.modules.applayer.tracking.AppTrackingBS;
 
-module TrackingBaseStation extends BaseWirelessNode
+//
+// IEEE 802.15.4 complaint node
+//
+module Node802154 extends BaseWirelessNode
 {
     parameters:
-        energyType = default("LinePower");
+        energyType = default("BaseEnergy");
+
         phyType = default("PhyCC2420");
         linkType = default("LinkUnslottedCSMACA");
-        linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
+        linkQueueType = default("DownQueue"); // Queue buffer upon link layer
         netType = default("NetEMRP");
-
-        net.isBaseStation = true;
-        @display("i=device/server2;is=l");
-
-    submodules:
-        app: AppTrackingBS {
-            @display("p=150,550");
-        }
-
-    connections:
-        netQueue.upper <--> app.lower;
-        netQueue.upperCtl <--> app.lowerCtl;
+        netQueueType = default("DownQueue"); // Queue buffer upon network layer
 }

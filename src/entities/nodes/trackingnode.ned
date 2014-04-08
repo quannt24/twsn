@@ -26,7 +26,7 @@ module TrackingNode extends BaseWirelessNode
 {
     parameters:
         energyType = default("Battery");
-        phyType = default("BaseWirelessPhy");
+        phyType = default("PhyCC2420");
         linkType = default("LinkUnslottedCSMACA");
         linkQueueType = default("DownQueue"); // Queue buffer uppon link layer
         netType = default("NetEMRP");
