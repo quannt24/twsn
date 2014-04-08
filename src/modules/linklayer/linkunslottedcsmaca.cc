@@ -27,7 +27,7 @@ void LinkUnslottedCSMACA::initialize()
     macMaxNB = par("macMaxNB").longValue();
     macMinBE = par("macMinBE").longValue();
 
-    ifsLen = par("aMinLIFSPeriod").longValue();
+    ifsLen = par("aMinLIFSPeriod").doubleValue();
 
     scheduleAt(0, listenTimer);
 }
@@ -195,9 +195,9 @@ void LinkUnslottedCSMACA::sendPkt()
 
         // Prepare IFS
         if (outPkt->getByteLength() <= par("aMaxSIFSFrameSize").longValue()) {
-            ifsLen = par("aMinSIFSPeriod").longValue();
+            ifsLen = par("aMinSIFSPeriod").doubleValue();
         } else {
-            ifsLen = par("aMinLIFSPeriod").longValue();
+            ifsLen = par("aMinLIFSPeriod").doubleValue();
         }
     }
 }
