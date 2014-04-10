@@ -14,16 +14,57 @@
 // 
 
 #include "stathelper.h"
+#include "baseenergy.h"
 
 namespace twsn {
 
 Define_Module(StatHelper);
+
+void StatHelper::pollTotalResEnergy()
+{
+    cModule *wsn = getModuleByPath("^");
+    BaseEnergy *ener;
+    int n = wsn->par("numNodes").longValue();
+    double tre = 0;
+    int i;
+
+    for (i = 0; i < n; i++) {
+        ener = check_and_cast<BaseEnergy*>(wsn->getSubmodule("node", i)->getSubmodule("energy"));
+        tre += ener->getCapacity();
+    }
+
+    emit(sigTRE, tre);
+}
 
 void StatHelper::initialize()
 {
     // Register signals
     sigMeaError = registerSignal("sigMeaError");
     sigPosError = registerSignal("sigPosError");
+    sigTRE = registerSignal("sigTRE");
+
+    // Start polling for total residual energy
+    scheduleAt(0, pollTRETimer);
+}
+
+void StatHelper::handleMessage(cMessage* msg)
+{
+    if (msg == pollTRETimer) {
+        pollTotalResEnergy();
+        scheduleAt(simTime() + par("pollTREPeriod").doubleValue(), pollTRETimer);
+    } else {
+        delete msg;
+    }
+}
+
+StatHelper::StatHelper()
+{
+    pollTRETimer = new cMessage("pollTRETimer");
+}
+
+StatHelper::~StatHelper()
+{
+    cancelAndDelete(pollTRETimer);
 }
 
 void StatHelper::recMeaError(double err)

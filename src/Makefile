@@ -312,6 +312,7 @@ $O/helpers/decohelper.o: helpers/decohelper.cc \
 	util/twsndef.h
 $O/helpers/stathelper.o: helpers/stathelper.cc \
 	base/modules/basesimple.h \
+	base/modules/energy/baseenergy.h \
 	helpers/stathelper.h \
 	util/twsndef.h
 $O/helpers/worldhelper.o: helpers/worldhelper.cc \

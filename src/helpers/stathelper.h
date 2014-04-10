@@ -27,14 +27,24 @@ namespace twsn {
 class StatHelper : public BaseSimple
 {
     private:
+        cMessage *pollTRETimer;
+
         /* Statistic signals */
         simsignal_t sigMeaError;
         simsignal_t sigPosError; // Positioning error produced by tracking algorithm
+        simsignal_t sigTRE; // Total residual energy of sensor nodes
+
+        /** Poll total residual energy */
+        void pollTotalResEnergy();
 
     protected:
         virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
 
     public:
+        StatHelper();
+        ~StatHelper();
+
         /** Record measurement error (measurement of distance) */
         void recMeaError(double err);
         /** Record positioning error produced by tracking algorithm */

@@ -24,6 +24,8 @@ simple StatHelper extends BaseSimple
 {
     parameters:
         @class("twsn::StatHelper");
+        
+        double pollTREPeriod @unit(s) = default(5 s);
 
 		// Measurement error of distance
         @signal[sigMeaError](type="double");
@@ -32,6 +34,10 @@ simple StatHelper extends BaseSimple
         // Estimation error of distance
         @signal[sigPosError](type="double");
         @statistic[posError](title="Positioning error"; source="sigPosError"; record=vector,histogram);
+        
+        // Total residual energy
+        @signal[sigTRE](type="double");
+        @statistic[totalResidualEnergy](title="Total residual energy"; source="sigTRE"; record=vector);
         
         @display("i=block/table2");
 }
