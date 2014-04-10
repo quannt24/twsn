@@ -22,6 +22,8 @@ Define_Module(BaseEnergy);
 void BaseEnergy::initialize()
 {
     BaseSimple::initialized();
+
+    sigResEnergy = registerSignal("sigResEnergy");
     setCapacity(par("initCapacity").doubleValue());
 }
 
@@ -43,6 +45,8 @@ void BaseEnergy::setCapacity(double cap)
             capacity = 0;
         }
     }
+
+    emit(sigResEnergy, capacity);
 }
 
 double BaseEnergy::draw(double amount)

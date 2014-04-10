@@ -30,5 +30,9 @@ simple BaseEnergy extends BaseSimple like IEnergy
         // Initial capacity, use -1 to represent infinite capacity (e.g. line power)
         double initCapacity @unit(mWh) = default(-1 mWh);
         
+        // Residual energy
+        @signal[sigResEnergy](type="double");
+        @statistic[residualEnergy](title="Residual energy"; source="sigResEnergy"; record=last);
+        
         @display("i=block/plug");
 }

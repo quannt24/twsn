@@ -32,6 +32,9 @@ class BaseEnergy : public BaseSimple
         // Capacity in mWh, non-negative except that -1 represent infinitive (INFINITE_ENERGY)
         double capacity;
 
+        /* Statistics signals */
+        simsignal_t sigResEnergy; // Residual energy
+
         virtual void initialize();
 
     public:
