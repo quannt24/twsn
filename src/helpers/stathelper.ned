@@ -39,5 +39,13 @@ simple StatHelper extends BaseSimple
         @signal[sigTRE](type="double");
         @statistic[totalResidualEnergy](title="Total residual energy"; source="sigTRE"; record=vector);
         
+        // Packet received at link and physical layers
+        @signal[sigRecvMacPkt](type="int");
+        @statistic[recvMacPkt](title="Number of received MAC packets"; source="sigRecvMacPkt"; record=sum);
+        
+        // Packet lsot at link and physical layers
+        @signal[sigLostMacPkt](type="int");
+        @statistic[lostMacPkt](title="Number of lost MAC packets"; source="sigLostMacPkt"; record=sum);
+        
         @display("i=block/table2");
 }

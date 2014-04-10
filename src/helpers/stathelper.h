@@ -33,6 +33,8 @@ class StatHelper : public BaseSimple
         simsignal_t sigMeaError;
         simsignal_t sigPosError; // Positioning error produced by tracking algorithm
         simsignal_t sigTRE; // Total residual energy of sensor nodes
+        simsignal_t sigRecvMacPkt; // Packet received at link layer
+        simsignal_t sigLostMacPkt; // Packet lost at link layer and physical layer
 
         /** Poll total residual energy */
         void pollTotalResEnergy();
@@ -49,6 +51,10 @@ class StatHelper : public BaseSimple
         void recMeaError(double err);
         /** Record positioning error produced by tracking algorithm */
         void recPosError(double err);
+        /** Emit a signal with value 1 to count number of received MAC packets */
+        void countRecvMacPkt();
+        /** Emit a signal with value 1 to count number of lost MAC packets */
+        void countLostMacPkt();
 };
 
 }  // namespace twsn

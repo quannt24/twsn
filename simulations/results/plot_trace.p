@@ -5,8 +5,8 @@ set ylabel "y (m)"
 #set xrange [100:220]
 #set yrange [90:100]
 
-#set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
-#set output 'trace.eps'
+set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
+set output 'trace.eps'
 
 set border linewidth 0.5
 set pointsize 1

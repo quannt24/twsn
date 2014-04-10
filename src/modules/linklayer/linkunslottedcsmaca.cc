@@ -15,6 +15,7 @@
 
 #include "linkunslottedcsmaca.h"
 #include "netpkt_m.h"
+#include "stathelper.h"
 
 namespace twsn {
 
@@ -50,6 +51,7 @@ void LinkUnslottedCSMACA::handleSelfMsg(cMessage* msg)
 
 void LinkUnslottedCSMACA::handleUpperMsg(cMessage* msg)
 {
+    // TODO Limit packet size
     /* Encapsulate packet from upper layer and start sending procedures. If it's not ready for
      * for sending (e.g. A packet is being sent), the new packet will be drop. */
     if (outPkt == NULL) {
@@ -69,6 +71,10 @@ void LinkUnslottedCSMACA::handleUpperMsg(cMessage* msg)
         notifyLower();
     } else {
         printError(ERROR, "Not ready for sending");
+        delete msg;
+        // Count packet loss
+        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+        sh->countLostMacPkt();
     }
 }
 
@@ -99,6 +105,18 @@ void LinkUnslottedCSMACA::handleLowerMsg(cMessage* msg)
 {
     MacPkt *macpkt = check_and_cast<MacPkt*>(msg);
     cPacket *netpkt = NULL;
+    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+
+    if (macpkt->hasBitError()) {
+        getParentModule()->bubble("Packet error");
+        delete msg;
+        // Count packet loss
+        sh->countLostMacPkt();
+        return;
+    }
+
+    // Count received packet
+    sh->countRecvMacPkt();
 
     switch (macpkt->getPktType()) {
         case MAC_PKT_PAYLOAD:
@@ -115,6 +133,9 @@ void LinkUnslottedCSMACA::handleLowerMsg(cMessage* msg)
         default:
             printError(WARNING, "Unknown MAC packet type");
             delete macpkt;
+            // Count packet loss
+            StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+            sh->countLostMacPkt();
             break;
     }
 }
@@ -212,9 +233,13 @@ void LinkUnslottedCSMACA::deferPkt()
         backoff();
     } else {
         // TODO Report failure
-        EV << "LinkUnslottedCSMACA: Transmission failure\n";
+        getParentModule()->bubble("Tx failure");
         delete outPkt;
         reset();
+
+        // Count packet loss
+        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+        sh->countLostMacPkt();
     }
 }
 

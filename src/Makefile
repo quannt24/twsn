@@ -298,6 +298,7 @@ $O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessph
 	base/modules/mobility/basemobility.h \
 	base/modules/phylayer/basephy.h \
 	base/modules/phylayer/basewirelessphy.h \
+	helpers/stathelper.h \
 	util/coord.h \
 	util/twsndef.h
 $O/base/modules/queue/downqueue.o: base/modules/queue/downqueue.cc \
@@ -373,6 +374,7 @@ $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmac
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/linklayer/baselink.h \
+	helpers/stathelper.h \
 	modules/linklayer/linkunslottedcsmaca.h \
 	util/twsndef.h
 $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \

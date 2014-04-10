@@ -19,6 +19,7 @@
 #include "baseenergy.h"
 #include "coord.h"
 #include "command_m.h"
+#include "stathelper.h"
 
 namespace twsn {
 
@@ -117,6 +118,9 @@ void BaseWirelessPhy::handleUpperMsg(cMessage* msg)
         }
     } else {
         delete msg;
+        // Count packet loss
+        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+        sh->countLostMacPkt();
     }
 }
 
@@ -227,8 +231,11 @@ void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
         return;
     }
     if (radioMode != TX) {
-        printError(ERROR, "Cannot transmit when not in TX mode. Dropping packet.");
+        printError(WARNING, "Cannot transmit when not in TX mode. Dropping packet.");
         delete pkt;
+        // Count packet loss
+        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+        sh->countLostMacPkt();
         return;
     }
 
@@ -299,9 +306,13 @@ void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
         }
     }
 
-    // Receiver is out-ranged. Transmission is still simulated, but frame will be dropped here.
+    /* Receiver is out-ranged. Transmission (in this node) is still simulated, but frame will be
+     * dropped here.*/
     printError(ERROR, "Cannot send to an out-ranged node. Dropping frame.");
     delete frame;
+    // Count packet loss
+    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+    sh->countLostMacPkt();
 }
 
 void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
@@ -312,11 +323,14 @@ void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
         return;
     }
 
-    channelMgr->releaseAirFrame(frame);
+    channelMgr->releaseAirFrame(frame); // Remove frame from management list of ChannelMgr
 
     if (radioMode != RX) {
-        printError(WARNING, "Cannot receive when not in RX mode. Dropping frame.");
+        printError(INFO, "Cannot receive when not in RX mode. Dropping frame.");
         delete frame;
+        // Count packet loss
+        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+        sh->countLostMacPkt();
         return;
     }
 
