@@ -47,5 +47,13 @@ simple StatHelper extends BaseSimple
         @signal[sigLostMacPkt](type="int");
         @statistic[lostMacPkt](title="Number of lost MAC packets"; source="sigLostMacPkt"; record=sum);
         
+        // Packet received at link and physical layers
+        @signal[sigRecvNetPkt](type="int");
+        @statistic[recvNetPkt](title="Number of received network packets"; source="sigRecvNetPkt"; record=sum);
+        
+        // Packet lsot at link and physical layers
+        @signal[sigLostNetPkt](type="int");
+        @statistic[lostNetPkt](title="Number of lost network packets"; source="sigLostNetPkt"; record=sum);
+        
         @display("i=block/table2");
 }

@@ -393,6 +393,7 @@ $O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
 	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
 	helpers/decohelper.h \
+	helpers/stathelper.h \
 	modules/netlayer/netemrp.h \
 	modules/netlayer/netemrppkt_m.h \
 	util/coord.h \

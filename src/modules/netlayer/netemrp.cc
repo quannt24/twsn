@@ -18,6 +18,7 @@
 #include "basemobility.h"
 #include "apppkt_m.h"
 #include "decohelper.h"
+#include "stathelper.h"
 
 namespace twsn {
 
@@ -62,6 +63,9 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
             // TODO Report failure
             printError(INFO, "Cannot find relay node. Dropping packet");
             delete outPkt;
+            // Count lost packet
+            StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+            sh->countLostNetPkt();
         }
         outPkt = NULL;
     } else if (msg == waitEnergyInfoTimer) {
@@ -138,6 +142,9 @@ void NetEMRP::handleUpperMsg(cMessage* msg)
     } else {
         printError(ERROR, "Not ready for sending. Dropping packet");
         delete msg;
+        // Count lost packet
+        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+        sh->countLostNetPkt();
     }
 }
 
@@ -164,16 +171,20 @@ void NetEMRP::handleUpperCtl(cMessage* msg)
 void NetEMRP::handleLowerMsg(cMessage* msg)
 {
     NetEmrpPkt *pkt = check_and_cast<NetEmrpPkt*>(msg);
+    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
 
     // Check hop limit
     pkt->setHopLimit(pkt->getHopLimit() - 1);
     if (pkt->getHopLimit() <= 0) {
-        if (pkt->getPktType() == EMRP_PAYLOAD_TO_BS && !par("isBaseStation").boolValue()) {
-            printError(INFO, "Hop limit exceeded. Dropping packet.");
-            delete pkt;
-            return;
-        }
+        printError(INFO, "Hop limit exceeded. Dropping packet.");
+        delete pkt;
+        // Count lost packet
+        sh->countLostNetPkt();
+        return;
     }
+
+    // Count received packet
+    sh->countRecvNetPkt();
 
     // Process packet
     switch (pkt->getPktType()) {
@@ -197,11 +208,6 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
             recvEnergyInfo(pkt);
             break;
     }
-}
-
-void NetEMRP::handleLowerCtl(cMessage* msg)
-{
-    delete msg;
 }
 
 void NetEMRP::requestRelay()
@@ -407,6 +413,9 @@ void NetEMRP::recvRelayedPayload(NetEmrpPkt* pkt)
                 updateRelayEnergy(NULL);
             }
             delete pkt;
+            // Count lost packet
+            StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+            sh->countLostNetPkt();
         } else {
             // Send back a report about energy (like a ACK)
             sendEnergyInfo(pkt->getSrcAddr());

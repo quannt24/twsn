@@ -44,6 +44,8 @@ void StatHelper::initialize()
     sigTRE = registerSignal("sigTRE");
     sigRecvMacPkt = registerSignal("sigRecvMacPkt");
     sigLostMacPkt = registerSignal("sigLostMacPkt");
+    sigRecvNetPkt = registerSignal("sigRecvNetPkt");
+    sigLostNetPkt = registerSignal("sigLostNetPkt");
 
     // Start polling for total residual energy
     scheduleAt(0, pollTRETimer);
@@ -91,6 +93,18 @@ void StatHelper::countLostMacPkt()
 {
     Enter_Method_Silent("countLostMacPkt");
     emit(sigLostMacPkt, 1);
+}
+
+void StatHelper::countRecvNetPkt()
+{
+    Enter_Method_Silent("countRecvNetPkt");
+    emit(sigRecvNetPkt, 1);
+}
+
+void StatHelper::countLostNetPkt()
+{
+    Enter_Method_Silent("countLostNetPkt");
+    emit(sigLostNetPkt, 1);
 }
 
 }  // namespace twsn

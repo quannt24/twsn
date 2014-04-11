@@ -35,6 +35,8 @@ class StatHelper : public BaseSimple
         simsignal_t sigTRE; // Total residual energy of sensor nodes
         simsignal_t sigRecvMacPkt; // Packet received at link layer
         simsignal_t sigLostMacPkt; // Packet lost at link layer and physical layer
+        simsignal_t sigRecvNetPkt; // Packet received at network layer
+        simsignal_t sigLostNetPkt; // Packet lost at network layer
 
         /** Poll total residual energy */
         void pollTotalResEnergy();
@@ -55,6 +57,10 @@ class StatHelper : public BaseSimple
         void countRecvMacPkt();
         /** Emit a signal with value 1 to count number of lost MAC packets */
         void countLostMacPkt();
+        /** Emit a signal with value 1 to count number of received network packets */
+        void countRecvNetPkt();
+        /** Emit a signal with value 1 to count number of lost network packets */
+        void countLostNetPkt();
 };
 
 }  // namespace twsn

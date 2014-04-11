@@ -66,8 +66,6 @@ class NetEMRP : public BaseNet
         virtual void handleUpperCtl(cMessage *msg);
         /** Handle message/packet from lower$i */
         virtual void handleLowerMsg(cMessage *msg);
-        /** Handle control message from lowerCtl$i */
-        virtual void handleLowerCtl(cMessage *msg);
 
         /** Broadcast request for info of base station/relay/backup node */
         void requestRelay();
