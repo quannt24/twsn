@@ -18,7 +18,7 @@
 
 #include <omnetpp.h>
 #include "baselink.h"
-#include "macpkt_m.h"
+#include "mac802154pkt_m.h"
 
 namespace twsn {
 
@@ -28,7 +28,7 @@ namespace twsn {
 class LinkUnslottedCSMACA : public BaseLink
 {
     protected:
-        MacPkt *outPkt; // Packet being sent
+        Mac802154Pkt *outPkt; // Packet being sent
 
         int aMaxBE;
         int macMaxNB;

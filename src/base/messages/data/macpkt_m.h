@@ -21,28 +21,9 @@
 namespace twsn {
 
 /**
- * Enum generated from <tt>base/messages/data/macpkt.msg</tt> by opp_msgc.
- * <pre>
- * enum MacPktType {
- *     MAC_PKT_PAYLOAD = 0; 
- *     MAC_PKT_CTL = 1; 
- *     MAC_PKT_PREAMBLE = 2; 
- *     MAC_PKT_ACK = 3; 
- * };
- * </pre>
- */
-enum MacPktType {
-    MAC_PKT_PAYLOAD = 0,
-    MAC_PKT_CTL = 1,
-    MAC_PKT_PREAMBLE = 2,
-    MAC_PKT_ACK = 3
-};
-
-/**
  * Class generated from <tt>base/messages/data/macpkt.msg</tt> by opp_msgc.
  * <pre>
  * packet MacPkt {
- *     int pktType = MAC_PKT_PAYLOAD;
  *     macaddr_t srcAddr; 
  *     macaddr_t desAddr; 
  *     int pktSize = 16; 
@@ -52,7 +33,6 @@ enum MacPktType {
 class MacPkt : public ::cPacket
 {
   protected:
-    int pktType_var;
     twsn::macaddr_t srcAddr_var;
     twsn::macaddr_t desAddr_var;
     int pktSize_var;
@@ -74,8 +54,6 @@ class MacPkt : public ::cPacket
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual int getPktType() const;
-    virtual void setPktType(int pktType);
     virtual twsn::macaddr_t& getSrcAddr();
     virtual const twsn::macaddr_t& getSrcAddr() const {return const_cast<MacPkt*>(this)->getSrcAddr();}
     virtual void setSrcAddr(const twsn::macaddr_t& srcAddr);

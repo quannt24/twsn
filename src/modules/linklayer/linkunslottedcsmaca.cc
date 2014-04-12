@@ -56,13 +56,13 @@ void LinkUnslottedCSMACA::handleUpperMsg(cMessage* msg)
      * for sending (e.g. A packet is being sent), the new packet will be drop. */
     if (outPkt == NULL) {
         NetPkt *netpkt = check_and_cast<NetPkt*>(msg);
-        MacPkt *macpkt = new MacPkt();
+        Mac802154Pkt *macpkt = new Mac802154Pkt();
 
         // TODO Address resolution
         macpkt->setSrcAddr(netpkt->getSrcAddr());
         macpkt->setDesAddr(netpkt->getDesAddr());
 
-        macpkt->setByteLength(macpkt->getByteLength());
+        macpkt->setByteLength(macpkt->getPktSize());
         macpkt->encapsulate(netpkt);
 
         outPkt = macpkt; // Going to send this packet
@@ -103,7 +103,7 @@ void LinkUnslottedCSMACA::handleUpperCtl(cMessage* msg)
 
 void LinkUnslottedCSMACA::handleLowerMsg(cMessage* msg)
 {
-    MacPkt *macpkt = check_and_cast<MacPkt*>(msg);
+    Mac802154Pkt *macpkt = check_and_cast<Mac802154Pkt*>(msg);
     cPacket *netpkt = NULL;
     StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
 
@@ -119,7 +119,7 @@ void LinkUnslottedCSMACA::handleLowerMsg(cMessage* msg)
     sh->countRecvMacPkt();
 
     switch (macpkt->getPktType()) {
-        case MAC_PKT_PAYLOAD:
+        case MAC802154_DATA:
             // Forward network packet to upper layer
             netpkt = macpkt->decapsulate();
             if (netpkt != NULL) {

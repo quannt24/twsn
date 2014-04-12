@@ -18,7 +18,7 @@ package twsn.modules.linklayer;
 import twsn.base.modules.linklayer.BaseLink;
 
 //
-// Link layer with unslotted CSMA/CA
+// Link layer with unslotted CSMA/CA complaining with IEEE 802.15.4
 //
 simple LinkUnslottedCSMACA extends BaseLink
 {
@@ -32,7 +32,7 @@ simple LinkUnslottedCSMACA extends BaseLink
         int aMaxSIFSFrameSize @unit(byte) 	= default(18 byte);
         double aMinSIFSPeriod @unit(s) 		= default(12 * symbolPeriod);
         double aMinLIFSPeriod @unit(s) 		= default(40 * symbolPeriod);
-        double aTurnaroundTime @unit(s) 	= default(12 * symbolPeriod);
+        double aTurnaroundTime @unit(s) 	= default(12 * symbolPeriod); // Should be set equal or greater than max delay for switching to RX mode
         double aUnitBP @unit(s) 			= default(20 * symbolPeriod);
 		int macMaxNB 						= default(4); // 0 ~ 5, default 4
 		int macMinBE 						= default(3); // 0 ~ 3, default 3

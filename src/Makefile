@@ -94,6 +94,7 @@ OBJS = \
     $O/base/messages/data/netpkt_m.o \
     $O/base/messages/data/macpkt_m.o \
     $O/modules/applayer/tracking/apptrackingpkt_m.o \
+    $O/modules/linklayer/mac802154pkt_m.o \
     $O/modules/netlayer/netemrppkt_m.o \
     $O/modules/other/sensemsg_m.o
 
@@ -105,6 +106,7 @@ MSGFILES = \
     base/messages/data/netpkt.msg \
     base/messages/data/macpkt.msg \
     modules/applayer/tracking/apptrackingpkt.msg \
+    modules/linklayer/mac802154pkt.msg \
     modules/netlayer/netemrppkt.msg \
     modules/other/sensemsg.msg
 
@@ -376,6 +378,11 @@ $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmac
 	base/modules/linklayer/baselink.h \
 	helpers/stathelper.h \
 	modules/linklayer/linkunslottedcsmaca.h \
+	modules/linklayer/mac802154pkt_m.h \
+	util/twsndef.h
+$O/modules/linklayer/mac802154pkt_m.o: modules/linklayer/mac802154pkt_m.cc \
+	base/messages/data/macpkt_m.h \
+	modules/linklayer/mac802154pkt_m.h \
 	util/twsndef.h
 $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	base/modules/basesimple.h \
