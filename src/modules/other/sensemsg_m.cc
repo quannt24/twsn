@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from modules/other/sensemsg.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from modules/other/sensemsg.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "sensemsg_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -43,12 +45,12 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(SenseMsg);
 
-SenseMsg::SenseMsg(const char *name, int kind) : cMessage(name,kind)
+SenseMsg::SenseMsg(const char *name, int kind) : ::cMessage(name,kind)
 {
     this->msgType_var = 0;
 }
 
-SenseMsg::SenseMsg(const SenseMsg& other) : cMessage(other)
+SenseMsg::SenseMsg(const SenseMsg& other) : ::cMessage(other)
 {
     copy(other);
 }
@@ -60,7 +62,7 @@ SenseMsg::~SenseMsg()
 SenseMsg& SenseMsg::operator=(const SenseMsg& other)
 {
     if (this==&other) return *this;
-    cMessage::operator=(other);
+    ::cMessage::operator=(other);
     copy(other);
     return *this;
 }
@@ -72,13 +74,13 @@ void SenseMsg::copy(const SenseMsg& other)
 
 void SenseMsg::parsimPack(cCommBuffer *b)
 {
-    cMessage::parsimPack(b);
+    ::cMessage::parsimPack(b);
     doPacking(b,this->msgType_var);
 }
 
 void SenseMsg::parsimUnpack(cCommBuffer *b)
 {
-    cMessage::parsimUnpack(b);
+    ::cMessage::parsimUnpack(b);
     doUnpacking(b,this->msgType_var);
 }
 
@@ -279,13 +281,13 @@ void *SenseMsgDescriptor::getFieldStructPointer(void *object, int field, int i) 
 
 Register_Class(SenseResult);
 
-SenseResult::SenseResult(const char *name, int kind) : twsn::SenseMsg(name,kind)
+SenseResult::SenseResult(const char *name, int kind) : ::twsn::SenseMsg(name,kind)
 {
     this->setMsgType(SS_RESULT);
 
 }
 
-SenseResult::SenseResult(const SenseResult& other) : twsn::SenseMsg(other)
+SenseResult::SenseResult(const SenseResult& other) : ::twsn::SenseMsg(other)
 {
     copy(other);
 }
@@ -297,7 +299,7 @@ SenseResult::~SenseResult()
 SenseResult& SenseResult::operator=(const SenseResult& other)
 {
     if (this==&other) return *this;
-    twsn::SenseMsg::operator=(other);
+    ::twsn::SenseMsg::operator=(other);
     copy(other);
     return *this;
 }
@@ -309,13 +311,13 @@ void SenseResult::copy(const SenseResult& other)
 
 void SenseResult::parsimPack(cCommBuffer *b)
 {
-    twsn::SenseMsg::parsimPack(b);
+    ::twsn::SenseMsg::parsimPack(b);
     doPacking(b,this->meaList_var);
 }
 
 void SenseResult::parsimUnpack(cCommBuffer *b)
 {
-    twsn::SenseMsg::parsimUnpack(b);
+    ::twsn::SenseMsg::parsimUnpack(b);
     doUnpacking(b,this->meaList_var);
 }
 
@@ -516,7 +518,7 @@ void *SenseResultDescriptor::getFieldStructPointer(void *object, int field, int 
 
 Register_Class(SenseAction);
 
-SenseAction::SenseAction(const char *name, int kind) : twsn::SenseMsg(name,kind)
+SenseAction::SenseAction(const char *name, int kind) : ::twsn::SenseMsg(name,kind)
 {
     this->setMsgType(SS_ACTION);
 
@@ -524,7 +526,7 @@ SenseAction::SenseAction(const char *name, int kind) : twsn::SenseMsg(name,kind)
     this->mobilityId_var = 0;
 }
 
-SenseAction::SenseAction(const SenseAction& other) : twsn::SenseMsg(other)
+SenseAction::SenseAction(const SenseAction& other) : ::twsn::SenseMsg(other)
 {
     copy(other);
 }
@@ -536,7 +538,7 @@ SenseAction::~SenseAction()
 SenseAction& SenseAction::operator=(const SenseAction& other)
 {
     if (this==&other) return *this;
-    twsn::SenseMsg::operator=(other);
+    ::twsn::SenseMsg::operator=(other);
     copy(other);
     return *this;
 }
@@ -549,14 +551,14 @@ void SenseAction::copy(const SenseAction& other)
 
 void SenseAction::parsimPack(cCommBuffer *b)
 {
-    twsn::SenseMsg::parsimPack(b);
+    ::twsn::SenseMsg::parsimPack(b);
     doPacking(b,this->sensorId_var);
     doPacking(b,this->mobilityId_var);
 }
 
 void SenseAction::parsimUnpack(cCommBuffer *b)
 {
-    twsn::SenseMsg::parsimUnpack(b);
+    ::twsn::SenseMsg::parsimUnpack(b);
     doUnpacking(b,this->sensorId_var);
     doUnpacking(b,this->mobilityId_var);
 }
@@ -775,7 +777,7 @@ void *SenseActionDescriptor::getFieldStructPointer(void *object, int field, int 
 
 Register_Class(SenseSignal);
 
-SenseSignal::SenseSignal(const char *name, int kind) : twsn::SenseMsg(name,kind)
+SenseSignal::SenseSignal(const char *name, int kind) : ::twsn::SenseMsg(name,kind)
 {
     this->setMsgType(SS_SIGNAL);
 
@@ -785,7 +787,7 @@ SenseSignal::SenseSignal(const char *name, int kind) : twsn::SenseMsg(name,kind)
     this->y_var = 0;
 }
 
-SenseSignal::SenseSignal(const SenseSignal& other) : twsn::SenseMsg(other)
+SenseSignal::SenseSignal(const SenseSignal& other) : ::twsn::SenseMsg(other)
 {
     copy(other);
 }
@@ -797,7 +799,7 @@ SenseSignal::~SenseSignal()
 SenseSignal& SenseSignal::operator=(const SenseSignal& other)
 {
     if (this==&other) return *this;
-    twsn::SenseMsg::operator=(other);
+    ::twsn::SenseMsg::operator=(other);
     copy(other);
     return *this;
 }
@@ -812,7 +814,7 @@ void SenseSignal::copy(const SenseSignal& other)
 
 void SenseSignal::parsimPack(cCommBuffer *b)
 {
-    twsn::SenseMsg::parsimPack(b);
+    ::twsn::SenseMsg::parsimPack(b);
     doPacking(b,this->tarId_var);
     doPacking(b,this->distance_var);
     doPacking(b,this->x_var);
@@ -821,7 +823,7 @@ void SenseSignal::parsimPack(cCommBuffer *b)
 
 void SenseSignal::parsimUnpack(cCommBuffer *b)
 {
-    twsn::SenseMsg::parsimUnpack(b);
+    ::twsn::SenseMsg::parsimUnpack(b);
     doUnpacking(b,this->tarId_var);
     doUnpacking(b,this->distance_var);
     doUnpacking(b,this->x_var);

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from modules/applayer/tracking/apptrackingpkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from modules/applayer/tracking/apptrackingpkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "apptrackingpkt_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -42,14 +44,14 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(AppTrackingPkt);
 
-AppTrackingPkt::AppTrackingPkt(const char *name, int kind) : twsn::AppPkt(name,kind)
+AppTrackingPkt::AppTrackingPkt(const char *name, int kind) : ::twsn::AppPkt(name,kind)
 {
     this->setPktSize(2);
 
     this->pktType_var = 0;
 }
 
-AppTrackingPkt::AppTrackingPkt(const AppTrackingPkt& other) : twsn::AppPkt(other)
+AppTrackingPkt::AppTrackingPkt(const AppTrackingPkt& other) : ::twsn::AppPkt(other)
 {
     copy(other);
 }
@@ -61,7 +63,7 @@ AppTrackingPkt::~AppTrackingPkt()
 AppTrackingPkt& AppTrackingPkt::operator=(const AppTrackingPkt& other)
 {
     if (this==&other) return *this;
-    twsn::AppPkt::operator=(other);
+    ::twsn::AppPkt::operator=(other);
     copy(other);
     return *this;
 }
@@ -73,13 +75,13 @@ void AppTrackingPkt::copy(const AppTrackingPkt& other)
 
 void AppTrackingPkt::parsimPack(cCommBuffer *b)
 {
-    twsn::AppPkt::parsimPack(b);
+    ::twsn::AppPkt::parsimPack(b);
     doPacking(b,this->pktType_var);
 }
 
 void AppTrackingPkt::parsimUnpack(cCommBuffer *b)
 {
-    twsn::AppPkt::parsimUnpack(b);
+    ::twsn::AppPkt::parsimUnpack(b);
     doUnpacking(b,this->pktType_var);
 }
 
@@ -280,7 +282,7 @@ void *AppTrackingPktDescriptor::getFieldStructPointer(void *object, int field, i
 
 Register_Class(AT_MeasurementPkt);
 
-AT_MeasurementPkt::AT_MeasurementPkt(const char *name, int kind) : twsn::AppTrackingPkt(name,kind)
+AT_MeasurementPkt::AT_MeasurementPkt(const char *name, int kind) : ::twsn::AppTrackingPkt(name,kind)
 {
     this->setRoutingType(RT_BROADCAST);
     this->setPktType(AT_MEASUREMENT);
@@ -288,7 +290,7 @@ AT_MeasurementPkt::AT_MeasurementPkt(const char *name, int kind) : twsn::AppTrac
 
 }
 
-AT_MeasurementPkt::AT_MeasurementPkt(const AT_MeasurementPkt& other) : twsn::AppTrackingPkt(other)
+AT_MeasurementPkt::AT_MeasurementPkt(const AT_MeasurementPkt& other) : ::twsn::AppTrackingPkt(other)
 {
     copy(other);
 }
@@ -300,7 +302,7 @@ AT_MeasurementPkt::~AT_MeasurementPkt()
 AT_MeasurementPkt& AT_MeasurementPkt::operator=(const AT_MeasurementPkt& other)
 {
     if (this==&other) return *this;
-    twsn::AppTrackingPkt::operator=(other);
+    ::twsn::AppTrackingPkt::operator=(other);
     copy(other);
     return *this;
 }
@@ -312,13 +314,13 @@ void AT_MeasurementPkt::copy(const AT_MeasurementPkt& other)
 
 void AT_MeasurementPkt::parsimPack(cCommBuffer *b)
 {
-    twsn::AppTrackingPkt::parsimPack(b);
+    ::twsn::AppTrackingPkt::parsimPack(b);
     doPacking(b,this->measurement_var);
 }
 
 void AT_MeasurementPkt::parsimUnpack(cCommBuffer *b)
 {
-    twsn::AppTrackingPkt::parsimUnpack(b);
+    ::twsn::AppTrackingPkt::parsimUnpack(b);
     doUnpacking(b,this->measurement_var);
 }
 
@@ -519,7 +521,7 @@ void *AT_MeasurementPktDescriptor::getFieldStructPointer(void *object, int field
 
 Register_Class(AT_TargetPosPkt);
 
-AT_TargetPosPkt::AT_TargetPosPkt(const char *name, int kind) : twsn::AppTrackingPkt(name,kind)
+AT_TargetPosPkt::AT_TargetPosPkt(const char *name, int kind) : ::twsn::AppTrackingPkt(name,kind)
 {
     this->setRoutingType(RT_TO_BS);
     this->setPktType(AT_TARGET_POSITION);
@@ -527,7 +529,7 @@ AT_TargetPosPkt::AT_TargetPosPkt(const char *name, int kind) : twsn::AppTracking
 
 }
 
-AT_TargetPosPkt::AT_TargetPosPkt(const AT_TargetPosPkt& other) : twsn::AppTrackingPkt(other)
+AT_TargetPosPkt::AT_TargetPosPkt(const AT_TargetPosPkt& other) : ::twsn::AppTrackingPkt(other)
 {
     copy(other);
 }
@@ -539,7 +541,7 @@ AT_TargetPosPkt::~AT_TargetPosPkt()
 AT_TargetPosPkt& AT_TargetPosPkt::operator=(const AT_TargetPosPkt& other)
 {
     if (this==&other) return *this;
-    twsn::AppTrackingPkt::operator=(other);
+    ::twsn::AppTrackingPkt::operator=(other);
     copy(other);
     return *this;
 }
@@ -551,13 +553,13 @@ void AT_TargetPosPkt::copy(const AT_TargetPosPkt& other)
 
 void AT_TargetPosPkt::parsimPack(cCommBuffer *b)
 {
-    twsn::AppTrackingPkt::parsimPack(b);
+    ::twsn::AppTrackingPkt::parsimPack(b);
     doPacking(b,this->targetPos_var);
 }
 
 void AT_TargetPosPkt::parsimUnpack(cCommBuffer *b)
 {
-    twsn::AppTrackingPkt::parsimUnpack(b);
+    ::twsn::AppTrackingPkt::parsimUnpack(b);
     doUnpacking(b,this->targetPos_var);
 }
 

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/data/netpkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/netpkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "netpkt_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -33,14 +35,14 @@ namespace twsn {
 
 Register_Class(NetPkt);
 
-NetPkt::NetPkt(const char *name, int kind) : cPacket(name,kind)
+NetPkt::NetPkt(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->preambleFlag_var = false;
     this->hopLimit_var = 64;
     this->pktSize_var = 18;
 }
 
-NetPkt::NetPkt(const NetPkt& other) : cPacket(other)
+NetPkt::NetPkt(const NetPkt& other) : ::cPacket(other)
 {
     copy(other);
 }
@@ -52,7 +54,7 @@ NetPkt::~NetPkt()
 NetPkt& NetPkt::operator=(const NetPkt& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    ::cPacket::operator=(other);
     copy(other);
     return *this;
 }
@@ -68,7 +70,7 @@ void NetPkt::copy(const NetPkt& other)
 
 void NetPkt::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
+    ::cPacket::parsimPack(b);
     doPacking(b,this->srcAddr_var);
     doPacking(b,this->desAddr_var);
     doPacking(b,this->preambleFlag_var);
@@ -78,7 +80,7 @@ void NetPkt::parsimPack(cCommBuffer *b)
 
 void NetPkt::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
+    ::cPacket::parsimUnpack(b);
     doUnpacking(b,this->srcAddr_var);
     doUnpacking(b,this->desAddr_var);
     doUnpacking(b,this->preambleFlag_var);

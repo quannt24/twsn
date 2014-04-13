@@ -79,6 +79,7 @@ OBJS = \
     $O/modules/applayer/tracking/apptrackingbs.o \
     $O/modules/applayer/tracking/apptrackingsensor.o \
     $O/modules/applayer/tracking/targettrace.o \
+    $O/modules/linklayer/linkxtmac.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
     $O/modules/mobility/mobilitypath.o \
     $O/modules/netlayer/netemrp.o \
@@ -169,7 +170,7 @@ $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile
 $O/%.o: %.cc $(COPTS_FILE)
 	@$(MKPATH) $(dir $@)
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(COPTS) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
 %_m.cc %_m.h: %.msg
 	$(qecho) MSGC: $<
@@ -378,6 +379,16 @@ $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmac
 	base/modules/linklayer/baselink.h \
 	helpers/stathelper.h \
 	modules/linklayer/linkunslottedcsmaca.h \
+	modules/linklayer/mac802154pkt_m.h \
+	util/twsndef.h
+$O/modules/linklayer/linkxtmac.o: modules/linklayer/linkxtmac.cc \
+	base/messages/control/command_m.h \
+	base/messages/data/macpkt_m.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	base/modules/linklayer/baselink.h \
+	modules/linklayer/linkunslottedcsmaca.h \
+	modules/linklayer/linkxtmac.h \
 	modules/linklayer/mac802154pkt_m.h \
 	util/twsndef.h
 $O/modules/linklayer/mac802154pkt_m.o: modules/linklayer/mac802154pkt_m.cc \

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/data/apppkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/apppkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "apppkt_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -41,13 +43,13 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(AppPkt);
 
-AppPkt::AppPkt(const char *name, int kind) : cPacket(name,kind)
+AppPkt::AppPkt(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->routingType_var = RT_TO_AN;
     this->pktSize_var = 1;
 }
 
-AppPkt::AppPkt(const AppPkt& other) : cPacket(other)
+AppPkt::AppPkt(const AppPkt& other) : ::cPacket(other)
 {
     copy(other);
 }
@@ -59,7 +61,7 @@ AppPkt::~AppPkt()
 AppPkt& AppPkt::operator=(const AppPkt& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    ::cPacket::operator=(other);
     copy(other);
     return *this;
 }
@@ -74,7 +76,7 @@ void AppPkt::copy(const AppPkt& other)
 
 void AppPkt::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
+    ::cPacket::parsimPack(b);
     doPacking(b,this->srcNetAddr_var);
     doPacking(b,this->desNetAddr_var);
     doPacking(b,this->routingType_var);
@@ -83,7 +85,7 @@ void AppPkt::parsimPack(cCommBuffer *b)
 
 void AppPkt::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
+    ::cPacket::parsimUnpack(b);
     doUnpacking(b,this->srcNetAddr_var);
     doUnpacking(b,this->desNetAddr_var);
     doUnpacking(b,this->routingType_var);

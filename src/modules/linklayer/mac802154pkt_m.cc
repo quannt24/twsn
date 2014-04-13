@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from modules/linklayer/mac802154pkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from modules/linklayer/mac802154pkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "mac802154pkt_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -38,18 +40,19 @@ EXECUTE_ON_STARTUP(
     e->insert(MAC802154_DATA, "MAC802154_DATA");
     e->insert(MAC802154_ACK, "MAC802154_ACK");
     e->insert(MAC802154_CMD, "MAC802154_CMD");
+    e->insert(MAC802154_PREAMBLE, "MAC802154_PREAMBLE");
 );
 
 Register_Class(Mac802154Pkt);
 
-Mac802154Pkt::Mac802154Pkt(const char *name, int kind) : twsn::MacPkt(name,kind)
+Mac802154Pkt::Mac802154Pkt(const char *name, int kind) : ::twsn::MacPkt(name,kind)
 {
     this->setPktSize(21);
 
     this->pktType_var = MAC802154_DATA;
 }
 
-Mac802154Pkt::Mac802154Pkt(const Mac802154Pkt& other) : twsn::MacPkt(other)
+Mac802154Pkt::Mac802154Pkt(const Mac802154Pkt& other) : ::twsn::MacPkt(other)
 {
     copy(other);
 }
@@ -61,7 +64,7 @@ Mac802154Pkt::~Mac802154Pkt()
 Mac802154Pkt& Mac802154Pkt::operator=(const Mac802154Pkt& other)
 {
     if (this==&other) return *this;
-    twsn::MacPkt::operator=(other);
+    ::twsn::MacPkt::operator=(other);
     copy(other);
     return *this;
 }
@@ -73,13 +76,13 @@ void Mac802154Pkt::copy(const Mac802154Pkt& other)
 
 void Mac802154Pkt::parsimPack(cCommBuffer *b)
 {
-    twsn::MacPkt::parsimPack(b);
+    ::twsn::MacPkt::parsimPack(b);
     doPacking(b,this->pktType_var);
 }
 
 void Mac802154Pkt::parsimUnpack(cCommBuffer *b)
 {
-    twsn::MacPkt::parsimUnpack(b);
+    ::twsn::MacPkt::parsimUnpack(b);
     doUnpacking(b,this->pktType_var);
 }
 

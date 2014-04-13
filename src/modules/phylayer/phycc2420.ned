@@ -20,6 +20,8 @@ import twsn.base.modules.phylayer.BaseWirelessPhy;
 simple PhyCC2420 extends BaseWirelessPhy
 {
     parameters:
+        bitRate = default(250000 bps);
+        
         // Radio mode switching delay
         delayIdleToRx @unit(s) = default(0.000192 s); // 12 symbol periods
         delayIdleToTx @unit(s) = default(0.000192 s);

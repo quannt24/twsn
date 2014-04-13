@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/control/command.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/control/command.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "command_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -58,14 +60,14 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(Command);
 
-Command::Command(const char *name, int kind) : cMessage(name,kind)
+Command::Command(const char *name, int kind) : ::cMessage(name,kind)
 {
     this->src_var = UNKNOWN;
     this->des_var = UNKNOWN;
     this->cmdId_var = 0;
 }
 
-Command::Command(const Command& other) : cMessage(other)
+Command::Command(const Command& other) : ::cMessage(other)
 {
     copy(other);
 }
@@ -77,7 +79,7 @@ Command::~Command()
 Command& Command::operator=(const Command& other)
 {
     if (this==&other) return *this;
-    cMessage::operator=(other);
+    ::cMessage::operator=(other);
     copy(other);
     return *this;
 }
@@ -91,7 +93,7 @@ void Command::copy(const Command& other)
 
 void Command::parsimPack(cCommBuffer *b)
 {
-    cMessage::parsimPack(b);
+    ::cMessage::parsimPack(b);
     doPacking(b,this->src_var);
     doPacking(b,this->des_var);
     doPacking(b,this->cmdId_var);
@@ -99,7 +101,7 @@ void Command::parsimPack(cCommBuffer *b)
 
 void Command::parsimUnpack(cCommBuffer *b)
 {
-    cMessage::parsimUnpack(b);
+    ::cMessage::parsimUnpack(b);
     doUnpacking(b,this->src_var);
     doUnpacking(b,this->des_var);
     doUnpacking(b,this->cmdId_var);
@@ -336,7 +338,7 @@ void *CommandDescriptor::getFieldStructPointer(void *object, int field, int i) c
 
 Register_Class(CmdCCA);
 
-CmdCCA::CmdCCA(const char *name, int kind) : twsn::Command(name,kind)
+CmdCCA::CmdCCA(const char *name, int kind) : ::twsn::Command(name,kind)
 {
     this->setSrc(LINK);
     this->setDes(PHYS);
@@ -345,7 +347,7 @@ CmdCCA::CmdCCA(const char *name, int kind) : twsn::Command(name,kind)
     this->duration_var = 0.000128;
 }
 
-CmdCCA::CmdCCA(const CmdCCA& other) : twsn::Command(other)
+CmdCCA::CmdCCA(const CmdCCA& other) : ::twsn::Command(other)
 {
     copy(other);
 }
@@ -357,7 +359,7 @@ CmdCCA::~CmdCCA()
 CmdCCA& CmdCCA::operator=(const CmdCCA& other)
 {
     if (this==&other) return *this;
-    twsn::Command::operator=(other);
+    ::twsn::Command::operator=(other);
     copy(other);
     return *this;
 }
@@ -369,13 +371,13 @@ void CmdCCA::copy(const CmdCCA& other)
 
 void CmdCCA::parsimPack(cCommBuffer *b)
 {
-    twsn::Command::parsimPack(b);
+    ::twsn::Command::parsimPack(b);
     doPacking(b,this->duration_var);
 }
 
 void CmdCCA::parsimUnpack(cCommBuffer *b)
 {
-    twsn::Command::parsimUnpack(b);
+    ::twsn::Command::parsimUnpack(b);
     doUnpacking(b,this->duration_var);
 }
 
@@ -576,7 +578,7 @@ void *CmdCCADescriptor::getFieldStructPointer(void *object, int field, int i) co
 
 Register_Class(CmdCCAR);
 
-CmdCCAR::CmdCCAR(const char *name, int kind) : twsn::Command(name,kind)
+CmdCCAR::CmdCCAR(const char *name, int kind) : ::twsn::Command(name,kind)
 {
     this->setSrc(PHYS);
     this->setDes(LINK);
@@ -585,7 +587,7 @@ CmdCCAR::CmdCCAR(const char *name, int kind) : twsn::Command(name,kind)
     this->clearChannel_var = 0;
 }
 
-CmdCCAR::CmdCCAR(const CmdCCAR& other) : twsn::Command(other)
+CmdCCAR::CmdCCAR(const CmdCCAR& other) : ::twsn::Command(other)
 {
     copy(other);
 }
@@ -597,7 +599,7 @@ CmdCCAR::~CmdCCAR()
 CmdCCAR& CmdCCAR::operator=(const CmdCCAR& other)
 {
     if (this==&other) return *this;
-    twsn::Command::operator=(other);
+    ::twsn::Command::operator=(other);
     copy(other);
     return *this;
 }
@@ -609,13 +611,13 @@ void CmdCCAR::copy(const CmdCCAR& other)
 
 void CmdCCAR::parsimPack(cCommBuffer *b)
 {
-    twsn::Command::parsimPack(b);
+    ::twsn::Command::parsimPack(b);
     doPacking(b,this->clearChannel_var);
 }
 
 void CmdCCAR::parsimUnpack(cCommBuffer *b)
 {
-    twsn::Command::parsimUnpack(b);
+    ::twsn::Command::parsimUnpack(b);
     doUnpacking(b,this->clearChannel_var);
 }
 

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/data/macpkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/macpkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "macpkt_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -33,12 +35,12 @@ namespace twsn {
 
 Register_Class(MacPkt);
 
-MacPkt::MacPkt(const char *name, int kind) : cPacket(name,kind)
+MacPkt::MacPkt(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->pktSize_var = 16;
 }
 
-MacPkt::MacPkt(const MacPkt& other) : cPacket(other)
+MacPkt::MacPkt(const MacPkt& other) : ::cPacket(other)
 {
     copy(other);
 }
@@ -50,7 +52,7 @@ MacPkt::~MacPkt()
 MacPkt& MacPkt::operator=(const MacPkt& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    ::cPacket::operator=(other);
     copy(other);
     return *this;
 }
@@ -64,7 +66,7 @@ void MacPkt::copy(const MacPkt& other)
 
 void MacPkt::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
+    ::cPacket::parsimPack(b);
     doPacking(b,this->srcAddr_var);
     doPacking(b,this->desAddr_var);
     doPacking(b,this->pktSize_var);
@@ -72,7 +74,7 @@ void MacPkt::parsimPack(cCommBuffer *b)
 
 void MacPkt::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
+    ::cPacket::parsimUnpack(b);
     doUnpacking(b,this->srcAddr_var);
     doUnpacking(b,this->desAddr_var);
     doUnpacking(b,this->pktSize_var);

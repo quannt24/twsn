@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from base/messages/data/airframe.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/airframe.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "airframe_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -33,12 +35,12 @@ namespace twsn {
 
 Register_Class(AirFrame);
 
-AirFrame::AirFrame(const char *name, int kind) : cPacket(name,kind)
+AirFrame::AirFrame(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->frameSize_var = 6;
 }
 
-AirFrame::AirFrame(const AirFrame& other) : cPacket(other)
+AirFrame::AirFrame(const AirFrame& other) : ::cPacket(other)
 {
     copy(other);
 }
@@ -50,7 +52,7 @@ AirFrame::~AirFrame()
 AirFrame& AirFrame::operator=(const AirFrame& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    ::cPacket::operator=(other);
     copy(other);
     return *this;
 }
@@ -64,7 +66,7 @@ void AirFrame::copy(const AirFrame& other)
 
 void AirFrame::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
+    ::cPacket::parsimPack(b);
     doPacking(b,this->sender_var);
     doPacking(b,this->receiver_var);
     doPacking(b,this->frameSize_var);
@@ -72,7 +74,7 @@ void AirFrame::parsimPack(cCommBuffer *b)
 
 void AirFrame::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
+    ::cPacket::parsimUnpack(b);
     doUnpacking(b,this->sender_var);
     doUnpacking(b,this->receiver_var);
     doUnpacking(b,this->frameSize_var);
