@@ -55,7 +55,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             // Cancel current being sent strobe
             printError(INFO, "Strobe deadline is missed");
             nStrobe--;
-            if (!outPkt->isScheduled()) {
+            if (!transmitting) {
                 delete outPkt;
             }
             outPkt = NULL;
@@ -264,6 +264,7 @@ void LinkXTMAC::reset()
 
     // Reset outPkt pointer
     outPkt = NULL;
+    transmitting = false;
 
     // Switch radio transceiver to listen mode
     Command *rxcmd = new Command();

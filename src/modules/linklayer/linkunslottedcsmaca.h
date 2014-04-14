@@ -29,6 +29,7 @@ class LinkUnslottedCSMACA : public BaseLink
 {
     protected:
         Mac802154Pkt *outPkt; // Packet being sent
+        bool transmitting; // Transmitting packet
 
         int aMaxBE;
         int macMaxNB;

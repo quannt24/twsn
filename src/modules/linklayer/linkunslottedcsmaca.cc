@@ -211,6 +211,7 @@ void LinkUnslottedCSMACA::sendPkt()
 
         // Transmit
         sendDown(outPkt);
+        transmitting = true;
         /* outPkt still holds value here only to mark that there is a packet being sent
          * and it is not ready to send next packet. Do not use outPkt after this point,
          * it will be set to NULL after receive CMD_READY from physical layer. */
@@ -248,6 +249,7 @@ void LinkUnslottedCSMACA::reset()
 {
     // Reset outPkt pointer so that we can send next packet
     outPkt = NULL;
+    transmitting = false;
     // Fetch next packet from queue after IFS
     if (!fetchTimer->isScheduled()) {
         scheduleAt(simTime() + ifsLen, fetchTimer);
@@ -263,6 +265,7 @@ void LinkUnslottedCSMACA::reset()
 LinkUnslottedCSMACA::LinkUnslottedCSMACA()
 {
     outPkt = NULL;
+    transmitting = false;
     backoffTimer = new cMessage("backoffTimer");
     listenTimer = new cMessage("listenTimer");
     fetchTimer = new cMessage("fetchTimer");
