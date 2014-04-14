@@ -41,6 +41,7 @@ enum CmdID {
     
     // Data link specific commands
     CMD_LIN_CCA_RESULT = 20; // CCA result
+    CMD_LIN_FORCE_ACTIVE = 21; // Force link layer stay active
 };
 
 // Base class for command messages
@@ -68,4 +69,11 @@ message CmdCCAR extends Command {
     des = LINK;
     cmdId = CMD_LIN_CCA_RESULT;
     bool clearChannel;
+}
+
+// Force link layer stay active
+message CmdForceActive extends Command {
+    des = LINK;
+    cmdId = CMD_LIN_FORCE_ACTIVE;
+    double duration = 0; // Active duration in seconds, use 0 (or a value < 0) for infinite
 }

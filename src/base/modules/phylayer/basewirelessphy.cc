@@ -436,7 +436,7 @@ void BaseWirelessPhy::updateNodeDisplay()
             ds.setTagArg("i", 1, "yellow");
             break;
         case IDLE:
-            ds.setTagArg("i", 1, "white");
+            ds.setTagArg("i", 1, "grey");
             break;
         default:
             ds.setTagArg("i", 1, "black");

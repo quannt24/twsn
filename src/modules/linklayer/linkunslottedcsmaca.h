@@ -68,7 +68,7 @@ class LinkUnslottedCSMACA : public BaseLink
         /** Defer sending of packet, update variables and begin next round */
         void deferPkt();
         /** Reset outPkt and switch to RX mode. Fetch next packet after IFS. */
-        void reset();
+        virtual void reset();
 
     public:
         LinkUnslottedCSMACA();

@@ -50,7 +50,7 @@ enum Mac802154PktType {
     MAC802154_DATA = 1; // 001: Payload data
     MAC802154_ACK = 2; // 010: Acknowledgement
     MAC802154_CMD = 3; // 011: MAC Command
-    // 100:111 are reserved. However, we add another type here for convenience.
+    // 100:111 are reserved. However, we add other types here for convenience.
     MAC802154_PREAMBLE = 4;
 };
 

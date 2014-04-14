@@ -382,14 +382,22 @@ $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmac
 	modules/linklayer/mac802154pkt_m.h \
 	util/twsndef.h
 $O/modules/linklayer/linkxtmac.o: modules/linklayer/linkxtmac.cc \
+	base/channelmgr/channelmgr.h \
+	base/channelmgr/phyentry.h \
 	base/messages/control/command_m.h \
+	base/messages/data/airframe_m.h \
 	base/messages/data/macpkt_m.h \
+	base/messages/data/netpkt_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/linklayer/baselink.h \
+	base/modules/phylayer/basephy.h \
+	base/modules/phylayer/basewirelessphy.h \
+	helpers/stathelper.h \
 	modules/linklayer/linkunslottedcsmaca.h \
 	modules/linklayer/linkxtmac.h \
 	modules/linklayer/mac802154pkt_m.h \
+	util/coord.h \
 	util/twsndef.h
 $O/modules/linklayer/mac802154pkt_m.o: modules/linklayer/mac802154pkt_m.cc \
 	base/messages/data/macpkt_m.h \

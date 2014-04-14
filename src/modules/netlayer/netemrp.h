@@ -49,6 +49,7 @@ class NetEMRP : public BaseNet
         NetEmrpPkt *outPkt; // Packet going to be sent
 
         /* Timers */
+        cMessage *forceActiveTimer; // Force link layer to stay active to initialize network
         cMessage *reqRelayTimer;
         cMessage *waitRelayInfoTimer;
         cMessage *waitEnergyInfoTimer;

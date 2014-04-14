@@ -46,15 +46,29 @@ void NetEMRP::initialize(int stage)
 void NetEMRP::initialize()
 {
     BaseNet::initialize();
-    // Set timer for initialize EMRP first time
+    // Force link layer to stay active to initialize network
+    scheduleAt(0, forceActiveTimer);
+
     if (!par("isBaseStation")) {
+        // Set timer for initialize EMRP first time
         scheduleAt(uniform(0, par("initInterval").doubleValue()), reqRelayTimer);
     }
 }
 
 void NetEMRP::handleSelfMsg(cMessage* msg)
 {
-    if (msg == reqRelayTimer) {
+    if (msg == forceActiveTimer) {
+        CmdForceActive *cfa = new CmdForceActive();
+        cfa->setSrc(NETW);
+        cfa->setDes(LINK);
+        if (par("isBaseStation")) {
+            cfa->setDuration(0); // Infinite
+        } else {
+            cfa->setDuration(par("initInterval").doubleValue()
+                    + uniform(0, 2 * par("waitRelayInfoTimeout").doubleValue()));
+        }
+        sendCtlDown(cfa);
+    } else if (msg == reqRelayTimer) {
         requestRelay();
     } else if (msg == waitRelayInfoTimer) {
         if (bsAddr != 0 || rnAddr != 0) {
@@ -514,6 +528,7 @@ NetEMRP::NetEMRP()
     reqRelayTimer = new cMessage("reqRelayTimer");
     waitRelayInfoTimer = new cMessage("waitRelayInfoTimer");
     waitEnergyInfoTimer = new cMessage("waitEnergyInfoTimer");
+    forceActiveTimer = new cMessage("forceActiveTimer");
 }
 
 NetEMRP::~NetEMRP()
@@ -521,6 +536,7 @@ NetEMRP::~NetEMRP()
     cancelAndDelete(reqRelayTimer);
     cancelAndDelete(waitRelayInfoTimer);
     cancelAndDelete(waitEnergyInfoTimer);
+    cancelAndDelete(forceActiveTimer);
 }
 
 }  // namespace twsn

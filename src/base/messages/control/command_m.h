@@ -56,6 +56,7 @@ enum CmdLevel {
  *     
  *     
  *     CMD_LIN_CCA_RESULT = 20; 
+ *     CMD_LIN_FORCE_ACTIVE = 21; 
  * };
  * </pre>
  */
@@ -68,7 +69,8 @@ enum CmdID {
     CMD_PHY_RX = 12,
     CMD_PHY_TX = 13,
     CMD_PHY_CCA = 14,
-    CMD_LIN_CCA_RESULT = 20
+    CMD_LIN_CCA_RESULT = 20,
+    CMD_LIN_FORCE_ACTIVE = 21
 };
 
 /**
@@ -199,6 +201,45 @@ class CmdCCAR : public ::twsn::Command
 
 inline void doPacking(cCommBuffer *b, CmdCCAR& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, CmdCCAR& obj) {obj.parsimUnpack(b);}
+
+/**
+ * Class generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * <pre>
+ * message CmdForceActive extends Command {
+ *     des = LINK;
+ *     cmdId = CMD_LIN_FORCE_ACTIVE;
+ *     double duration = 0; 
+ * }
+ * </pre>
+ */
+class CmdForceActive : public ::twsn::Command
+{
+  protected:
+    double duration_var;
+
+  private:
+    void copy(const CmdForceActive& other);
+
+  protected:
+    // protected and unimplemented operator==(), to prevent accidental usage
+    bool operator==(const CmdForceActive&);
+
+  public:
+    CmdForceActive(const char *name=NULL, int kind=0);
+    CmdForceActive(const CmdForceActive& other);
+    virtual ~CmdForceActive();
+    CmdForceActive& operator=(const CmdForceActive& other);
+    virtual CmdForceActive *dup() const {return new CmdForceActive(*this);}
+    virtual void parsimPack(cCommBuffer *b);
+    virtual void parsimUnpack(cCommBuffer *b);
+
+    // field getter/setter methods
+    virtual double getDuration() const;
+    virtual void setDuration(double duration);
+};
+
+inline void doPacking(cCommBuffer *b, CmdForceActive& obj) {obj.parsimPack(b);}
+inline void doUnpacking(cCommBuffer *b, CmdForceActive& obj) {obj.parsimUnpack(b);}
 
 }; // end namespace twsn
 

@@ -23,7 +23,7 @@ Define_Module(LinkUnslottedCSMACA);
 
 void LinkUnslottedCSMACA::initialize()
 {
-    BaseLink::initialized();
+    BaseLink::initialize();
     aMaxBE = par("aMaxBE").longValue();
     macMaxNB = par("macMaxNB").longValue();
     macMinBE = par("macMinBE").longValue();
@@ -96,6 +96,7 @@ void LinkUnslottedCSMACA::handleUpperCtl(cMessage* msg)
             if (cmd->getDes() != LINK)
                 sendCtlDown(cmd);
             else
+                printError(WARNING, "Unknown command from upper");
                 delete cmd; // Unknown command
             break;
     }
