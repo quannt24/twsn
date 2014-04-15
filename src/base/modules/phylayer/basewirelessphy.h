@@ -21,7 +21,7 @@
 #include "basephy.h"
 #include "channelmgr.h"
 #include "airframe_m.h"
-#include "macpkt_m.h"
+#include "mac802154pkt_m.h"
 #include "command_m.h"
 
 namespace twsn {
@@ -86,7 +86,7 @@ class BaseWirelessPhy : public BasePhy
         virtual void fetchPacket();
 
         /** Transmit a MAC packet (broadcast or unicast) */
-        virtual void txMacPkt(MacPkt *pkt);
+        virtual void txMacPkt(Mac802154Pkt *pkt);
         /** Finish transmission */
         virtual void finishTx();
 

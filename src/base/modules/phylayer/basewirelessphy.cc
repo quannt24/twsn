@@ -96,7 +96,7 @@ void BaseWirelessPhy::handleSelfMsg(cMessage* msg)
     } else if (msg == ccaTimer) {
         senseChannel();
     } else if (msg == txTimer) {
-        txMacPkt(check_and_cast<MacPkt*>((MacPkt*) msg->getContextPointer()));
+        txMacPkt(check_and_cast<Mac802154Pkt*>((Mac802154Pkt*) msg->getContextPointer()));
     }
 }
 
@@ -108,7 +108,7 @@ void BaseWirelessPhy::handleUpperMsg(cMessage* msg)
 
     if (!finishTxTimer->isScheduled()) {
         if (radioMode == TX) {
-            txMacPkt(check_and_cast<MacPkt*>(msg));
+            txMacPkt(check_and_cast<Mac802154Pkt*>(msg));
         } else {
             // Switch to TX mode then transmit
             if (!switchTxTimer->isScheduled()) switchRadioMode(TX);
@@ -117,10 +117,13 @@ void BaseWirelessPhy::handleUpperMsg(cMessage* msg)
             scheduleAt(switchTxTimer->getArrivalTime(), txTimer);
         }
     } else {
+        Mac802154Pkt *pkt = check_and_cast<Mac802154Pkt*>(msg);
+        if (pkt->getPktType() != MAC802154_PREAMBLE) {
+            // Count packet loss
+            StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+            sh->countLostMacPkt();
+        }
         delete msg;
-        // Count packet loss
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countLostMacPkt();
     }
 }
 
@@ -223,7 +226,7 @@ void BaseWirelessPhy::fetchPacket()
     sendCtlUp(cmd);
 }
 
-void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
+void BaseWirelessPhy::txMacPkt(Mac802154Pkt* pkt)
 {
     if (channelMgr == NULL || phyEntry == NULL) {
         printError(ERROR, "Module has not registered with ChannelMgr. Dropping packet.");
@@ -232,10 +235,10 @@ void BaseWirelessPhy::txMacPkt(MacPkt* pkt)
     }
     if (radioMode != TX) {
         printError(WARNING, "Cannot transmit when not in TX mode. Dropping packet.");
-        delete pkt;
         // Count packet loss
         StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countLostMacPkt();
+        if (pkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+        delete pkt;
         return;
     }
 
@@ -309,10 +312,11 @@ void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
     /* Receiver is out-ranged. Transmission (in this node) is still simulated, but frame will be
      * dropped here.*/
     printError(ERROR, "Cannot send to an out-ranged node. Dropping frame.");
-    delete frame;
+    Mac802154Pkt *pkt = check_and_cast<Mac802154Pkt*>(frame->getEncapsulatedPacket());
     // Count packet loss
     StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-    sh->countLostMacPkt();
+    if (pkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+    delete frame;
 }
 
 void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
@@ -327,10 +331,11 @@ void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
 
     if (radioMode != RX) {
         printError(INFO, "Cannot receive when not in RX mode. Dropping frame.");
-        delete frame;
+        Mac802154Pkt *pkt = check_and_cast<Mac802154Pkt*>(frame->getEncapsulatedPacket());
         // Count packet loss
         StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countLostMacPkt();
+        if (pkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+        delete frame;
         return;
     }
 

@@ -3,6 +3,8 @@
   <inputs>
     <inputs name="/TWSN/simulations/results/Config2-*.vec"/>
     <inputs name="/TWSN/simulations/results/Config2-*.sca"/>
+    <inputs name="*.vec"/>
+    <inputs name="*.sca"/>
   </inputs>
   <datasets>
     <datasets name="R">

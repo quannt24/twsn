@@ -302,6 +302,7 @@ $O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessph
 	base/modules/phylayer/basephy.h \
 	base/modules/phylayer/basewirelessphy.h \
 	helpers/stathelper.h \
+	modules/linklayer/mac802154pkt_m.h \
 	util/coord.h \
 	util/twsndef.h
 $O/base/modules/queue/downqueue.o: base/modules/queue/downqueue.cc \

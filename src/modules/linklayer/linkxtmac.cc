@@ -137,10 +137,10 @@ void LinkXTMAC::handleUpperMsg(cMessage* msg)
         }
     } else {
         printError(ERROR, "Not ready for sending");
-        delete msg;
         // Count packet loss
         StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
         sh->countLostMacPkt();
+        delete msg;
     }
 }
 
@@ -184,14 +184,14 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
 
     if (macpkt->hasBitError()) {
         getParentModule()->bubble("Packet error");
-        delete msg;
         // Count packet loss
-        sh->countLostMacPkt();
+        if (macpkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+        delete macpkt;
         return;
     }
 
     // Count received packet
-    sh->countRecvMacPkt();
+    if (macpkt->getPktType() != MAC802154_PREAMBLE) sh->countRecvMacPkt();
 
     switch (macpkt->getPktType()) {
         case MAC802154_DATA:
@@ -213,6 +213,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
                 sendAck(macpkt->getSrcAddr());
             } else if (macpkt->getDesAddr() == MAC_BROADCAST_ADDR) {
                 activate();
+                // We do not send ACK to broadcasted strobes
             }
             delete macpkt;
             break;
@@ -239,10 +240,10 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
 
         default:
             printError(WARNING, "Unknown MAC packet type");
-            delete macpkt;
             // Count packet loss
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-            sh->countLostMacPkt();
+            if (macpkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+            delete macpkt;
             break;
     }
 }
