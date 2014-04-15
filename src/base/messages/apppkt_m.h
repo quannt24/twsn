@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/apppkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/apppkt.msg.
 //
 
 #ifndef _TWSN_APPPKT_M_H_
@@ -21,7 +21,7 @@
 namespace twsn {
 
 /**
- * Enum generated from <tt>base/messages/data/apppkt.msg</tt> by opp_msgc.
+ * Enum generated from <tt>base/messages/apppkt.msg</tt> by opp_msgc.
  * <pre>
  * enum RoutingType {
  *     RT_TO_AN = 0; 
@@ -37,7 +37,7 @@ enum RoutingType {
 };
 
 /**
- * Class generated from <tt>base/messages/data/apppkt.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/apppkt.msg</tt> by opp_msgc.
  * <pre>
  * packet AppPkt {
  *     

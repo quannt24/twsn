@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from modules/linklayer/mac802154pkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/mac802154pkt.msg.
 //
 
 #ifndef _TWSN_MAC802154PKT_M_H_
@@ -22,7 +22,7 @@
 namespace twsn {
 
 /**
- * Enum generated from <tt>modules/linklayer/mac802154pkt.msg</tt> by opp_msgc.
+ * Enum generated from <tt>base/messages/mac802154pkt.msg</tt> by opp_msgc.
  * <pre>
  * enum Mac802154PktType {
  *     MAC802154_BEACON = 0; 
@@ -43,7 +43,7 @@ enum Mac802154PktType {
 };
 
 /**
- * Class generated from <tt>modules/linklayer/mac802154pkt.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/mac802154pkt.msg</tt> by opp_msgc.
  * <pre>
  * packet Mac802154Pkt extends MacPkt {
  * 	int pktType = MAC802154_DATA; 

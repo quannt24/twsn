@@ -18,10 +18,10 @@ package twsn.base.modules.phylayer;
 //
 // Base module for wireless physical layer
 //
-simple BaseWirelessPhy extends BasePhy like IWirelessPhy
+simple Base802154Phy extends BasePhy like IWirelessPhy
 {
     parameters:
-        @class("twsn::BaseWirelessPhy");
+        @class("twsn::Base802154Phy");
 
         // For simplicity, all physical modules are assumed having the same signal sensitivity,
         // so that we can simulate a fixed transmission range for each physical module.
@@ -34,19 +34,19 @@ simple BaseWirelessPhy extends BasePhy like IWirelessPhy
         int initRadioMode = default(1);
 
         // Radio mode switching delay
-        double delayIdleToRx @unit(s) = default(0 s);
-        double delayIdleToTx @unit(s) = default(0 s);
+        double delayIdleToRx @unit(s) = default(0.000192 s);
+        double delayIdleToTx @unit(s) = default(0.000192 s);
 
         double delayRxToIdle @unit(s) = default(0 s);
-        double delayRxToTx @unit(s) = default(0 s);
+        double delayRxToTx @unit(s) = default(0.000192 s);
 
         double delayTxToIdle @unit(s) = default(0 s);
-        double delayTxToRx @unit(s) = default(0 s);
+        double delayTxToRx @unit(s) = default(0.000192 s);
 
         // Power consumption
-        double pIdle @unit(mW) = default(0 mW);
-        double pRx @unit(mW) = default(0 mW);
-        double pTx @unit(mW) = default(0 mW);
+        double pIdle @unit(mW) = default(1.278 mW);
+        double pRx @unit(mW) = default(56.4 mW);
+        double pTx @unit(mW) = default(52.2 mW);
         // Period for planning timer to calculate and draw energy from power source (simulate
         // continuous draw)
         double drawPeriod = default(1);

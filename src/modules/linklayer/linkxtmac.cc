@@ -16,7 +16,7 @@
 #include "linkxtmac.h"
 #include "netpkt_m.h"
 #include "stathelper.h"
-#include "basewirelessphy.h"
+#include "base802154phy.h"
 
 namespace twsn {
 
@@ -325,7 +325,7 @@ void LinkXTMAC::sendAck(macaddr_t addr)
 
 void LinkXTMAC::switchToRx()
 {
-    BaseWirelessPhy *phy = check_and_cast<BaseWirelessPhy*>(getModuleByPath("^.phy"));
+    Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
     if (phy->getRadioMode() == IDLE) {
         Command *cmd = new Command();
         cmd->setSrc(LINK);
@@ -337,7 +337,7 @@ void LinkXTMAC::switchToRx()
 
 void LinkXTMAC::switchToIdle()
 {
-    BaseWirelessPhy *phy = check_and_cast<BaseWirelessPhy*>(getModuleByPath("^.phy"));
+    Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
     if (phy->getRadioMode() != IDLE) {
         Command *cmd = new Command();
         cmd->setSrc(LINK);

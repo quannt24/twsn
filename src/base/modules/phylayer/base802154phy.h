@@ -31,7 +31,7 @@ enum RadioMode {POWER_DOWN = 0, IDLE = 1, RX = 2, TX = 3};
 /**
  * Base module for wireless physical layer
  */
-class BaseWirelessPhy : public BasePhy
+class Base802154Phy : public BasePhy
 {
     protected:
         /* ChannelMgr object simulating wireless channel */
@@ -113,8 +113,8 @@ class BaseWirelessPhy : public BasePhy
         virtual void draw();
 
     public:
-        BaseWirelessPhy();
-        ~BaseWirelessPhy();
+        Base802154Phy();
+        ~Base802154Phy();
         int getRadioMode() { return radioMode; }
 };
 

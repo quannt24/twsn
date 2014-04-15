@@ -21,8 +21,6 @@ INCLUDE_PATH = \
     -Ibase/entities \
     -Ibase/entities/nodes \
     -Ibase/messages \
-    -Ibase/messages/control \
-    -Ibase/messages/data \
     -Ibase/modules \
     -Ibase/modules/applayer \
     -Ibase/modules/energy \
@@ -71,7 +69,7 @@ OBJS = \
     $O/base/modules/mobility/basemobility.o \
     $O/base/modules/netlayer/basenet.o \
     $O/base/modules/phylayer/basephy.o \
-    $O/base/modules/phylayer/basewirelessphy.o \
+    $O/base/modules/phylayer/base802154phy.o \
     $O/base/modules/queue/downqueue.o \
     $O/helpers/stathelper.o \
     $O/helpers/decohelper.o \
@@ -89,25 +87,25 @@ OBJS = \
     $O/util/coord.o \
     $O/util/measurement.o \
     $O/util/gaussiannoise.o \
-    $O/base/messages/control/command_m.o \
-    $O/base/messages/data/airframe_m.o \
-    $O/base/messages/data/apppkt_m.o \
-    $O/base/messages/data/netpkt_m.o \
-    $O/base/messages/data/macpkt_m.o \
+    $O/base/messages/airframe_m.o \
+    $O/base/messages/apppkt_m.o \
+    $O/base/messages/netpkt_m.o \
+    $O/base/messages/command_m.o \
+    $O/base/messages/macpkt_m.o \
+    $O/base/messages/mac802154pkt_m.o \
     $O/modules/applayer/tracking/apptrackingpkt_m.o \
-    $O/modules/linklayer/mac802154pkt_m.o \
     $O/modules/netlayer/netemrppkt_m.o \
     $O/modules/other/sensemsg_m.o
 
 # Message files
 MSGFILES = \
-    base/messages/control/command.msg \
-    base/messages/data/airframe.msg \
-    base/messages/data/apppkt.msg \
-    base/messages/data/netpkt.msg \
-    base/messages/data/macpkt.msg \
+    base/messages/airframe.msg \
+    base/messages/apppkt.msg \
+    base/messages/netpkt.msg \
+    base/messages/command.msg \
+    base/messages/macpkt.msg \
+    base/messages/mac802154pkt.msg \
     modules/applayer/tracking/apptrackingpkt.msg \
-    modules/linklayer/mac802154pkt.msg \
     modules/netlayer/netemrppkt.msg \
     modules/other/sensemsg.msg
 
@@ -188,8 +186,6 @@ clean:
 	$(Q)-rm -f base/entities/*_m.cc base/entities/*_m.h
 	$(Q)-rm -f base/entities/nodes/*_m.cc base/entities/nodes/*_m.h
 	$(Q)-rm -f base/messages/*_m.cc base/messages/*_m.h
-	$(Q)-rm -f base/messages/control/*_m.cc base/messages/control/*_m.h
-	$(Q)-rm -f base/messages/data/*_m.cc base/messages/data/*_m.h
 	$(Q)-rm -f base/modules/*_m.cc base/modules/*_m.h
 	$(Q)-rm -f base/modules/applayer/*_m.cc base/modules/applayer/*_m.h
 	$(Q)-rm -f base/modules/energy/*_m.cc base/modules/energy/*_m.h
@@ -220,13 +216,13 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/messages/control/*.cc base/messages/data/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/applayer/tracking/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc modules/phylayer/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/applayer/tracking/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc modules/phylayer/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
 	base/channelmgr/channelmgr.h \
 	base/channelmgr/phyentry.h \
-	base/messages/data/airframe_m.h \
+	base/messages/airframe_m.h \
 	base/modules/basesimple.h \
 	util/coord.h \
 	util/twsndef.h
@@ -234,22 +230,26 @@ $O/base/channelmgr/phyentry.o: base/channelmgr/phyentry.cc \
 	base/channelmgr/phyentry.h \
 	util/coord.h \
 	util/twsndef.h
-$O/base/messages/control/command_m.o: base/messages/control/command_m.cc \
-	base/messages/control/command_m.h
-$O/base/messages/data/airframe_m.o: base/messages/data/airframe_m.cc \
-	base/messages/data/airframe_m.h \
+$O/base/messages/airframe_m.o: base/messages/airframe_m.cc \
+	base/messages/airframe_m.h \
 	util/twsndef.h
-$O/base/messages/data/apppkt_m.o: base/messages/data/apppkt_m.cc \
-	base/messages/data/apppkt_m.h \
+$O/base/messages/apppkt_m.o: base/messages/apppkt_m.cc \
+	base/messages/apppkt_m.h \
 	util/twsndef.h
-$O/base/messages/data/macpkt_m.o: base/messages/data/macpkt_m.cc \
-	base/messages/data/macpkt_m.h \
+$O/base/messages/command_m.o: base/messages/command_m.cc \
+	base/messages/command_m.h
+$O/base/messages/mac802154pkt_m.o: base/messages/mac802154pkt_m.cc \
+	base/messages/mac802154pkt_m.h \
+	base/messages/macpkt_m.h \
 	util/twsndef.h
-$O/base/messages/data/netpkt_m.o: base/messages/data/netpkt_m.cc \
-	base/messages/data/netpkt_m.h \
+$O/base/messages/macpkt_m.o: base/messages/macpkt_m.cc \
+	base/messages/macpkt_m.h \
+	util/twsndef.h
+$O/base/messages/netpkt_m.o: base/messages/netpkt_m.cc \
+	base/messages/netpkt_m.h \
 	util/twsndef.h
 $O/base/modules/baselayer.o: base/modules/baselayer.cc \
-	base/messages/control/command_m.h \
+	base/messages/command_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	util/twsndef.h
@@ -257,7 +257,7 @@ $O/base/modules/basesimple.o: base/modules/basesimple.cc \
 	base/modules/basesimple.h \
 	util/twsndef.h
 $O/base/modules/applayer/baseapp.o: base/modules/applayer/baseapp.cc \
-	base/messages/control/command_m.h \
+	base/messages/command_m.h \
 	base/modules/applayer/baseapp.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
@@ -267,7 +267,7 @@ $O/base/modules/energy/baseenergy.o: base/modules/energy/baseenergy.cc \
 	base/modules/energy/baseenergy.h \
 	util/twsndef.h
 $O/base/modules/linklayer/baselink.o: base/modules/linklayer/baselink.cc \
-	base/messages/control/command_m.h \
+	base/messages/command_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/linklayer/baselink.h \
@@ -278,35 +278,35 @@ $O/base/modules/mobility/basemobility.o: base/modules/mobility/basemobility.cc \
 	util/coord.h \
 	util/twsndef.h
 $O/base/modules/netlayer/basenet.o: base/modules/netlayer/basenet.cc \
-	base/messages/control/command_m.h \
+	base/messages/command_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
 	util/coord.h \
 	util/twsndef.h
-$O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
-	base/messages/data/macpkt_m.h \
-	base/modules/basesimple.h \
-	base/modules/phylayer/basephy.h \
-	util/twsndef.h
-$O/base/modules/phylayer/basewirelessphy.o: base/modules/phylayer/basewirelessphy.cc \
+$O/base/modules/phylayer/base802154phy.o: base/modules/phylayer/base802154phy.cc \
 	base/channelmgr/channelmgr.h \
 	base/channelmgr/phyentry.h \
-	base/messages/control/command_m.h \
-	base/messages/data/airframe_m.h \
-	base/messages/data/macpkt_m.h \
+	base/messages/airframe_m.h \
+	base/messages/command_m.h \
+	base/messages/mac802154pkt_m.h \
+	base/messages/macpkt_m.h \
 	base/modules/basesimple.h \
 	base/modules/energy/baseenergy.h \
 	base/modules/mobility/basemobility.h \
+	base/modules/phylayer/base802154phy.h \
 	base/modules/phylayer/basephy.h \
-	base/modules/phylayer/basewirelessphy.h \
 	helpers/stathelper.h \
-	modules/linklayer/mac802154pkt_m.h \
 	util/coord.h \
 	util/twsndef.h
+$O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
+	base/messages/macpkt_m.h \
+	base/modules/basesimple.h \
+	base/modules/phylayer/basephy.h \
+	util/twsndef.h
 $O/base/modules/queue/downqueue.o: base/modules/queue/downqueue.cc \
-	base/messages/control/command_m.h \
+	base/messages/command_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/queue/downqueue.h \
@@ -321,7 +321,7 @@ $O/helpers/stathelper.o: helpers/stathelper.cc \
 	helpers/stathelper.h \
 	util/twsndef.h
 $O/helpers/worldhelper.o: helpers/worldhelper.cc \
-	base/messages/control/command_m.h \
+	base/messages/command_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/mobility/basemobility.h \
@@ -330,8 +330,8 @@ $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	util/coord.h \
 	util/twsndef.h
 $O/modules/applayer/tracking/apptrackingbs.o: modules/applayer/tracking/apptrackingbs.cc \
-	base/messages/control/command_m.h \
-	base/messages/data/apppkt_m.h \
+	base/messages/apppkt_m.h \
+	base/messages/command_m.h \
 	base/modules/applayer/baseapp.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
@@ -343,15 +343,15 @@ $O/modules/applayer/tracking/apptrackingbs.o: modules/applayer/tracking/apptrack
 	util/measurement.h \
 	util/twsndef.h
 $O/modules/applayer/tracking/apptrackingpkt_m.o: modules/applayer/tracking/apptrackingpkt_m.cc \
-	base/messages/data/apppkt_m.h \
+	base/messages/apppkt_m.h \
 	modules/applayer/tracking/apptrackingpkt_m.h \
 	modules/applayer/tracking/targetpos.h \
 	util/coord.h \
 	util/measurement.h \
 	util/twsndef.h
 $O/modules/applayer/tracking/apptrackingsensor.o: modules/applayer/tracking/apptrackingsensor.cc \
-	base/messages/control/command_m.h \
-	base/messages/data/apppkt_m.h \
+	base/messages/apppkt_m.h \
+	base/messages/command_m.h \
 	base/modules/applayer/baseapp.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
@@ -372,37 +372,33 @@ $O/modules/applayer/tracking/targettrace.o: modules/applayer/tracking/targettrac
 	util/coord.h \
 	util/twsndef.h
 $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmaca.cc \
-	base/messages/control/command_m.h \
-	base/messages/data/macpkt_m.h \
-	base/messages/data/netpkt_m.h \
+	base/messages/command_m.h \
+	base/messages/mac802154pkt_m.h \
+	base/messages/macpkt_m.h \
+	base/messages/netpkt_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/linklayer/baselink.h \
 	helpers/stathelper.h \
 	modules/linklayer/linkunslottedcsmaca.h \
-	modules/linklayer/mac802154pkt_m.h \
 	util/twsndef.h
 $O/modules/linklayer/linkxtmac.o: modules/linklayer/linkxtmac.cc \
 	base/channelmgr/channelmgr.h \
 	base/channelmgr/phyentry.h \
-	base/messages/control/command_m.h \
-	base/messages/data/airframe_m.h \
-	base/messages/data/macpkt_m.h \
-	base/messages/data/netpkt_m.h \
+	base/messages/airframe_m.h \
+	base/messages/command_m.h \
+	base/messages/mac802154pkt_m.h \
+	base/messages/macpkt_m.h \
+	base/messages/netpkt_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/linklayer/baselink.h \
+	base/modules/phylayer/base802154phy.h \
 	base/modules/phylayer/basephy.h \
-	base/modules/phylayer/basewirelessphy.h \
 	helpers/stathelper.h \
 	modules/linklayer/linkunslottedcsmaca.h \
 	modules/linklayer/linkxtmac.h \
-	modules/linklayer/mac802154pkt_m.h \
 	util/coord.h \
-	util/twsndef.h
-$O/modules/linklayer/mac802154pkt_m.o: modules/linklayer/mac802154pkt_m.cc \
-	base/messages/data/macpkt_m.h \
-	modules/linklayer/mac802154pkt_m.h \
 	util/twsndef.h
 $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	base/modules/basesimple.h \
@@ -411,9 +407,9 @@ $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	util/coord.h \
 	util/twsndef.h
 $O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
-	base/messages/control/command_m.h \
-	base/messages/data/apppkt_m.h \
-	base/messages/data/netpkt_m.h \
+	base/messages/apppkt_m.h \
+	base/messages/command_m.h \
+	base/messages/netpkt_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
 	base/modules/energy/baseenergy.h \
@@ -426,7 +422,7 @@ $O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
 	util/coord.h \
 	util/twsndef.h
 $O/modules/netlayer/netemrppkt_m.o: modules/netlayer/netemrppkt_m.cc \
-	base/messages/data/netpkt_m.h \
+	base/messages/netpkt_m.h \
 	modules/netlayer/netemrppkt_m.h \
 	util/twsndef.h
 $O/modules/other/acousticgenerator.o: modules/other/acousticgenerator.cc \

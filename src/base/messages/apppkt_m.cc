@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/macpkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/apppkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "macpkt_m.h"
+#include "apppkt_m.h"
 
 USING_NAMESPACE
 
@@ -33,23 +33,32 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 namespace twsn {
 
-Register_Class(MacPkt);
+EXECUTE_ON_STARTUP(
+    cEnum *e = cEnum::find("twsn::RoutingType");
+    if (!e) enums.getInstance()->add(e = new cEnum("twsn::RoutingType"));
+    e->insert(RT_TO_AN, "RT_TO_AN");
+    e->insert(RT_TO_BS, "RT_TO_BS");
+    e->insert(RT_BROADCAST, "RT_BROADCAST");
+);
 
-MacPkt::MacPkt(const char *name, int kind) : ::cPacket(name,kind)
+Register_Class(AppPkt);
+
+AppPkt::AppPkt(const char *name, int kind) : ::cPacket(name,kind)
 {
-    this->pktSize_var = 16;
+    this->routingType_var = RT_TO_AN;
+    this->pktSize_var = 1;
 }
 
-MacPkt::MacPkt(const MacPkt& other) : ::cPacket(other)
+AppPkt::AppPkt(const AppPkt& other) : ::cPacket(other)
 {
     copy(other);
 }
 
-MacPkt::~MacPkt()
+AppPkt::~AppPkt()
 {
 }
 
-MacPkt& MacPkt::operator=(const MacPkt& other)
+AppPkt& AppPkt::operator=(const AppPkt& other)
 {
     if (this==&other) return *this;
     ::cPacket::operator=(other);
@@ -57,64 +66,77 @@ MacPkt& MacPkt::operator=(const MacPkt& other)
     return *this;
 }
 
-void MacPkt::copy(const MacPkt& other)
+void AppPkt::copy(const AppPkt& other)
 {
-    this->srcAddr_var = other.srcAddr_var;
-    this->desAddr_var = other.desAddr_var;
+    this->srcNetAddr_var = other.srcNetAddr_var;
+    this->desNetAddr_var = other.desNetAddr_var;
+    this->routingType_var = other.routingType_var;
     this->pktSize_var = other.pktSize_var;
 }
 
-void MacPkt::parsimPack(cCommBuffer *b)
+void AppPkt::parsimPack(cCommBuffer *b)
 {
     ::cPacket::parsimPack(b);
-    doPacking(b,this->srcAddr_var);
-    doPacking(b,this->desAddr_var);
+    doPacking(b,this->srcNetAddr_var);
+    doPacking(b,this->desNetAddr_var);
+    doPacking(b,this->routingType_var);
     doPacking(b,this->pktSize_var);
 }
 
-void MacPkt::parsimUnpack(cCommBuffer *b)
+void AppPkt::parsimUnpack(cCommBuffer *b)
 {
     ::cPacket::parsimUnpack(b);
-    doUnpacking(b,this->srcAddr_var);
-    doUnpacking(b,this->desAddr_var);
+    doUnpacking(b,this->srcNetAddr_var);
+    doUnpacking(b,this->desNetAddr_var);
+    doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->pktSize_var);
 }
 
-twsn::macaddr_t& MacPkt::getSrcAddr()
+twsn::netaddr_t& AppPkt::getSrcNetAddr()
 {
-    return srcAddr_var;
+    return srcNetAddr_var;
 }
 
-void MacPkt::setSrcAddr(const twsn::macaddr_t& srcAddr)
+void AppPkt::setSrcNetAddr(const twsn::netaddr_t& srcNetAddr)
 {
-    this->srcAddr_var = srcAddr;
+    this->srcNetAddr_var = srcNetAddr;
 }
 
-twsn::macaddr_t& MacPkt::getDesAddr()
+twsn::netaddr_t& AppPkt::getDesNetAddr()
 {
-    return desAddr_var;
+    return desNetAddr_var;
 }
 
-void MacPkt::setDesAddr(const twsn::macaddr_t& desAddr)
+void AppPkt::setDesNetAddr(const twsn::netaddr_t& desNetAddr)
 {
-    this->desAddr_var = desAddr;
+    this->desNetAddr_var = desNetAddr;
 }
 
-int MacPkt::getPktSize() const
+int AppPkt::getRoutingType() const
+{
+    return routingType_var;
+}
+
+void AppPkt::setRoutingType(int routingType)
+{
+    this->routingType_var = routingType;
+}
+
+int AppPkt::getPktSize() const
 {
     return pktSize_var;
 }
 
-void MacPkt::setPktSize(int pktSize)
+void AppPkt::setPktSize(int pktSize)
 {
     this->pktSize_var = pktSize;
 }
 
-class MacPktDescriptor : public cClassDescriptor
+class AppPktDescriptor : public cClassDescriptor
 {
   public:
-    MacPktDescriptor();
-    virtual ~MacPktDescriptor();
+    AppPktDescriptor();
+    virtual ~AppPktDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -133,34 +155,34 @@ class MacPktDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(MacPktDescriptor);
+Register_ClassDescriptor(AppPktDescriptor);
 
-MacPktDescriptor::MacPktDescriptor() : cClassDescriptor("twsn::MacPkt", "cPacket")
+AppPktDescriptor::AppPktDescriptor() : cClassDescriptor("twsn::AppPkt", "cPacket")
 {
 }
 
-MacPktDescriptor::~MacPktDescriptor()
+AppPktDescriptor::~AppPktDescriptor()
 {
 }
 
-bool MacPktDescriptor::doesSupport(cObject *obj) const
+bool AppPktDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<MacPkt *>(obj)!=NULL;
+    return dynamic_cast<AppPkt *>(obj)!=NULL;
 }
 
-const char *MacPktDescriptor::getProperty(const char *propertyname) const
+const char *AppPktDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int MacPktDescriptor::getFieldCount(void *object) const
+int AppPktDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
+    return basedesc ? 4+basedesc->getFieldCount(object) : 4;
 }
 
-unsigned int MacPktDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int AppPktDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -172,11 +194,12 @@ unsigned int MacPktDescriptor::getFieldTypeFlags(void *object, int field) const
         FD_ISCOMPOUND,
         FD_ISCOMPOUND,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<4) ? fieldTypeFlags[field] : 0;
 }
 
-const char *MacPktDescriptor::getFieldName(void *object, int field) const
+const char *AppPktDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -185,24 +208,26 @@ const char *MacPktDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "srcAddr",
-        "desAddr",
+        "srcNetAddr",
+        "desNetAddr",
+        "routingType",
         "pktSize",
     };
-    return (field>=0 && field<3) ? fieldNames[field] : NULL;
+    return (field>=0 && field<4) ? fieldNames[field] : NULL;
 }
 
-int MacPktDescriptor::findField(void *object, const char *fieldName) const
+int AppPktDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+1;
-    if (fieldName[0]=='p' && strcmp(fieldName, "pktSize")==0) return base+2;
+    if (fieldName[0]=='s' && strcmp(fieldName, "srcNetAddr")==0) return base+0;
+    if (fieldName[0]=='d' && strcmp(fieldName, "desNetAddr")==0) return base+1;
+    if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+2;
+    if (fieldName[0]=='p' && strcmp(fieldName, "pktSize")==0) return base+3;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *MacPktDescriptor::getFieldTypeString(void *object, int field) const
+const char *AppPktDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -211,14 +236,15 @@ const char *MacPktDescriptor::getFieldTypeString(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldTypeStrings[] = {
-        "macaddr_t",
-        "macaddr_t",
+        "netaddr_t",
+        "netaddr_t",
+        "int",
         "int",
     };
-    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<4) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *MacPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *AppPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -231,7 +257,7 @@ const char *MacPktDescriptor::getFieldProperty(void *object, int field, const ch
     }
 }
 
-int MacPktDescriptor::getArraySize(void *object, int field) const
+int AppPktDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -239,13 +265,13 @@ int MacPktDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    MacPkt *pp = (MacPkt *)object; (void)pp;
+    AppPkt *pp = (AppPkt *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string MacPktDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string AppPktDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -253,16 +279,17 @@ std::string MacPktDescriptor::getFieldAsString(void *object, int field, int i) c
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    MacPkt *pp = (MacPkt *)object; (void)pp;
+    AppPkt *pp = (AppPkt *)object; (void)pp;
     switch (field) {
-        case 0: {std::stringstream out; out << pp->getSrcAddr(); return out.str();}
-        case 1: {std::stringstream out; out << pp->getDesAddr(); return out.str();}
-        case 2: return long2string(pp->getPktSize());
+        case 0: {std::stringstream out; out << pp->getSrcNetAddr(); return out.str();}
+        case 1: {std::stringstream out; out << pp->getDesNetAddr(); return out.str();}
+        case 2: return long2string(pp->getRoutingType());
+        case 3: return long2string(pp->getPktSize());
         default: return "";
     }
 }
 
-bool MacPktDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool AppPktDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -270,14 +297,15 @@ bool MacPktDescriptor::setFieldAsString(void *object, int field, int i, const ch
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    MacPkt *pp = (MacPkt *)object; (void)pp;
+    AppPkt *pp = (AppPkt *)object; (void)pp;
     switch (field) {
-        case 2: pp->setPktSize(string2long(value)); return true;
+        case 2: pp->setRoutingType(string2long(value)); return true;
+        case 3: pp->setPktSize(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *MacPktDescriptor::getFieldStructName(void *object, int field) const
+const char *AppPktDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -286,14 +314,15 @@ const char *MacPktDescriptor::getFieldStructName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldStructNames[] = {
-        "twsn::macaddr_t",
-        "twsn::macaddr_t",
+        "twsn::netaddr_t",
+        "twsn::netaddr_t",
+        NULL,
         NULL,
     };
-    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<4) ? fieldStructNames[field] : NULL;
 }
 
-void *MacPktDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *AppPktDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -301,10 +330,10 @@ void *MacPktDescriptor::getFieldStructPointer(void *object, int field, int i) co
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    MacPkt *pp = (MacPkt *)object; (void)pp;
+    AppPkt *pp = (AppPkt *)object; (void)pp;
     switch (field) {
-        case 0: return (void *)(&pp->getSrcAddr()); break;
-        case 1: return (void *)(&pp->getDesAddr()); break;
+        case 0: return (void *)(&pp->getSrcNetAddr()); break;
+        case 1: return (void *)(&pp->getDesNetAddr()); break;
         default: return NULL;
     }
 }

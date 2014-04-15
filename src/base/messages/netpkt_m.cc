@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/apppkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/netpkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "apppkt_m.h"
+#include "netpkt_m.h"
 
 USING_NAMESPACE
 
@@ -33,32 +33,25 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 namespace twsn {
 
-EXECUTE_ON_STARTUP(
-    cEnum *e = cEnum::find("twsn::RoutingType");
-    if (!e) enums.getInstance()->add(e = new cEnum("twsn::RoutingType"));
-    e->insert(RT_TO_AN, "RT_TO_AN");
-    e->insert(RT_TO_BS, "RT_TO_BS");
-    e->insert(RT_BROADCAST, "RT_BROADCAST");
-);
+Register_Class(NetPkt);
 
-Register_Class(AppPkt);
-
-AppPkt::AppPkt(const char *name, int kind) : ::cPacket(name,kind)
+NetPkt::NetPkt(const char *name, int kind) : ::cPacket(name,kind)
 {
-    this->routingType_var = RT_TO_AN;
-    this->pktSize_var = 1;
+    this->preambleFlag_var = false;
+    this->hopLimit_var = 64;
+    this->pktSize_var = 18;
 }
 
-AppPkt::AppPkt(const AppPkt& other) : ::cPacket(other)
+NetPkt::NetPkt(const NetPkt& other) : ::cPacket(other)
 {
     copy(other);
 }
 
-AppPkt::~AppPkt()
+NetPkt::~NetPkt()
 {
 }
 
-AppPkt& AppPkt::operator=(const AppPkt& other)
+NetPkt& NetPkt::operator=(const NetPkt& other)
 {
     if (this==&other) return *this;
     ::cPacket::operator=(other);
@@ -66,77 +59,90 @@ AppPkt& AppPkt::operator=(const AppPkt& other)
     return *this;
 }
 
-void AppPkt::copy(const AppPkt& other)
+void NetPkt::copy(const NetPkt& other)
 {
-    this->srcNetAddr_var = other.srcNetAddr_var;
-    this->desNetAddr_var = other.desNetAddr_var;
-    this->routingType_var = other.routingType_var;
+    this->srcAddr_var = other.srcAddr_var;
+    this->desAddr_var = other.desAddr_var;
+    this->preambleFlag_var = other.preambleFlag_var;
+    this->hopLimit_var = other.hopLimit_var;
     this->pktSize_var = other.pktSize_var;
 }
 
-void AppPkt::parsimPack(cCommBuffer *b)
+void NetPkt::parsimPack(cCommBuffer *b)
 {
     ::cPacket::parsimPack(b);
-    doPacking(b,this->srcNetAddr_var);
-    doPacking(b,this->desNetAddr_var);
-    doPacking(b,this->routingType_var);
+    doPacking(b,this->srcAddr_var);
+    doPacking(b,this->desAddr_var);
+    doPacking(b,this->preambleFlag_var);
+    doPacking(b,this->hopLimit_var);
     doPacking(b,this->pktSize_var);
 }
 
-void AppPkt::parsimUnpack(cCommBuffer *b)
+void NetPkt::parsimUnpack(cCommBuffer *b)
 {
     ::cPacket::parsimUnpack(b);
-    doUnpacking(b,this->srcNetAddr_var);
-    doUnpacking(b,this->desNetAddr_var);
-    doUnpacking(b,this->routingType_var);
+    doUnpacking(b,this->srcAddr_var);
+    doUnpacking(b,this->desAddr_var);
+    doUnpacking(b,this->preambleFlag_var);
+    doUnpacking(b,this->hopLimit_var);
     doUnpacking(b,this->pktSize_var);
 }
 
-twsn::netaddr_t& AppPkt::getSrcNetAddr()
+twsn::netaddr_t& NetPkt::getSrcAddr()
 {
-    return srcNetAddr_var;
+    return srcAddr_var;
 }
 
-void AppPkt::setSrcNetAddr(const twsn::netaddr_t& srcNetAddr)
+void NetPkt::setSrcAddr(const twsn::netaddr_t& srcAddr)
 {
-    this->srcNetAddr_var = srcNetAddr;
+    this->srcAddr_var = srcAddr;
 }
 
-twsn::netaddr_t& AppPkt::getDesNetAddr()
+twsn::netaddr_t& NetPkt::getDesAddr()
 {
-    return desNetAddr_var;
+    return desAddr_var;
 }
 
-void AppPkt::setDesNetAddr(const twsn::netaddr_t& desNetAddr)
+void NetPkt::setDesAddr(const twsn::netaddr_t& desAddr)
 {
-    this->desNetAddr_var = desNetAddr;
+    this->desAddr_var = desAddr;
 }
 
-int AppPkt::getRoutingType() const
+bool NetPkt::getPreambleFlag() const
 {
-    return routingType_var;
+    return preambleFlag_var;
 }
 
-void AppPkt::setRoutingType(int routingType)
+void NetPkt::setPreambleFlag(bool preambleFlag)
 {
-    this->routingType_var = routingType;
+    this->preambleFlag_var = preambleFlag;
 }
 
-int AppPkt::getPktSize() const
+int NetPkt::getHopLimit() const
+{
+    return hopLimit_var;
+}
+
+void NetPkt::setHopLimit(int hopLimit)
+{
+    this->hopLimit_var = hopLimit;
+}
+
+int NetPkt::getPktSize() const
 {
     return pktSize_var;
 }
 
-void AppPkt::setPktSize(int pktSize)
+void NetPkt::setPktSize(int pktSize)
 {
     this->pktSize_var = pktSize;
 }
 
-class AppPktDescriptor : public cClassDescriptor
+class NetPktDescriptor : public cClassDescriptor
 {
   public:
-    AppPktDescriptor();
-    virtual ~AppPktDescriptor();
+    NetPktDescriptor();
+    virtual ~NetPktDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -155,34 +161,34 @@ class AppPktDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(AppPktDescriptor);
+Register_ClassDescriptor(NetPktDescriptor);
 
-AppPktDescriptor::AppPktDescriptor() : cClassDescriptor("twsn::AppPkt", "cPacket")
+NetPktDescriptor::NetPktDescriptor() : cClassDescriptor("twsn::NetPkt", "cPacket")
 {
 }
 
-AppPktDescriptor::~AppPktDescriptor()
+NetPktDescriptor::~NetPktDescriptor()
 {
 }
 
-bool AppPktDescriptor::doesSupport(cObject *obj) const
+bool NetPktDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<AppPkt *>(obj)!=NULL;
+    return dynamic_cast<NetPkt *>(obj)!=NULL;
 }
 
-const char *AppPktDescriptor::getProperty(const char *propertyname) const
+const char *NetPktDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int AppPktDescriptor::getFieldCount(void *object) const
+int NetPktDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 4+basedesc->getFieldCount(object) : 4;
+    return basedesc ? 5+basedesc->getFieldCount(object) : 5;
 }
 
-unsigned int AppPktDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int NetPktDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -195,11 +201,12 @@ unsigned int AppPktDescriptor::getFieldTypeFlags(void *object, int field) const
         FD_ISCOMPOUND,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<4) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<5) ? fieldTypeFlags[field] : 0;
 }
 
-const char *AppPktDescriptor::getFieldName(void *object, int field) const
+const char *NetPktDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -208,26 +215,28 @@ const char *AppPktDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "srcNetAddr",
-        "desNetAddr",
-        "routingType",
+        "srcAddr",
+        "desAddr",
+        "preambleFlag",
+        "hopLimit",
         "pktSize",
     };
-    return (field>=0 && field<4) ? fieldNames[field] : NULL;
+    return (field>=0 && field<5) ? fieldNames[field] : NULL;
 }
 
-int AppPktDescriptor::findField(void *object, const char *fieldName) const
+int NetPktDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "srcNetAddr")==0) return base+0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "desNetAddr")==0) return base+1;
-    if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+2;
-    if (fieldName[0]=='p' && strcmp(fieldName, "pktSize")==0) return base+3;
+    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+0;
+    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+1;
+    if (fieldName[0]=='p' && strcmp(fieldName, "preambleFlag")==0) return base+2;
+    if (fieldName[0]=='h' && strcmp(fieldName, "hopLimit")==0) return base+3;
+    if (fieldName[0]=='p' && strcmp(fieldName, "pktSize")==0) return base+4;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *AppPktDescriptor::getFieldTypeString(void *object, int field) const
+const char *NetPktDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -238,13 +247,14 @@ const char *AppPktDescriptor::getFieldTypeString(void *object, int field) const
     static const char *fieldTypeStrings[] = {
         "netaddr_t",
         "netaddr_t",
+        "bool",
         "int",
         "int",
     };
-    return (field>=0 && field<4) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<5) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *AppPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *NetPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -257,7 +267,7 @@ const char *AppPktDescriptor::getFieldProperty(void *object, int field, const ch
     }
 }
 
-int AppPktDescriptor::getArraySize(void *object, int field) const
+int NetPktDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -265,13 +275,13 @@ int AppPktDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    AppPkt *pp = (AppPkt *)object; (void)pp;
+    NetPkt *pp = (NetPkt *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string AppPktDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string NetPktDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -279,17 +289,18 @@ std::string AppPktDescriptor::getFieldAsString(void *object, int field, int i) c
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    AppPkt *pp = (AppPkt *)object; (void)pp;
+    NetPkt *pp = (NetPkt *)object; (void)pp;
     switch (field) {
-        case 0: {std::stringstream out; out << pp->getSrcNetAddr(); return out.str();}
-        case 1: {std::stringstream out; out << pp->getDesNetAddr(); return out.str();}
-        case 2: return long2string(pp->getRoutingType());
-        case 3: return long2string(pp->getPktSize());
+        case 0: {std::stringstream out; out << pp->getSrcAddr(); return out.str();}
+        case 1: {std::stringstream out; out << pp->getDesAddr(); return out.str();}
+        case 2: return bool2string(pp->getPreambleFlag());
+        case 3: return long2string(pp->getHopLimit());
+        case 4: return long2string(pp->getPktSize());
         default: return "";
     }
 }
 
-bool AppPktDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool NetPktDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -297,15 +308,16 @@ bool AppPktDescriptor::setFieldAsString(void *object, int field, int i, const ch
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    AppPkt *pp = (AppPkt *)object; (void)pp;
+    NetPkt *pp = (NetPkt *)object; (void)pp;
     switch (field) {
-        case 2: pp->setRoutingType(string2long(value)); return true;
-        case 3: pp->setPktSize(string2long(value)); return true;
+        case 2: pp->setPreambleFlag(string2bool(value)); return true;
+        case 3: pp->setHopLimit(string2long(value)); return true;
+        case 4: pp->setPktSize(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *AppPktDescriptor::getFieldStructName(void *object, int field) const
+const char *NetPktDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -318,11 +330,12 @@ const char *AppPktDescriptor::getFieldStructName(void *object, int field) const
         "twsn::netaddr_t",
         NULL,
         NULL,
+        NULL,
     };
-    return (field>=0 && field<4) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<5) ? fieldStructNames[field] : NULL;
 }
 
-void *AppPktDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *NetPktDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -330,10 +343,10 @@ void *AppPktDescriptor::getFieldStructPointer(void *object, int field, int i) co
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    AppPkt *pp = (AppPkt *)object; (void)pp;
+    NetPkt *pp = (NetPkt *)object; (void)pp;
     switch (field) {
-        case 0: return (void *)(&pp->getSrcNetAddr()); break;
-        case 1: return (void *)(&pp->getDesNetAddr()); break;
+        case 0: return (void *)(&pp->getSrcAddr()); break;
+        case 1: return (void *)(&pp->getDesAddr()); break;
         default: return NULL;
     }
 }

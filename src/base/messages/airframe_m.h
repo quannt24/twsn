@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/airframe.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/airframe.msg.
 //
 
 #ifndef _TWSN_AIRFRAME_M_H_
@@ -21,7 +21,7 @@
 namespace twsn {
 
 /**
- * Class generated from <tt>base/messages/data/airframe.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/airframe.msg</tt> by opp_msgc.
  * <pre>
  * packet AirFrame {
  *     moduleid_t sender;

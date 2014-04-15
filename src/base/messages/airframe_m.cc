@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/netpkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/airframe.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "netpkt_m.h"
+#include "airframe_m.h"
 
 USING_NAMESPACE
 
@@ -33,25 +33,23 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 namespace twsn {
 
-Register_Class(NetPkt);
+Register_Class(AirFrame);
 
-NetPkt::NetPkt(const char *name, int kind) : ::cPacket(name,kind)
+AirFrame::AirFrame(const char *name, int kind) : ::cPacket(name,kind)
 {
-    this->preambleFlag_var = false;
-    this->hopLimit_var = 64;
-    this->pktSize_var = 18;
+    this->frameSize_var = 6;
 }
 
-NetPkt::NetPkt(const NetPkt& other) : ::cPacket(other)
+AirFrame::AirFrame(const AirFrame& other) : ::cPacket(other)
 {
     copy(other);
 }
 
-NetPkt::~NetPkt()
+AirFrame::~AirFrame()
 {
 }
 
-NetPkt& NetPkt::operator=(const NetPkt& other)
+AirFrame& AirFrame::operator=(const AirFrame& other)
 {
     if (this==&other) return *this;
     ::cPacket::operator=(other);
@@ -59,90 +57,64 @@ NetPkt& NetPkt::operator=(const NetPkt& other)
     return *this;
 }
 
-void NetPkt::copy(const NetPkt& other)
+void AirFrame::copy(const AirFrame& other)
 {
-    this->srcAddr_var = other.srcAddr_var;
-    this->desAddr_var = other.desAddr_var;
-    this->preambleFlag_var = other.preambleFlag_var;
-    this->hopLimit_var = other.hopLimit_var;
-    this->pktSize_var = other.pktSize_var;
+    this->sender_var = other.sender_var;
+    this->receiver_var = other.receiver_var;
+    this->frameSize_var = other.frameSize_var;
 }
 
-void NetPkt::parsimPack(cCommBuffer *b)
+void AirFrame::parsimPack(cCommBuffer *b)
 {
     ::cPacket::parsimPack(b);
-    doPacking(b,this->srcAddr_var);
-    doPacking(b,this->desAddr_var);
-    doPacking(b,this->preambleFlag_var);
-    doPacking(b,this->hopLimit_var);
-    doPacking(b,this->pktSize_var);
+    doPacking(b,this->sender_var);
+    doPacking(b,this->receiver_var);
+    doPacking(b,this->frameSize_var);
 }
 
-void NetPkt::parsimUnpack(cCommBuffer *b)
+void AirFrame::parsimUnpack(cCommBuffer *b)
 {
     ::cPacket::parsimUnpack(b);
-    doUnpacking(b,this->srcAddr_var);
-    doUnpacking(b,this->desAddr_var);
-    doUnpacking(b,this->preambleFlag_var);
-    doUnpacking(b,this->hopLimit_var);
-    doUnpacking(b,this->pktSize_var);
+    doUnpacking(b,this->sender_var);
+    doUnpacking(b,this->receiver_var);
+    doUnpacking(b,this->frameSize_var);
 }
 
-twsn::netaddr_t& NetPkt::getSrcAddr()
+twsn::moduleid_t& AirFrame::getSender()
 {
-    return srcAddr_var;
+    return sender_var;
 }
 
-void NetPkt::setSrcAddr(const twsn::netaddr_t& srcAddr)
+void AirFrame::setSender(const twsn::moduleid_t& sender)
 {
-    this->srcAddr_var = srcAddr;
+    this->sender_var = sender;
 }
 
-twsn::netaddr_t& NetPkt::getDesAddr()
+twsn::moduleid_t& AirFrame::getReceiver()
 {
-    return desAddr_var;
+    return receiver_var;
 }
 
-void NetPkt::setDesAddr(const twsn::netaddr_t& desAddr)
+void AirFrame::setReceiver(const twsn::moduleid_t& receiver)
 {
-    this->desAddr_var = desAddr;
+    this->receiver_var = receiver;
 }
 
-bool NetPkt::getPreambleFlag() const
+int AirFrame::getFrameSize() const
 {
-    return preambleFlag_var;
+    return frameSize_var;
 }
 
-void NetPkt::setPreambleFlag(bool preambleFlag)
+void AirFrame::setFrameSize(int frameSize)
 {
-    this->preambleFlag_var = preambleFlag;
+    this->frameSize_var = frameSize;
 }
 
-int NetPkt::getHopLimit() const
-{
-    return hopLimit_var;
-}
-
-void NetPkt::setHopLimit(int hopLimit)
-{
-    this->hopLimit_var = hopLimit;
-}
-
-int NetPkt::getPktSize() const
-{
-    return pktSize_var;
-}
-
-void NetPkt::setPktSize(int pktSize)
-{
-    this->pktSize_var = pktSize;
-}
-
-class NetPktDescriptor : public cClassDescriptor
+class AirFrameDescriptor : public cClassDescriptor
 {
   public:
-    NetPktDescriptor();
-    virtual ~NetPktDescriptor();
+    AirFrameDescriptor();
+    virtual ~AirFrameDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -161,34 +133,34 @@ class NetPktDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(NetPktDescriptor);
+Register_ClassDescriptor(AirFrameDescriptor);
 
-NetPktDescriptor::NetPktDescriptor() : cClassDescriptor("twsn::NetPkt", "cPacket")
+AirFrameDescriptor::AirFrameDescriptor() : cClassDescriptor("twsn::AirFrame", "cPacket")
 {
 }
 
-NetPktDescriptor::~NetPktDescriptor()
+AirFrameDescriptor::~AirFrameDescriptor()
 {
 }
 
-bool NetPktDescriptor::doesSupport(cObject *obj) const
+bool AirFrameDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<NetPkt *>(obj)!=NULL;
+    return dynamic_cast<AirFrame *>(obj)!=NULL;
 }
 
-const char *NetPktDescriptor::getProperty(const char *propertyname) const
+const char *AirFrameDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int NetPktDescriptor::getFieldCount(void *object) const
+int AirFrameDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 5+basedesc->getFieldCount(object) : 5;
+    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
 }
 
-unsigned int NetPktDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int AirFrameDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -200,13 +172,11 @@ unsigned int NetPktDescriptor::getFieldTypeFlags(void *object, int field) const
         FD_ISCOMPOUND,
         FD_ISCOMPOUND,
         FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
     };
-    return (field>=0 && field<5) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
-const char *NetPktDescriptor::getFieldName(void *object, int field) const
+const char *AirFrameDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -215,28 +185,24 @@ const char *NetPktDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "srcAddr",
-        "desAddr",
-        "preambleFlag",
-        "hopLimit",
-        "pktSize",
+        "sender",
+        "receiver",
+        "frameSize",
     };
-    return (field>=0 && field<5) ? fieldNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldNames[field] : NULL;
 }
 
-int NetPktDescriptor::findField(void *object, const char *fieldName) const
+int AirFrameDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+1;
-    if (fieldName[0]=='p' && strcmp(fieldName, "preambleFlag")==0) return base+2;
-    if (fieldName[0]=='h' && strcmp(fieldName, "hopLimit")==0) return base+3;
-    if (fieldName[0]=='p' && strcmp(fieldName, "pktSize")==0) return base+4;
+    if (fieldName[0]=='s' && strcmp(fieldName, "sender")==0) return base+0;
+    if (fieldName[0]=='r' && strcmp(fieldName, "receiver")==0) return base+1;
+    if (fieldName[0]=='f' && strcmp(fieldName, "frameSize")==0) return base+2;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *NetPktDescriptor::getFieldTypeString(void *object, int field) const
+const char *AirFrameDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -245,16 +211,14 @@ const char *NetPktDescriptor::getFieldTypeString(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldTypeStrings[] = {
-        "netaddr_t",
-        "netaddr_t",
-        "bool",
-        "int",
+        "moduleid_t",
+        "moduleid_t",
         "int",
     };
-    return (field>=0 && field<5) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *NetPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *AirFrameDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -267,7 +231,7 @@ const char *NetPktDescriptor::getFieldProperty(void *object, int field, const ch
     }
 }
 
-int NetPktDescriptor::getArraySize(void *object, int field) const
+int AirFrameDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -275,13 +239,13 @@ int NetPktDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    NetPkt *pp = (NetPkt *)object; (void)pp;
+    AirFrame *pp = (AirFrame *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string NetPktDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string AirFrameDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -289,18 +253,16 @@ std::string NetPktDescriptor::getFieldAsString(void *object, int field, int i) c
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    NetPkt *pp = (NetPkt *)object; (void)pp;
+    AirFrame *pp = (AirFrame *)object; (void)pp;
     switch (field) {
-        case 0: {std::stringstream out; out << pp->getSrcAddr(); return out.str();}
-        case 1: {std::stringstream out; out << pp->getDesAddr(); return out.str();}
-        case 2: return bool2string(pp->getPreambleFlag());
-        case 3: return long2string(pp->getHopLimit());
-        case 4: return long2string(pp->getPktSize());
+        case 0: {std::stringstream out; out << pp->getSender(); return out.str();}
+        case 1: {std::stringstream out; out << pp->getReceiver(); return out.str();}
+        case 2: return long2string(pp->getFrameSize());
         default: return "";
     }
 }
 
-bool NetPktDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool AirFrameDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -308,16 +270,14 @@ bool NetPktDescriptor::setFieldAsString(void *object, int field, int i, const ch
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    NetPkt *pp = (NetPkt *)object; (void)pp;
+    AirFrame *pp = (AirFrame *)object; (void)pp;
     switch (field) {
-        case 2: pp->setPreambleFlag(string2bool(value)); return true;
-        case 3: pp->setHopLimit(string2long(value)); return true;
-        case 4: pp->setPktSize(string2long(value)); return true;
+        case 2: pp->setFrameSize(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *NetPktDescriptor::getFieldStructName(void *object, int field) const
+const char *AirFrameDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -326,16 +286,14 @@ const char *NetPktDescriptor::getFieldStructName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldStructNames[] = {
-        "twsn::netaddr_t",
-        "twsn::netaddr_t",
-        NULL,
-        NULL,
+        "twsn::moduleid_t",
+        "twsn::moduleid_t",
         NULL,
     };
-    return (field>=0 && field<5) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
 }
 
-void *NetPktDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *AirFrameDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -343,10 +301,10 @@ void *NetPktDescriptor::getFieldStructPointer(void *object, int field, int i) co
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    NetPkt *pp = (NetPkt *)object; (void)pp;
+    AirFrame *pp = (AirFrame *)object; (void)pp;
     switch (field) {
-        case 0: return (void *)(&pp->getSrcAddr()); break;
-        case 1: return (void *)(&pp->getDesAddr()); break;
+        case 0: return (void *)(&pp->getSender()); break;
+        case 1: return (void *)(&pp->getReceiver()); break;
         default: return NULL;
     }
 }

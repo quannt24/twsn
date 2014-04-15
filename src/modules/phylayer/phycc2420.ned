@@ -15,9 +15,9 @@
 
 package twsn.modules.phylayer;
 
-import twsn.base.modules.phylayer.BaseWirelessPhy;
+import twsn.base.modules.phylayer.Base802154Phy;
 
-simple PhyCC2420 extends BaseWirelessPhy
+simple PhyCC2420 extends Base802154Phy
 {
     parameters:
         bitRate = default(250000 bps);

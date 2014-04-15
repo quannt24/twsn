@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "basewirelessphy.h"
+#include "base802154phy.h"
 #include "channelmgr.h"
 #include "basemobility.h"
 #include "baseenergy.h"
@@ -23,9 +23,9 @@
 
 namespace twsn {
 
-Define_Module(BaseWirelessPhy);
+Define_Module(Base802154Phy);
 
-void BaseWirelessPhy::initialize()
+void Base802154Phy::initialize()
 {
     // Stage 0
     // Call initialize() of parent
@@ -42,7 +42,7 @@ void BaseWirelessPhy::initialize()
     scheduleAt(simTime() + par("drawPeriod").doubleValue(), pcTimer);
 }
 
-void BaseWirelessPhy::initialize(int stage)
+void Base802154Phy::initialize(int stage)
 {
     //EV << "BaseWirelessPhy::info: initialization stage " << stage << endl;
     switch (stage) {
@@ -56,7 +56,7 @@ void BaseWirelessPhy::initialize(int stage)
     }
 }
 
-void BaseWirelessPhy::registerChannel()
+void Base802154Phy::registerChannel()
 {
     channelMgr = check_and_cast<ChannelMgr*>(getModuleByPath("channelMgr"));
     BaseMobility *mob = check_and_cast<BaseMobility*>(getModuleByPath("^.mobility"));
@@ -66,7 +66,7 @@ void BaseWirelessPhy::registerChannel()
     EV << "BaseWirelessPhy::info: Register channel\n";
 }
 
-void BaseWirelessPhy::handleMessage(cMessage *msg)
+void Base802154Phy::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
         handleSelfMsg(msg);
@@ -79,7 +79,7 @@ void BaseWirelessPhy::handleMessage(cMessage *msg)
     }
 }
 
-void BaseWirelessPhy::handleSelfMsg(cMessage* msg)
+void Base802154Phy::handleSelfMsg(cMessage* msg)
 {
     if (msg == fetchTimer) {
         fetchPacket();
@@ -100,7 +100,7 @@ void BaseWirelessPhy::handleSelfMsg(cMessage* msg)
     }
 }
 
-void BaseWirelessPhy::handleUpperMsg(cMessage* msg)
+void Base802154Phy::handleUpperMsg(cMessage* msg)
 {
     /* Transmit MAC packet. The packet only transmitted if physical module ready; if not, it will
      * be deleted. To make sure the packet is transmitted (or canceled with report), link layer
@@ -127,7 +127,7 @@ void BaseWirelessPhy::handleUpperMsg(cMessage* msg)
     }
 }
 
-void BaseWirelessPhy::handleUpperCtl(cMessage* msg)
+void Base802154Phy::handleUpperCtl(cMessage* msg)
 {
     Command *cmd = check_and_cast<Command*>(msg);
 
@@ -169,12 +169,12 @@ void BaseWirelessPhy::handleUpperCtl(cMessage* msg)
     delete msg;
 }
 
-void BaseWirelessPhy::handleAirFrame(AirFrame* frame)
+void Base802154Phy::handleAirFrame(AirFrame* frame)
 {
     recvAirFrame(frame);
 }
 
-void BaseWirelessPhy::sendUp(cPacket* pkt)
+void Base802154Phy::sendUp(cPacket* pkt)
 {
     if (gate("upper$o")->isPathOK()) {
         send(pkt, "upper$o");
@@ -184,7 +184,7 @@ void BaseWirelessPhy::sendUp(cPacket* pkt)
     }
 }
 
-void BaseWirelessPhy::sendCtlUp(Command* cmd)
+void Base802154Phy::sendCtlUp(Command* cmd)
 {
     if (gate("upperCtl$o")->isPathOK()) {
         send(cmd, "upperCtl$o");
@@ -194,7 +194,7 @@ void BaseWirelessPhy::sendCtlUp(Command* cmd)
     }
 }
 
-void BaseWirelessPhy::performCCA(double duration)
+void Base802154Phy::performCCA(double duration)
 {
     if (radioMode == RX) {
         scheduleAt(simTime() + duration, ccaTimer);
@@ -208,7 +208,7 @@ void BaseWirelessPhy::performCCA(double duration)
     }
 }
 
-void BaseWirelessPhy::senseChannel()
+void Base802154Phy::senseChannel()
 {
     bool clearChannel = false;
     if (phyEntry != NULL && phyEntry->getChannelState() == 0) clearChannel = true;
@@ -219,14 +219,14 @@ void BaseWirelessPhy::senseChannel()
     sendCtlUp(cmd);
 }
 
-void BaseWirelessPhy::fetchPacket()
+void Base802154Phy::fetchPacket()
 {
     Command *cmd = new Command();
     cmd->setCmdId(CMD_DATA_FETCH);
     sendCtlUp(cmd);
 }
 
-void BaseWirelessPhy::txMacPkt(Mac802154Pkt* pkt)
+void Base802154Phy::txMacPkt(Mac802154Pkt* pkt)
 {
     if (channelMgr == NULL || phyEntry == NULL) {
         printError(ERROR, "Module has not registered with ChannelMgr. Dropping packet.");
@@ -277,7 +277,7 @@ void BaseWirelessPhy::txMacPkt(Mac802154Pkt* pkt)
     }
 }
 
-void BaseWirelessPhy::finishTx()
+void Base802154Phy::finishTx()
 {
     channelMgr->stopTx(phyEntry);
     updateNodeDisplay();
@@ -290,7 +290,7 @@ void BaseWirelessPhy::finishTx()
     sendCtlUp(cmd);
 }
 
-void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
+void Base802154Phy::sendAirFrame(AirFrame* frame)
 {
     // Check if receiver is an adjacent node
     std::list<PhyEntry*> *adjList = phyEntry->getAdjList();
@@ -298,7 +298,7 @@ void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
     for (std::list<PhyEntry*>::iterator adjIt = adjList->begin(); adjIt != adjList->end(); adjIt++) {
         if ((*adjIt)->getModuleId() == frame->getReceiver()) {
             // Check if receiver is having RX radio mode; if not, mark frame with error
-            BaseWirelessPhy *recvPhy = check_and_cast<BaseWirelessPhy*>(simulation.getModule(frame->getReceiver()));
+            Base802154Phy *recvPhy = check_and_cast<Base802154Phy*>(simulation.getModule(frame->getReceiver()));
             if (recvPhy->getRadioMode() != RX) frame->setBitError(true);
 
             // Send frame to receiver
@@ -319,7 +319,7 @@ void BaseWirelessPhy::sendAirFrame(AirFrame* frame)
     delete frame;
 }
 
-void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
+void Base802154Phy::recvAirFrame(AirFrame* frame)
 {
     if (channelMgr == NULL) {
         printError(ERROR, "Module has not registered with ChannelMgr. Dropping frame.");
@@ -346,7 +346,7 @@ void BaseWirelessPhy::recvAirFrame(AirFrame* frame)
     delete frame;
 }
 
-void BaseWirelessPhy::switchRadioMode(int mode)
+void Base802154Phy::switchRadioMode(int mode)
 {
     double switchDelay = 0;
 
@@ -391,7 +391,7 @@ void BaseWirelessPhy::switchRadioMode(int mode)
     }
 }
 
-void BaseWirelessPhy::setRadioMode(int mode)
+void Base802154Phy::setRadioMode(int mode)
 {
     // Draw energy before switching mode
     BaseEnergy *ener = check_and_cast<BaseEnergy*>(getModuleByPath("^.energy"));
@@ -428,7 +428,7 @@ void BaseWirelessPhy::setRadioMode(int mode)
     }
 }
 
-void BaseWirelessPhy::updateNodeDisplay()
+void Base802154Phy::updateNodeDisplay()
 {
     cDisplayString &ds = getParentModule()->getDisplayString();
 
@@ -456,7 +456,7 @@ void BaseWirelessPhy::updateNodeDisplay()
     }
 }
 
-void BaseWirelessPhy::draw()
+void Base802154Phy::draw()
 {
     double p = 0; // Power
     double drawAmount = 0; // Consumed energy in (mWh)
@@ -491,7 +491,7 @@ void BaseWirelessPhy::draw()
     }
 }
 
-BaseWirelessPhy::BaseWirelessPhy()
+Base802154Phy::Base802154Phy()
 {
     channelMgr = NULL;
     phyEntry = NULL;
@@ -506,7 +506,7 @@ BaseWirelessPhy::BaseWirelessPhy()
     txTimer = new cMessage("txTimer");
 }
 
-BaseWirelessPhy::~BaseWirelessPhy()
+Base802154Phy::~Base802154Phy()
 {
     cancelAndDelete(finishTxTimer);
     cancelAndDelete(fetchTimer);

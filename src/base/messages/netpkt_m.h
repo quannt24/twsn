@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/netpkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/netpkt.msg.
 //
 
 #ifndef _TWSN_NETPKT_M_H_
@@ -21,7 +21,7 @@
 namespace twsn {
 
 /**
- * Class generated from <tt>base/messages/data/netpkt.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/netpkt.msg</tt> by opp_msgc.
  * <pre>
  * packet NetPkt {
  *     netaddr_t srcAddr; 

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from modules/linklayer/mac802154pkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/mac802154pkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:

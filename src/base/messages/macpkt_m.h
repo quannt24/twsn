@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/data/macpkt.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/macpkt.msg.
 //
 
 #ifndef _TWSN_MACPKT_M_H_
@@ -21,7 +21,7 @@
 namespace twsn {
 
 /**
- * Class generated from <tt>base/messages/data/macpkt.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/macpkt.msg</tt> by opp_msgc.
  * <pre>
  * packet MacPkt {
  *     macaddr_t srcAddr; 

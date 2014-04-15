@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/control/command.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from base/messages/command.msg.
 //
 
 #ifndef _TWSN_COMMAND_M_H_
@@ -17,7 +17,7 @@
 namespace twsn {
 
 /**
- * Enum generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * Enum generated from <tt>base/messages/command.msg</tt> by opp_msgc.
  * <pre>
  * enum CmdLevel {
  *     UNKNOWN = 0;
@@ -39,7 +39,7 @@ enum CmdLevel {
 };
 
 /**
- * Enum generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * Enum generated from <tt>base/messages/command.msg</tt> by opp_msgc.
  * <pre>
  * enum CmdID {
  *     
@@ -76,7 +76,7 @@ enum CmdID {
 };
 
 /**
- * Class generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/command.msg</tt> by opp_msgc.
  * <pre>
  * message Command {
  *     
@@ -125,7 +125,7 @@ inline void doPacking(cCommBuffer *b, Command& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, Command& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/command.msg</tt> by opp_msgc.
  * <pre>
  * message CmdCCA extends Command {
  *     src = LINK;
@@ -165,7 +165,7 @@ inline void doPacking(cCommBuffer *b, CmdCCA& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, CmdCCA& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/command.msg</tt> by opp_msgc.
  * <pre>
  * message CmdCCAR extends Command {
  *     src = PHYS;
@@ -205,7 +205,7 @@ inline void doPacking(cCommBuffer *b, CmdCCAR& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, CmdCCAR& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>base/messages/control/command.msg</tt> by opp_msgc.
+ * Class generated from <tt>base/messages/command.msg</tt> by opp_msgc.
  * <pre>
  * message CmdForceActive extends Command {
  *     des = LINK;
