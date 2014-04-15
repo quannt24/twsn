@@ -31,6 +31,8 @@ class AppTrackingBS : public BaseApp
         std::list<TargetTrace> traceList;
         int numTrace; // Number of trace tracked (including noise)
 
+        simsignal_t sigEtoEDelay;
+
         /** Process newly added target position */
         void processTarPos(TargetPos &tarPos);
         /** Clean up junk traces */

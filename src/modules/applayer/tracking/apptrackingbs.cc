@@ -120,13 +120,14 @@ void AppTrackingBS::output()
 void AppTrackingBS::initialize()
 {
     numTrace = 0;
+    sigEtoEDelay = registerSignal("sigEtoEDelay");
 
     /* Clear output folder */
 #if defined(__linux__) || defined(__unix__)
     system("exec rm ./results/bs_output/*");
 #else
     #if defined(_WIN32)
-        system("del .\results\bs_output\*"); // TODO Test on Windows
+        system("del .\results\bs_output\*");
     #endif
 #endif
 }
@@ -138,6 +139,11 @@ void AppTrackingBS::handleLowerMsg(cMessage* msg)
     if (pkt->getPktType() == AT_TARGET_POSITION) {
         AT_TargetPosPkt *tpPkt = check_and_cast<AT_TargetPosPkt*>(msg);
         TargetPos tp = tpPkt->getTargetPos();
+
+        // Record end-to-end delay
+        emit(sigEtoEDelay, simTime() - tp.getTimestamp());
+
+        // Process data
         processTarPos(tp);
         cleanJunk();
     }
