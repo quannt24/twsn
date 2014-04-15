@@ -56,7 +56,8 @@ enum CmdLevel {
  *     
  *     
  *     CMD_LIN_CCA_RESULT = 20; 
- *     CMD_LIN_FORCE_ACTIVE = 21; 
+ *     CMD_LIN_ACTIVE = 21; 
+ *     CMD_LIN_FORCE_ACTIVE = 22; 
  * };
  * </pre>
  */
@@ -70,7 +71,8 @@ enum CmdID {
     CMD_PHY_TX = 13,
     CMD_PHY_CCA = 14,
     CMD_LIN_CCA_RESULT = 20,
-    CMD_LIN_FORCE_ACTIVE = 21
+    CMD_LIN_ACTIVE = 21,
+    CMD_LIN_FORCE_ACTIVE = 22
 };
 
 /**

@@ -10,7 +10,7 @@
 .tkenvrc
 out/
 /results/
-src/TrackingWSN
+src/TWSN
 simulations/.tkenvlog
 simulations/results/*.vec
 simulations/results/*.vci

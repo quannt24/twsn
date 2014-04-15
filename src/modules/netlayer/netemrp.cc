@@ -65,7 +65,7 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
             cfa->setDuration(0); // Infinite
         } else {
             cfa->setDuration(par("initInterval").doubleValue()
-                    + uniform(0, 2 * par("waitRelayInfoTimeout").doubleValue()));
+                    + uniform(par("waitRelayInfoTimeout").doubleValue(), 2 * par("waitRelayInfoTimeout").doubleValue()));
         }
         sendCtlDown(cfa);
     } else if (msg == reqRelayTimer) {

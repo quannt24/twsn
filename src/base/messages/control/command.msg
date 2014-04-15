@@ -41,7 +41,8 @@ enum CmdID {
     
     // Data link specific commands
     CMD_LIN_CCA_RESULT = 20; // CCA result
-    CMD_LIN_FORCE_ACTIVE = 21; // Force link layer stay active
+    CMD_LIN_ACTIVE = 21; // Notify link layer to stay active (with default active time)
+    CMD_LIN_FORCE_ACTIVE = 22; // Force link layer stay active
 };
 
 // Base class for command messages

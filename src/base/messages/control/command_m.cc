@@ -56,6 +56,7 @@ EXECUTE_ON_STARTUP(
     e->insert(CMD_PHY_TX, "CMD_PHY_TX");
     e->insert(CMD_PHY_CCA, "CMD_PHY_CCA");
     e->insert(CMD_LIN_CCA_RESULT, "CMD_LIN_CCA_RESULT");
+    e->insert(CMD_LIN_ACTIVE, "CMD_LIN_ACTIVE");
     e->insert(CMD_LIN_FORCE_ACTIVE, "CMD_LIN_FORCE_ACTIVE");
 );
 

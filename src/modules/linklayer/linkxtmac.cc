@@ -348,6 +348,7 @@ void LinkXTMAC::switchToIdle()
 
 LinkXTMAC::LinkXTMAC()
 {
+    mainPkt = NULL;
     nStrobe = 0;
     active = false;
     forcedActive = false;
