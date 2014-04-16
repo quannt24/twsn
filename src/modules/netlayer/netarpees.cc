@@ -11,23 +11,45 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-//
+// 
 
-cplusplus {{
-	#include "twsndef.h"
-}}
+#include "netarpees.h"
 
-namespace twsn;
+namespace twsn {
 
-class noncobject netaddr_t;
+Define_Module(NetARPEES);
 
-//
-// Base packet type for network layer
-//
-packet NetPkt {
-    netaddr_t srcAddr; // Network address of sender
-    netaddr_t desAddr; // Network address of sender or broadcast address
-    bool preambleFlag = false; // Using one bit in flag field
-    int hopLimit = 32;
-    int pktSize = 18; // Packet size in bytes. Please use setByteLength() to set this size to packet.
+void NetARPEES::handleSelfMsg(cMessage* msg)
+{
 }
+
+void NetARPEES::handleUpperMsg(cMessage* msg)
+{
+}
+
+void NetARPEES::handleUpperCtl(cMessage* msg)
+{
+}
+
+void NetARPEES::handleLowerMsg(cMessage* msg)
+{
+}
+
+void NetARPEES::handleLowerCtl(cMessage* msg)
+{
+}
+
+NetARPEES::NetARPEES()
+{
+    bsAddr = 0;
+    rnAddr = 0;
+
+    waitRelayInfoTimer = new cMessage("waitRelayInfoTimer");
+}
+
+NetARPEES::~NetARPEES()
+{
+    cancelAndDelete(waitRelayInfoTimer);
+}
+
+}  // namespace twsn

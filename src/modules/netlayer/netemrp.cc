@@ -24,25 +24,6 @@ namespace twsn {
 
 Define_Module(NetEMRP);
 
-void NetEMRP::initialize(int stage)
-{
-    switch (stage) {
-        case 0:
-            initialize();
-            break;
-
-        case 1:
-            macAddr = getModuleByPath("^.phy")->getId();
-            /*char msg[100];
-            sprintf(msg, "MAC address %d", (int) macAddr);
-            printError(VERBOSE, msg);*/
-            break;
-
-        default:
-            break;
-    }
-}
-
 void NetEMRP::initialize()
 {
     BaseNet::initialize();
@@ -82,6 +63,8 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
             sh->countLostNetPkt();
         }
         outPkt = NULL;
+        // Fetch next packet in queue
+        fetchPacketFromUpper();
     } else if (msg == waitEnergyInfoTimer) {
         // Current relay node cannot report its energy information, replace it.
         rnAddr = 0;
@@ -89,7 +72,7 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
     } else {
         // Self messages which are dynamically created (one time use)
         if (msg->getKind() == TIMER_RES_RELAY) {
-            netaddr_t des = check_and_cast<ResponseRelayInfoTimer*>(msg)->getReqAddr();
+            netaddr_t des = check_and_cast<NetEmrpResRelayInfoTimer*>(msg)->getReqAddr();
             sendRelayInfo(des);
         }
         delete msg;
@@ -147,6 +130,7 @@ void NetEMRP::handleUpperMsg(cMessage* msg)
         if (!sendDelayed) {
             sendDown(outPkt);
             outPkt = NULL;
+            fetchPacketFromUpper();
         } else {
             // Find relay node
             requestRelay();
@@ -454,7 +438,7 @@ void NetEMRP::recvRelayedPayload(NetEmrpPkt* pkt)
 
 void NetEMRP::recvRelayRequest(NetEmrpPkt* pkt)
 {
-    ResponseRelayInfoTimer *timer = new ResponseRelayInfoTimer();
+    NetEmrpResRelayInfoTimer *timer = new NetEmrpResRelayInfoTimer();
     timer->setReqAddr(pkt->getSrcAddr());
     timer->setKind(TIMER_RES_RELAY);
     scheduleAt(simTime() + uniform(0, par("waitRelayInfoTimeout").doubleValue()), timer);

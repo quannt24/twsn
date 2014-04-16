@@ -14,6 +14,7 @@
 // 
 
 #include "basenet.h"
+#include "baselink.h"
 #include "basemobility.h"
 
 namespace twsn {
@@ -27,14 +28,11 @@ void BaseNet::initialize(int stage)
             initialize();
             break;
 
-        case 1:
-            macAddr = getModuleByPath("^.phy")->getId();
-            /*char msg[100];
+        case 2:
+            macAddr = check_and_cast<BaseLink*>(getModuleByPath("^.link"))->getMacAddr();
+            char msg[100];
             sprintf(msg, "MAC address %d", (int) macAddr);
-            printError(VERBOSE, msg);*/
-            break;
-
-        default:
+            printError(VERBOSE, msg);
             break;
     }
 }

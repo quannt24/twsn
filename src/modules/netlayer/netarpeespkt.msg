@@ -27,28 +27,27 @@ class noncobject netaddr_t;
 //    netaddr_t srcAddr; // Network address of sender
 //    netaddr_t desAddr; // Network address of sender or broadcast address
 //    bool preambleFlag = false; // Using one bit in flag field
-//    int hopLimit = 64;
+//    int hopLimit = 32;
 //    int pktSize = 18; // Packet size in bytes. Please use setByteLength() to set this size to packet.
 //}
 
-enum EmrpPktType {
-    EMRP_PAYLOAD_TO_AN = 0; // Packet to be transmited to adjacent node (cluster head or a specific node)
-    EMRP_PAYLOAD_TO_BS = 1; // Packet to be transmited to base station
-    EMRP_RELAY_REQ = 2; // Request for relay info
-    EMRP_RELAY_INFO = 3; // Relay info to response the request
-    EMRP_ENERGY_INFO = 4; // Enegry info report after relay a packet
+enum ArpeesPktType {
+    ARPEES_PAYLOAD_TO_AN = 0; // Packet to be transmited to adjacent node (cluster head or a specific node)
+    ARPEES_PAYLOAD_TO_BS = 1; // Packet to be transmited to base station
+    ARPEES_RELAY_REQ = 2; // Request for relay info
+    ARPEES_RELAY_INFO = 3; // Relay info to response the request
 };
 
-// General EMRP packet
-packet NetEmrpPkt extends NetPkt {
+// General ARPEES packet
+packet NetArpeesPkt extends NetPkt {
     pktSize = 18;
-    int pktType = EMRP_PAYLOAD_TO_AN; // 3 bits in flag field
+    int pktType = ARPEES_PAYLOAD_TO_AN; // 3 bits in flag field
 }
 
-// EMRP relay info packet
-packet NetEmrpRelayInfoPkt extends NetEmrpPkt {
+// ARPEES relay info packet
+packet NetArpeesRelayInfoPkt extends NetArpeesPkt {
     pktSize = 34;
-    pktType = EMRP_RELAY_INFO;
+    pktType = ARPEES_RELAY_INFO;
     
     bool bsFlag = false; // Flag on if sender is base station, using 1 bit in flag field
     double energy = 0; // Current energy, 4 bytes
@@ -57,18 +56,7 @@ packet NetEmrpRelayInfoPkt extends NetEmrpPkt {
     double dBs = 0; // Distance to base station, 4 bytes
 }
 
-// EMRP energy report packet
-packet NetEmrpEnergyInfoPkt extends NetEmrpPkt {
-    pktSize = 22;
-    pktType = EMRP_ENERGY_INFO;
-    
-    // Note: only use consumedEnergy (for original EMRP) or remainEnergy. Therefore pkSize is still
-    // be 24 bytes
-    //double consumedEnergy; // Predicted energy to send relayed packet (4 bytes)
-    double remainEnergy; // Remain energy, 4 bytes
-}
-
 // Timer for sending back relay information to requesting node
-message NetEmrpResRelayInfoTimer {
+message NetArpeesResRelayInfoTimer {
     netaddr_t reqAddr; // Address of the node which requesting
 }

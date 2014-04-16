@@ -38,7 +38,7 @@ Register_Class(NetPkt);
 NetPkt::NetPkt(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->preambleFlag_var = false;
-    this->hopLimit_var = 64;
+    this->hopLimit_var = 32;
     this->pktSize_var = 18;
 }
 

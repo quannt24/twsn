@@ -80,6 +80,7 @@ OBJS = \
     $O/modules/linklayer/linkxtmac.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
     $O/modules/mobility/mobilitypath.o \
+    $O/modules/netlayer/netarpees.o \
     $O/modules/netlayer/netemrp.o \
     $O/modules/other/acousticgenerator.o \
     $O/modules/other/acousticsensor.o \
@@ -94,6 +95,7 @@ OBJS = \
     $O/base/messages/macpkt_m.o \
     $O/base/messages/mac802154pkt_m.o \
     $O/modules/applayer/tracking/apptrackingpkt_m.o \
+    $O/modules/netlayer/netarpeespkt_m.o \
     $O/modules/netlayer/netemrppkt_m.o \
     $O/modules/other/sensemsg_m.o
 
@@ -106,6 +108,7 @@ MSGFILES = \
     base/messages/macpkt.msg \
     base/messages/mac802154pkt.msg \
     modules/applayer/tracking/apptrackingpkt.msg \
+    modules/netlayer/netarpeespkt.msg \
     modules/netlayer/netemrppkt.msg \
     modules/other/sensemsg.msg
 
@@ -281,6 +284,7 @@ $O/base/modules/netlayer/basenet.o: base/modules/netlayer/basenet.cc \
 	base/messages/command_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
+	base/modules/linklayer/baselink.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
 	util/coord.h \
@@ -405,6 +409,18 @@ $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	base/modules/mobility/basemobility.h \
 	modules/mobility/mobilitypath.h \
 	util/coord.h \
+	util/twsndef.h
+$O/modules/netlayer/netarpees.o: modules/netlayer/netarpees.cc \
+	base/messages/command_m.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	base/modules/netlayer/basenet.h \
+	modules/netlayer/netarpees.h \
+	util/coord.h \
+	util/twsndef.h
+$O/modules/netlayer/netarpeespkt_m.o: modules/netlayer/netarpeespkt_m.cc \
+	base/messages/netpkt_m.h \
+	modules/netlayer/netarpeespkt_m.h \
 	util/twsndef.h
 $O/modules/netlayer/netemrp.o: modules/netlayer/netemrp.cc \
 	base/messages/apppkt_m.h \

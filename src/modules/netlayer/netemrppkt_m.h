@@ -44,7 +44,7 @@ enum EmrpPktType {
  * Class generated from <tt>modules/netlayer/netemrppkt.msg</tt> by opp_msgc.
  * <pre>
  * packet NetEmrpPkt extends NetPkt {
- *     pktSize = 19;
+ *     pktSize = 18;
  *     int pktType = EMRP_PAYLOAD_TO_AN; 
  * }
  * </pre>
@@ -82,7 +82,7 @@ inline void doUnpacking(cCommBuffer *b, NetEmrpPkt& obj) {obj.parsimUnpack(b);}
  * Class generated from <tt>modules/netlayer/netemrppkt.msg</tt> by opp_msgc.
  * <pre>
  * packet NetEmrpRelayInfoPkt extends NetEmrpPkt {
- *     pktSize = 35;
+ *     pktSize = 34;
  *     pktType = EMRP_RELAY_INFO;
  *     
  *     bool bsFlag = false; 
@@ -138,7 +138,7 @@ inline void doUnpacking(cCommBuffer *b, NetEmrpRelayInfoPkt& obj) {obj.parsimUnp
  * Class generated from <tt>modules/netlayer/netemrppkt.msg</tt> by opp_msgc.
  * <pre>
  * packet NetEmrpEnergyInfoPkt extends NetEmrpPkt {
- *     pktSize = 23;
+ *     pktSize = 22;
  *     pktType = EMRP_ENERGY_INFO;
  *     
  *     
@@ -180,40 +180,40 @@ inline void doUnpacking(cCommBuffer *b, NetEmrpEnergyInfoPkt& obj) {obj.parsimUn
 /**
  * Class generated from <tt>modules/netlayer/netemrppkt.msg</tt> by opp_msgc.
  * <pre>
- * message ResponseRelayInfoTimer {
+ * message NetEmrpResRelayInfoTimer {
  *     netaddr_t reqAddr; 
  * }
  * </pre>
  */
-class ResponseRelayInfoTimer : public ::cMessage
+class NetEmrpResRelayInfoTimer : public ::cMessage
 {
   protected:
     twsn::netaddr_t reqAddr_var;
 
   private:
-    void copy(const ResponseRelayInfoTimer& other);
+    void copy(const NetEmrpResRelayInfoTimer& other);
 
   protected:
     // protected and unimplemented operator==(), to prevent accidental usage
-    bool operator==(const ResponseRelayInfoTimer&);
+    bool operator==(const NetEmrpResRelayInfoTimer&);
 
   public:
-    ResponseRelayInfoTimer(const char *name=NULL, int kind=0);
-    ResponseRelayInfoTimer(const ResponseRelayInfoTimer& other);
-    virtual ~ResponseRelayInfoTimer();
-    ResponseRelayInfoTimer& operator=(const ResponseRelayInfoTimer& other);
-    virtual ResponseRelayInfoTimer *dup() const {return new ResponseRelayInfoTimer(*this);}
+    NetEmrpResRelayInfoTimer(const char *name=NULL, int kind=0);
+    NetEmrpResRelayInfoTimer(const NetEmrpResRelayInfoTimer& other);
+    virtual ~NetEmrpResRelayInfoTimer();
+    NetEmrpResRelayInfoTimer& operator=(const NetEmrpResRelayInfoTimer& other);
+    virtual NetEmrpResRelayInfoTimer *dup() const {return new NetEmrpResRelayInfoTimer(*this);}
     virtual void parsimPack(cCommBuffer *b);
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
     virtual twsn::netaddr_t& getReqAddr();
-    virtual const twsn::netaddr_t& getReqAddr() const {return const_cast<ResponseRelayInfoTimer*>(this)->getReqAddr();}
+    virtual const twsn::netaddr_t& getReqAddr() const {return const_cast<NetEmrpResRelayInfoTimer*>(this)->getReqAddr();}
     virtual void setReqAddr(const twsn::netaddr_t& reqAddr);
 };
 
-inline void doPacking(cCommBuffer *b, ResponseRelayInfoTimer& obj) {obj.parsimPack(b);}
-inline void doUnpacking(cCommBuffer *b, ResponseRelayInfoTimer& obj) {obj.parsimUnpack(b);}
+inline void doPacking(cCommBuffer *b, NetEmrpResRelayInfoTimer& obj) {obj.parsimPack(b);}
+inline void doUnpacking(cCommBuffer *b, NetEmrpResRelayInfoTimer& obj) {obj.parsimUnpack(b);}
 
 }; // end namespace twsn
 

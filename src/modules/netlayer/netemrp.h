@@ -54,10 +54,7 @@ class NetEMRP : public BaseNet
         cMessage *waitRelayInfoTimer;
         cMessage *waitEnergyInfoTimer;
 
-        /** Override to use multiple initialization stages */
-        virtual int numInitStages() const { return 2; }
-        virtual void initialize(int stage);
-        virtual void initialize();
+        virtual void initialize(); // MAC address is obtained by BaseNet initializing functions
 
         /** Handle self message */
         virtual void handleSelfMsg(cMessage *msg);

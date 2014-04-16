@@ -11,23 +11,20 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-//
+// 
 
-cplusplus {{
-	#include "twsndef.h"
-}}
+package twsn.modules.netlayer;
 
-namespace twsn;
-
-class noncobject netaddr_t;
+import twsn.base.modules.netlayer.BaseNet;
 
 //
-// Base packet type for network layer
+// Network layer using ARPEES protocol
 //
-packet NetPkt {
-    netaddr_t srcAddr; // Network address of sender
-    netaddr_t desAddr; // Network address of sender or broadcast address
-    bool preambleFlag = false; // Using one bit in flag field
-    int hopLimit = 32;
-    int pktSize = 18; // Packet size in bytes. Please use setByteLength() to set this size to packet.
+simple NetAPREES extends BaseNet
+{
+    parameters:
+        @class("twsn::NetAPREES");
+        
+        // Timeout for waiting relay information after sending a relay request
+        double waitRelayInfoTimeout @unit(s) = default(0.1 s);
 }

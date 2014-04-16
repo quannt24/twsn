@@ -27,7 +27,7 @@ namespace twsn {
  *     netaddr_t srcAddr; 
  *     netaddr_t desAddr; 
  *     bool preambleFlag = false; 
- *     int hopLimit = 64;
+ *     int hopLimit = 32;
  *     int pktSize = 18; 
  * }
  * </pre>

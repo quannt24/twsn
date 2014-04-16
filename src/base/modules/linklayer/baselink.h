@@ -33,8 +33,11 @@ class BaseLink : public BaseLayer
         virtual int numInitStages() const { return 2; }
         virtual void initialize(int stage);
         virtual void initialize();
+
     public:
         BaseLink();
+        /** MAC address is valid only AFTER initializing stage 1 */
+        macaddr_t getMacAddr() { return macAddr; }
 };
 
 }  // namespace twsn
