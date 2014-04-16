@@ -53,6 +53,11 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
         requestRelay();
     } else if (msg == waitRelayInfoTimer) {
         if (bsAddr != 0 || rnAddr != 0) {
+            if (bsAddr != 0) {
+                outPkt->setDesAddr(bsAddr);
+            } else if (rnAddr != 0) {
+                outPkt->setDesAddr(rnAddr);
+            }
             sendDown(outPkt);
         } else {
             // TODO Report failure
@@ -71,7 +76,7 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
         updateRelayEnergy(NULL);
     } else {
         // Self messages which are dynamically created (one time use)
-        if (msg->getKind() == TIMER_RES_RELAY) {
+        if (msg->getKind() == EMRP_TIMER_RES_RELAY) {
             netaddr_t des = check_and_cast<NetEmrpResRelayInfoTimer*>(msg)->getReqAddr();
             sendRelayInfo(des);
         }
@@ -161,6 +166,7 @@ void NetEMRP::handleUpperCtl(cMessage* msg)
             if (cmd->getDes() != NETW)
                 sendCtlDown(cmd);
             else
+                printError(WARNING, "Unknown command");
                 delete cmd; // Unknown command
             break;
     }
@@ -232,7 +238,7 @@ void NetEMRP::sendRelayInfo(netaddr_t desAddr)
     pkt->setEnergy(ener->getCapacity());
     pkt->setPosX(mob->getCoordX());
     pkt->setPosY(mob->getCoordY());
-    pkt->setDBs(dBs); // Every node knows position of BS thanks to helper
+    pkt->setDBs(dBs); // Every node knows position of BS thank to helper
 
     pkt->setByteLength(pkt->getPktSize());
     sendDown(pkt);
@@ -440,7 +446,7 @@ void NetEMRP::recvRelayRequest(NetEmrpPkt* pkt)
 {
     NetEmrpResRelayInfoTimer *timer = new NetEmrpResRelayInfoTimer();
     timer->setReqAddr(pkt->getSrcAddr());
-    timer->setKind(TIMER_RES_RELAY);
+    timer->setKind(EMRP_TIMER_RES_RELAY);
     scheduleAt(simTime() + uniform(0, par("waitRelayInfoTimeout").doubleValue()), timer);
 
     delete pkt;

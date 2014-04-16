@@ -18,6 +18,7 @@
 
 #include <omnetpp.h>
 #include "basenet.h"
+#include "netarpeespkt_m.h"
 
 namespace twsn {
 
@@ -26,6 +27,10 @@ namespace twsn {
  */
 class NetARPEES : public BaseNet
 {
+    public:
+        /** Dynamic created timer types */
+        enum ArpeesTimerType {ARPEES_TIMER_RES_RELAY};
+
     protected:
         // MAC addresses for routing
         // Value 0 means connection info is not initialized.
@@ -34,8 +39,10 @@ class NetARPEES : public BaseNet
 
         // Stored information about relay node
         double enerRn; // Energy
-        double dRnBs; // Distance from relay node to base station in meter
+        double dBsRn; // Distance from relay node to base station in meter
         double dRn; // Distance from relay node to this node
+
+        NetArpeesPkt *outPkt; // Packet going to be sent
 
         cMessage *waitRelayInfoTimer;
 
@@ -49,6 +56,39 @@ class NetARPEES : public BaseNet
         virtual void handleLowerMsg(cMessage *msg);
         /** Handle control message from lowerCtl$i */
         virtual void handleLowerCtl(cMessage *msg);
+
+        /** Broadcast request for info of base station/relay node */
+        void requestRelay();
+        /** Send relay information to specific node */
+        void sendRelayInfo(netaddr_t desAddr);
+
+        /**
+         * Decapsulate and send payload to upper layer. Network header will be deleted.
+         * This function is only for normal payload. Relayed payload should be handle by
+         * recvRelayedPayload().
+         */
+        void recvPayload(NetArpeesPkt *pkt);
+        /** Process relayed payload */
+        void recvRelayedPayload(NetArpeesPkt *pkt);
+        /** Handle relay request */
+        void recvRelayRequest(NetArpeesPkt *pkt);
+        /** Handle relay information */
+        void recvRelayInfo(NetArpeesPkt *pkt);
+
+        /**
+         * Compare new relay info with current relay node; if it's better, select it as new relay node.
+         * Return true when new the node having new relay info is selected as new relay node.
+         */
+        bool considerRelay(NetArpeesRelayInfoPkt *ri);
+        /**
+         * Function for assessing a candidate for relaying.
+         * Parameters:
+         *  ener: energy of relay candidate
+         *  dRc: distance from this node to relay candidate
+         *  dBs: distance from this node to base station
+         *  dRcBs: distance from relay candidate to base station
+         */
+        double assessRelay(double ener, double dRc, double dBs, double dRcBs);
 
     public:
         NetARPEES();

@@ -411,11 +411,18 @@ $O/modules/mobility/mobilitypath.o: modules/mobility/mobilitypath.cc \
 	util/coord.h \
 	util/twsndef.h
 $O/modules/netlayer/netarpees.o: modules/netlayer/netarpees.cc \
+	base/messages/apppkt_m.h \
 	base/messages/command_m.h \
+	base/messages/netpkt_m.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
+	base/modules/energy/baseenergy.h \
+	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
+	base/modules/queue/downqueue.h \
+	helpers/stathelper.h \
 	modules/netlayer/netarpees.h \
+	modules/netlayer/netarpeespkt_m.h \
 	util/coord.h \
 	util/twsndef.h
 $O/modules/netlayer/netarpeespkt_m.o: modules/netlayer/netarpeespkt_m.cc \

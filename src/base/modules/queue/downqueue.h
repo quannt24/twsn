@@ -26,6 +26,9 @@ namespace twsn {
  */
 class DownQueue : public BaseLayer
 {
+    public:
+        enum MsgKind {NONE = 0, ENQUEUE = 1} ;
+
     private:
         cPacketQueue queue;
 

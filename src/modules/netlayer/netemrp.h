@@ -24,7 +24,7 @@
 namespace twsn {
 
 /** Dynamic created timer types */
-enum EmrpTimerType {TIMER_RES_RELAY};
+enum EmrpTimerType {EMRP_TIMER_RES_RELAY};
 
 /**
  * Network layer using EMRP protocol

@@ -42,8 +42,15 @@ void DownQueue::handleUpperCtl(cMessage* msg)
 
 void DownQueue::handleLowerMsg(cMessage* msg)
 {
-    // Just forward to upper layer
-    sendUp(check_and_cast<cPacket*>(msg));
+    if (msg->getKind() == ENQUEUE) {
+        // Enqueue message though it's sent from lower
+        msg->setKind(NONE); // Reset message kind to enable sending message higher
+        queue.insert(check_and_cast<cPacket*>(msg));
+        notifyLower();
+    } else {
+        // Just forward to upper layer
+        sendUp(check_and_cast<cPacket*>(msg));
+    }
 }
 
 void DownQueue::handleLowerCtl(cMessage* msg)

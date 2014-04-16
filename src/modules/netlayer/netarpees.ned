@@ -20,10 +20,10 @@ import twsn.base.modules.netlayer.BaseNet;
 //
 // Network layer using ARPEES protocol
 //
-simple NetAPREES extends BaseNet
+simple NetARPEES extends BaseNet
 {
     parameters:
-        @class("twsn::NetAPREES");
+        @class("twsn::NetARPEES");
         
         // Timeout for waiting relay information after sending a relay request
         double waitRelayInfoTimeout @unit(s) = default(0.1 s);
