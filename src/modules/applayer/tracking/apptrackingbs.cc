@@ -135,13 +135,17 @@ void AppTrackingBS::initialize()
     sigTrackError = registerSignal("sigTrackError");
 
     /* Clear output folder */
-#if defined(__linux__) || defined(__unix__)
-    system("exec rm ./results/bs_output/*");
+    cConfigurationEx *configEx = ev.getConfigEx();
+    std::ostringstream ossCmd;
+    ossCmd.seekp(0);
+
+#if defined(_WIN32)
+    ossCmd << "del .\\results\\bs_output\\" << configEx->getActiveConfigName() << "_*" << '\0';
 #else
-    #if defined(_WIN32)
-        system("del .\results\bs_output\*");
-    #endif
+    ossCmd << "exec rm ./results/bs_output/" << configEx->getActiveConfigName() << "_*" << '\0';
 #endif
+
+    system(ossCmd.str().c_str());
 }
 
 void AppTrackingBS::handleLowerMsg(cMessage* msg)

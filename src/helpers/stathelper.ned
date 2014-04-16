@@ -33,7 +33,7 @@ simple StatHelper extends BaseSimple
         
         // Estimation error of distance
         @signal[sigPosError](type="double");
-        @statistic[posError](title="Positioning error"; source="sigPosError"; record=vector,histogram);
+        @statistic[posError](title="Positioning error"; source="sigPosError"; record=vector);
         
         // Total residual energy
         @signal[sigTRE](type="double");

@@ -1,32 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="/TWSN/simulations/results/Config2-*.vec"/>
-    <inputs name="/TWSN/simulations/results/Config2-*.sca"/>
     <inputs name="*.vec"/>
     <inputs name="*.sca"/>
   </inputs>
   <datasets>
-    <datasets name="R">
+    <datasets name="Error">
       <items xsi:type="scave:Add" filterPattern="meaError:histogram" type="HISTOGRAM"/>
       <items xsi:type="scave:HistogramChart" name="Measurement of distance error distribution">
         <properties name="Graph.Title" value="Measurement of distance error distribution"/>
-        <properties name="Bars.Baseline" value="-100.0"/>
         <properties name="Hist.Bar" value="Outline"/>
         <properties name="Hist.Data" value="Count"/>
-        <properties name="Hist.ShowOverflowCell" value="true"/>
       </items>
       <items xsi:type="scave:Add" filterPattern="meaError:vector" type="VECTOR"/>
-      <items xsi:type="scave:LineChart" name="Measurement error of distance over time" lineNameFormat="">
-        <properties name="Graph.Title" value="Measurement error of distance over time"/>
+      <items xsi:type="scave:LineChart" name="Measurement error" lineNameFormat="">
+        <filters xsi:type="scave:Select" filterPattern="meaError:vector" type="VECTOR"/>
+        <properties name="Graph.Title" value="Measurement error"/>
         <properties name="Y.Axis.Min" value="-20.0"/>
         <properties name="Y.Axis.Max" value="20.0"/>
         <properties name="Symbols.Size" value="2"/>
         <properties name="Line.Type" value="Dots"/>
       </items>
+      <items xsi:type="scave:Add" filterPattern="posError:vector" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Position error" lineNameFormat="">
+        <filters xsi:type="scave:Select" filterPattern="posError:vector" type="VECTOR"/>
+        <properties name="Graph.Title" value="Position error"/>
+        <properties name="Y.Axis.Max" value="80.0"/>
+        <properties name="Line.Type" value="Dots"/>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="trackError:vector" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Track error" lineNameFormat="">
+        <filters xsi:type="scave:Select" filterPattern="trackError:vector" type="VECTOR"/>
+        <properties name="Graph.Title" value="Track error"/>
+        <properties name="Y.Axis.Max" value="80.0"/>
+        <properties name="Line.Type" value="Dots"/>
+      </items>
+    </datasets>
+    <datasets name="Energy">
+      <items xsi:type="scave:Add" filterPattern="totalResidualEnergy:vector" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Total residual energy" lineNameFormat="">
+        <properties name="Graph.Title" value="Total residual energy"/>
+      </items>
+    </datasets>
+    <datasets name="Packet count">
+      <items xsi:type="scave:Add" filterPattern="lostMacPkt:sum OR lostNetPkt:sum OR recvMacPkt:sum OR recvNetPkt:sum"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="MAC Packet loss" valueExpr="'lostMacPkt:sum' / ('lostMacPkt:sum' + 'recvMacPkt:sum')" moduleExpr="" groupByExpr="configname"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="Network packet loss" valueExpr="'lostNetPkt:sum' / ('lostNetPkt:sum' + 'recvNetPkt:sum')" moduleExpr="" groupByExpr="configname"/>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.3"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.1/@items.1"/>
   </chartSheets>
 </scave:Analysis>

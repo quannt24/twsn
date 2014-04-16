@@ -42,5 +42,5 @@ simple AppTrackingBS extends BaseApp
 		@signal[sigEtoEDelay](type="double");
         @statistic[EtoEDelay](title="End to end delay"; source="sigEtoEDelay"; record=vector);
         @signal[sigTrackError](type="double");
-        @statistic[TrackError](title="Track error"; source="sigTrackError"; record=vector);
+        @statistic[trackError](title="Track error"; source="sigTrackError"; record=vector);
 }
