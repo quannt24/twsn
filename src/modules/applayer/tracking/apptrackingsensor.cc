@@ -66,6 +66,8 @@ void AppTrackingSensor::promoteCH()
 
         if (tp != NULL) {
             getParentModule()->bubble("Target tracked");
+            // Record true coordination for reference
+            tp->setTrueCoord(measurement.getTarCoord());
             // Punch time stamp
             tp->setTimestamp(senseTimestamp);
 

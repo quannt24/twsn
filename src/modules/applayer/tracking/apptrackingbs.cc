@@ -27,7 +27,11 @@ void AppTrackingBS::processTarPos(TargetPos &tp)
         // Add new trace with this TargetPos
         TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
         trace.setId(numTrace);
-        trace.addTargetPos(tp);
+        TargetPos filteredPos = trace.addTargetPos(tp);
+
+        // Record track error
+        emit(sigTrackError, distance(filteredPos.getCoord(), filteredPos.getTrueCoord()));
+
         traceList.push_back(trace);
         numTrace++;
         std::cerr << "First trace, ID " << trace.getId() << endl;
@@ -53,13 +57,20 @@ void AppTrackingBS::processTarPos(TargetPos &tp)
         }
 
         if (mostLikelyTrace != NULL) {
-            mostLikelyTrace->addTargetPos(tp);
+            TargetPos filteredPos = mostLikelyTrace->addTargetPos(tp);
             std::cerr << "Add to trace ID " << mostLikelyId << endl;
+
+            // Record track error
+            emit(sigTrackError, distance(filteredPos.getCoord(), filteredPos.getTrueCoord()));
         } else {
             // Add new trace with this TargetPos
             TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
             trace.setId(numTrace);
-            trace.addTargetPos(tp);
+            TargetPos filteredPos = trace.addTargetPos(tp);
+
+            // Record track error
+            emit(sigTrackError, distance(filteredPos.getCoord(), filteredPos.getTrueCoord()));
+
             traceList.push_back(trace);
             numTrace++;
             std::cerr << "New trace, ID " << trace.getId() << endl;
@@ -121,6 +132,7 @@ void AppTrackingBS::initialize()
 {
     numTrace = 0;
     sigEtoEDelay = registerSignal("sigEtoEDelay");
+    sigTrackError = registerSignal("sigTrackError");
 
     /* Clear output folder */
 #if defined(__linux__) || defined(__unix__)

@@ -17,6 +17,7 @@ class TargetPos
     private:
         int tarId;
         Coord coord;
+        Coord trueCoord; // True coordinate of target (for reference, not counted for packet size)
         double timestamp;
 
     public:
@@ -27,11 +28,14 @@ class TargetPos
             timestamp = 0;
         }
 
+        int getTarId() const { return tarId; }
+        void setTarId(int tarId) { this->tarId = tarId; }
+
         const Coord& getCoord() const { return coord; }
         void setCoord(const Coord& coord) { this->coord = coord; }
 
-        int getTarId() const { return tarId; }
-        void setTarId(int tarId) { this->tarId = tarId; }
+        const Coord& getTrueCoord() const { return trueCoord; }
+        void setTrueCoord(const Coord& trueCoord) { this->trueCoord = trueCoord; }
 
         double getTimestamp() const { return timestamp; }
         void setTimestamp(double timestamp) { this->timestamp = timestamp; }

@@ -40,9 +40,11 @@ class TargetTrace
 
         /**
          * Add a TargetPos to path.
-         * This function does not check if the TargetPos is acceptable or not.
+         * This function does not check if the TargetPos is acceptable or not. It will use passed
+         * TargetPos as new measurement to track. The actual TargetPos added to pass is calculated
+         * (filtered) and returned by the function.
          */
-        void addTargetPos(TargetPos tp);
+        TargetPos& addTargetPos(TargetPos tp);
         /**
          * Get number of TargetPos in path
          */

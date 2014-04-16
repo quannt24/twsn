@@ -32,6 +32,7 @@ class AppTrackingBS : public BaseApp
         int numTrace; // Number of trace tracked (including noise)
 
         simsignal_t sigEtoEDelay;
+        simsignal_t sigTrackError;
 
         /** Process newly added target position */
         void processTarPos(TargetPos &tarPos);

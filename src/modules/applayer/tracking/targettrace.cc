@@ -23,7 +23,7 @@ TargetTrace::TargetTrace(double theta, double minDeltaT)
     }
 }
 
-void TargetTrace::addTargetPos(TargetPos tp)
+TargetPos& TargetTrace::addTargetPos(TargetPos tp)
 {
     if (path.size() == 0) {
         // Just add to path
@@ -31,6 +31,8 @@ void TargetTrace::addTargetPos(TargetPos tp)
         // Initialize predicted values
         pVx = 0;
         pVy = 0;
+
+        return tp;
     } else {
         // Predict
         TargetPos &recentPos = path.back();
@@ -56,8 +58,11 @@ void TargetTrace::addTargetPos(TargetPos tp)
 
         TargetPos filteredPos;
         filteredPos.setCoord(newCoord);
+        filteredPos.setTrueCoord(tp.getTrueCoord());
         filteredPos.setTimestamp(tp.getTimestamp());
         path.push_back(filteredPos);
+
+        return filteredPos;
     }
 }
 
