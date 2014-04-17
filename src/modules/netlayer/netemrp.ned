@@ -34,6 +34,6 @@ simple NetEMRP extends BaseNet
         // as incident happended).
         double waitEnergyInfoTimeout @unit(s) = default(0.5 s);
         // Differential amount of relay/backup nodes' energy that triggers switch nodes
-        double switchingEnergy @unit(mWh) = default(0.2mWh);
-        double criticalEnergy @unit(mWh) = default(0.05mWh);
+        double switchingEnergy @unit(mWh) = default(5 mWh);
+        double criticalEnergy @unit(mWh) = default(0.1 mWh);
 }
