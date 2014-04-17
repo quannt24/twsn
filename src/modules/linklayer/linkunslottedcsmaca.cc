@@ -70,7 +70,7 @@ void LinkUnslottedCSMACA::handleUpperMsg(cMessage* msg)
     outQueue.insert(macpkt);
 
     // Send packet at head of the queue if ready
-    if (!transmitting && !ifsTimer->isScheduled()) {
+    if (outPkt == NULL && !ifsTimer->isScheduled()) {
         outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
         notifyLower();
     }
@@ -207,17 +207,17 @@ void LinkUnslottedCSMACA::sendPkt()
         txcmd->setCmdId(CMD_PHY_TX);
         sendCtlDown(txcmd);
 
-        // Transmit
-        sendDown(outPkt);
-        outPkt = NULL;
-        transmitting = true;
-
         // Prepare IFS
         if (outPkt->getByteLength() <= par("aMaxSIFSFrameSize").longValue()) {
             ifsLen = par("aMinSIFSPeriod").doubleValue();
         } else {
             ifsLen = par("aMinLIFSPeriod").doubleValue();
         }
+
+        // Transmit
+        sendDown(outPkt);
+        /* NOTE: We do not set outPkt = NULL here to indicate that it is being sent by physical
+         * layer. Do not change content of this pointer after this point. */
     }
 }
 
@@ -241,7 +241,6 @@ void LinkUnslottedCSMACA::deferPkt()
         }
 
         delete outPkt;
-        outPkt = NULL;
         reset();
 
         // Count packet loss
@@ -252,8 +251,8 @@ void LinkUnslottedCSMACA::deferPkt()
 
 void LinkUnslottedCSMACA::reset()
 {
-    // Reset transmitting flag so that we can send next packet
-    transmitting = false;
+    // Reset outPkt pointer so that we can send next packet
+    outPkt = NULL;
     // Fetch next packet from queue after IFS
     if (!ifsTimer->isScheduled()) {
         scheduleAt(simTime() + ifsLen, ifsTimer);
@@ -269,7 +268,6 @@ void LinkUnslottedCSMACA::reset()
 LinkUnslottedCSMACA::LinkUnslottedCSMACA()
 {
     outPkt = NULL;
-    transmitting = false;
     backoffTimer = new cMessage("backoffTimer");
     listenTimer = new cMessage("listenTimer");
     ifsTimer = new cMessage("ifsTimer");

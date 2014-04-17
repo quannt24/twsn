@@ -46,7 +46,7 @@ class NetEMRP : public BaseNet
         double dBsBn;
         double dBn;
 
-        cPacketQueue outQueue;
+        cPacketQueue outQueue; // Sending queue for payload
         NetEmrpPkt *outPkt; // Packet going to be sent
 
         /* Timers */

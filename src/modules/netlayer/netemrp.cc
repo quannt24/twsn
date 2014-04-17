@@ -88,7 +88,7 @@ void NetEMRP::handleUpperMsg(cMessage* msg)
     /* Encapsulate then enqueue packet from upper layer */
     AppPkt *apppkt = check_and_cast<AppPkt*>(msg);
     NetEmrpPkt *netpkt = new NetEmrpPkt();
-    netpkt->setSrcAddr(macAddr);
+    // Source address (this node address) will be set later by prepareQueuedPkt()
 
     switch (apppkt->getRoutingType()) {
         case RT_TO_BS:
@@ -123,24 +123,6 @@ void NetEMRP::handleUpperMsg(cMessage* msg)
 
     // Send packet at head of the queue if ready
     prepareQueuedPkt();
-
-//        if (!sendDelayed) {
-//            sendDown(outPkt);
-//            outPkt = NULL;
-//            fetchPacketFromUpper();
-//        } else {
-//            // Find relay node
-//            requestRelay();
-//            // Wait for timeout to retry
-//            scheduleAt(simTime() + par("waitRelayInfoTimeout").doubleValue(), waitRelayInfoTimer);
-//        }
-//    } else {
-//        printError(ERROR, "Not ready for sending. Dropping packet");
-//        delete msg;
-//        // Count lost packet
-//        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-//        sh->countLostNetPkt();
-//    }
 }
 
 void NetEMRP::handleUpperCtl(cMessage* msg)
@@ -215,6 +197,7 @@ void NetEMRP::prepareQueuedPkt()
 {
     if (outPkt == NULL && !outQueue.empty()) {
         outPkt = check_and_cast<NetEmrpPkt*>(outQueue.pop());
+        outPkt->setSrcAddr(macAddr);
 
         if (outPkt->getPktType() == EMRP_PAYLOAD_TO_BS) {
             if (bsAddr != 0 || rnAddr != 0) {

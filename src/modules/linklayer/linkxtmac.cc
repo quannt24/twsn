@@ -64,9 +64,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             // Cancel current being sent strobe
             printError(INFO, "Strobe deadline is missed");
             nStrobe--;
-            if (!transmitting) {
-                delete outPkt;
-            }
+            if (outPkt != NULL) delete outPkt;
             outPkt = NULL;
             cancelEvent(backoffTimer);
 
@@ -75,7 +73,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
         }
     } else if (msg == mainSendingTimer) {
         if (mainPkt != NULL) {
-            if (!transmitting) {
+            if (outPkt == NULL) {
                 printError(INFO, "Send main packet");
                 outPkt = mainPkt;
                 notifyLower();
@@ -208,7 +206,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             strobePkt = NULL;
             cancelEvent(strobeTimer);
             cancelEvent(deadlineTimer);
-            if (transmitting && outPkt->getPktType() == MAC802154_PREAMBLE) {
+            if (outPkt != NULL && outPkt->getPktType() == MAC802154_PREAMBLE) {
                 cancelEvent(backoffTimer);
                 delete outPkt;
                 outPkt = NULL;
@@ -244,7 +242,6 @@ void LinkXTMAC::reset()
 
     // Reset outPkt pointer
     outPkt = NULL;
-    transmitting = false;
 
     // Switch radio transceiver to listen mode
     Command *rxcmd = new Command();
@@ -280,7 +277,6 @@ void LinkXTMAC::prepareQueuedPkt()
 {
     if (nStrobe <= 0
             && mainPkt == NULL
-            && !transmitting
             && !ifsTimer->isScheduled()
             && !mainSendingTimer->isScheduled()
             && !outQueue.empty()) {
@@ -307,14 +303,12 @@ void LinkXTMAC::prepareQueuedPkt()
                 // Send main packet immediately
                 nStrobe = 0;
                 outPkt = mainPkt;
-                // Notify physical layer
                 notifyLower();
             }
         } else {
             // Send main packet immediately
             nStrobe = 0;
             outPkt = mainPkt;
-            // Notify physical layer
             notifyLower();
         }
     }

@@ -60,7 +60,7 @@ void NetARPEES::handleUpperMsg(cMessage* msg)
     /* Encapsulate then enqueue packet from upper layer */
     AppPkt *apppkt = check_and_cast<AppPkt*>(msg);
     NetArpeesPkt *netpkt = new NetArpeesPkt();
-    netpkt->setSrcAddr(macAddr);
+    // Source address (this node address) will be set later by prepareQueuedPkt()
 
     switch (apppkt->getRoutingType()) {
         case RT_TO_BS:
@@ -165,6 +165,7 @@ void NetARPEES::prepareQueuedPkt()
 {
     if (outPkt == NULL && !outQueue.empty()) {
         outPkt = check_and_cast<NetArpeesPkt*>(outQueue.pop());
+        outPkt->setSrcAddr(macAddr);
 
         if (outPkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
             // Find relay node

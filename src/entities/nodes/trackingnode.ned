@@ -25,12 +25,12 @@ module TrackingNode extends Node802154
 {
     parameters:
         energyType = default("Battery");
-        
+
         net.isBaseStation = false;
 
     submodules:
         app: AppTrackingSensor {
-            @display("p=150,550");
+            @display("p=150,350");
         }
         sensor: AcousticSensor {
             @display("p=50,350");

@@ -48,4 +48,7 @@ network TestWSN extends BaseWSN
         decoHelper: DecoHelper {
             @display("p=-20,70");
         }
+        statHelper: StatHelper {
+            @display("p=-20,100");
+        }
 }
