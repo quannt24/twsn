@@ -28,6 +28,7 @@ namespace twsn {
 class LinkUnslottedCSMACA : public BaseLink
 {
     protected:
+        cPacketQueue outQueue;
         Mac802154Pkt *outPkt; // Packet being sent
         bool transmitting; // Transmitting packet
 
@@ -44,7 +45,7 @@ class LinkUnslottedCSMACA : public BaseLink
         cMessage *listenTimer; // Start listen
         /* Timer for fetching packet from queue, this timer also for implementing IFS,
          * do not cancel it if you are not sure. */
-        cMessage *fetchTimer;
+        cMessage *ifsTimer;
 
         virtual void initialize();
         /** Handle self message */
@@ -58,6 +59,12 @@ class LinkUnslottedCSMACA : public BaseLink
         /** Handle control message from lowerCtl$i */
         virtual void handleLowerCtl(cMessage *msg);
 
+        /**
+         * Notify lower layer (physical) that there is a packet going to be sent.
+         * Sending procedures will be started right after physical module ready (with
+         * CMD_DATA_FETCH command arrive at lowerCtl gate).
+         */
+        void notifyLower();
         /** Start sending procedures to send outPkt */
         void startSending();
         /** Backoff with random backoff expenent */

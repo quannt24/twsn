@@ -24,7 +24,8 @@
 namespace twsn {
 
 /**
- * Base class for physical layer
+ * Base class for physical layer.
+ * Note: This class does not derive from BaseLayer.
  */
 class BasePhy : public BaseSimple
 {

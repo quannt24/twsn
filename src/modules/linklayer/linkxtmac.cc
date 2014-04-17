@@ -34,9 +34,19 @@ void LinkXTMAC::initialize()
 
 void LinkXTMAC::handleSelfMsg(cMessage* msg)
 {
-    LinkUnslottedCSMACA::handleSelfMsg(msg);
-
-    if (msg == strobeTimer) {
+    if (msg == backoffTimer) {
+        performCCA();
+    } else if (msg == listenTimer) {
+        // Switch radio transceiver to listen mode
+        Command *cmd = new Command();
+        cmd->setSrc(LINK);
+        cmd->setDes(PHYS);
+        cmd->setCmdId(CMD_PHY_RX);
+        sendCtlDown(cmd);
+    } else if (msg == ifsTimer) {
+        // Send packet at head of the queue if ready
+        prepareQueuedPkt();
+    } else if (msg == strobeTimer) {
         if (nStrobe > 0) {
             // Send next strobe
             sendStrobe();
@@ -47,7 +57,6 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
 
             // Send main packet anyway
             outPkt = mainPkt;
-            // Notify physical layer
             notifyLower();
         }
     } else if (msg == deadlineTimer) {
@@ -66,7 +75,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
         }
     } else if (msg == mainSendingTimer) {
         if (mainPkt != NULL) {
-            if (outPkt == NULL) {
+            if (!transmitting) {
                 printError(INFO, "Send main packet");
                 outPkt = mainPkt;
                 notifyLower();
@@ -74,10 +83,14 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
                 printError(ERROR, "Not ready for sending");
                 delete mainPkt;
                 mainPkt = NULL;
+
+                // Count packet loss
+                StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+                sh->countLostMacPkt();
             }
         } else {
-            printError(WARNING, "NULL main packet, fetch for other");
-            fetchPacketFromUpper();
+            printError(WARNING, "NULL main packet, prepare other");
+            prepareQueuedPkt();
         }
     } else if (msg == dcSleepTimer) {
         active = false;
@@ -99,49 +112,22 @@ void LinkXTMAC::handleUpperMsg(cMessage* msg)
 {
     // TODO Limit packet size
 
-    /* Encapsulate packet from upper layer and start sending procedures. If it's not ready for
-     * for sending (e.g. A packet is being sent), the new packet will be drop. */
-    if (mainPkt == NULL && outPkt == NULL) {
-        NetPkt *netpkt = check_and_cast<NetPkt*>(msg);
-        Mac802154Pkt *macpkt = new Mac802154Pkt();
+    /* Encapsulate then enqueue packet from upper layer */
+    NetPkt *netpkt = check_and_cast<NetPkt*>(msg);
+    Mac802154Pkt *macpkt = new Mac802154Pkt();
 
-        // TODO Address resolution
-        macpkt->setSrcAddr(netpkt->getSrcAddr());
-        macpkt->setDesAddr(netpkt->getDesAddr());
+    // TODO Address resolution
+    macpkt->setSrcAddr(netpkt->getSrcAddr());
+    macpkt->setDesAddr(netpkt->getDesAddr());
 
-        macpkt->setByteLength(macpkt->getPktSize());
-        macpkt->encapsulate(netpkt);
+    macpkt->setByteLength(macpkt->getPktSize());
+    macpkt->encapsulate(netpkt);
 
-        mainPkt = macpkt; // Going to send this packet
-        activate();
+    outQueue.insert(macpkt);
+    activate();
 
-        if (netpkt->getPreambleFlag()) {
-            // Prepare strobes
-            nStrobe = (int) ceil(par("sleepInterval").doubleValue() / par("strobePeriod").doubleValue());
-            std::cerr << "Sending " << nStrobe << " strobes t=" << simTime() << endl;
-
-            strobePkt = new Mac802154Pkt();
-            strobePkt->setPktType(MAC802154_PREAMBLE);
-            strobePkt->setSrcAddr(this->macAddr);
-            strobePkt->setDesAddr(mainPkt->getDesAddr());
-            strobePkt->setByteLength(strobePkt->getPktSize());
-
-            // Send strobe
-            sendStrobe();
-        } else {
-            // Send main packet immediately
-            nStrobe = 0;
-            outPkt = mainPkt;
-            // Notify physical layer
-            notifyLower();
-        }
-    } else {
-        printError(ERROR, "Not ready for sending");
-        // Count packet loss
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countLostMacPkt();
-        delete msg;
-    }
+    // Send packet at head of the queue if ready
+    prepareQueuedPkt();
 }
 
 void LinkXTMAC::handleUpperCtl(cMessage* msg)
@@ -150,14 +136,6 @@ void LinkXTMAC::handleUpperCtl(cMessage* msg)
     Command *cmd = check_and_cast<Command*>(msg);
 
     switch (cmd->getCmdId()) {
-        case CMD_DATA_NOTI:
-            if (mainPkt == NULL && outPkt == NULL && !fetchTimer->isScheduled()) {
-                // Fetch timer also help bypass continuous notification
-                scheduleAt(simTime(), fetchTimer);
-            }
-            delete cmd;
-            break;
-
         case CMD_LIN_FORCE_ACTIVE: {
             CmdForceActive *cfa = check_and_cast<CmdForceActive*>(cmd);
             activate(true, cfa->getDuration());
@@ -167,11 +145,12 @@ void LinkXTMAC::handleUpperCtl(cMessage* msg)
 
         default:
             // Just forward to lower layer
-            if (cmd->getDes() != LINK)
+            if (cmd->getDes() != LINK) {
                 sendCtlDown(cmd);
-            else
+            } else {
                 printError(WARNING, "Unknown command from upper");
                 delete cmd; // Unknown command
+            }
             break;
     }
 }
@@ -229,7 +208,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             strobePkt = NULL;
             cancelEvent(strobeTimer);
             cancelEvent(deadlineTimer);
-            if (outPkt != NULL && outPkt->getPktType() == MAC802154_PREAMBLE) {
+            if (transmitting && outPkt->getPktType() == MAC802154_PREAMBLE) {
                 cancelEvent(backoffTimer);
                 delete outPkt;
                 outPkt = NULL;
@@ -252,8 +231,8 @@ void LinkXTMAC::reset()
 {
     if (outPkt == mainPkt) {
         // Main packet sent. Fetch next packet from queue after IFS.
-        if (!fetchTimer->isScheduled()) {
-            scheduleAt(simTime() + ifsLen, fetchTimer);
+        if (!ifsTimer->isScheduled()) {
+            scheduleAt(simTime() + ifsLen, ifsTimer);
         }
         // Reset mainPkt pointer so that we can send next packet
         mainPkt = NULL;
@@ -297,6 +276,50 @@ void LinkXTMAC::activate(bool forced, double duration)
     }
 }
 
+void LinkXTMAC::prepareQueuedPkt()
+{
+    if (nStrobe <= 0
+            && mainPkt == NULL
+            && !transmitting
+            && !ifsTimer->isScheduled()
+            && !mainSendingTimer->isScheduled()
+            && !outQueue.empty()) {
+
+        mainPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
+
+        if (mainPkt->getPktType() == MAC802154_DATA) {
+            NetPkt *encPkt = check_and_cast<NetPkt*>(mainPkt->getEncapsulatedPacket());
+
+            if (encPkt->getPreambleFlag()) {
+                // Prepare strobes
+                nStrobe = (int) ceil(par("sleepInterval").doubleValue() / par("strobePeriod").doubleValue());
+                std::cerr << "Sending " << nStrobe << " strobes t=" << simTime() << endl;
+
+                strobePkt = new Mac802154Pkt();
+                strobePkt->setPktType(MAC802154_PREAMBLE);
+                strobePkt->setSrcAddr(this->macAddr);
+                strobePkt->setDesAddr(mainPkt->getDesAddr());
+                strobePkt->setByteLength(strobePkt->getPktSize());
+
+                // Send strobe
+                sendStrobe();
+            } else {
+                // Send main packet immediately
+                nStrobe = 0;
+                outPkt = mainPkt;
+                // Notify physical layer
+                notifyLower();
+            }
+        } else {
+            // Send main packet immediately
+            nStrobe = 0;
+            outPkt = mainPkt;
+            // Notify physical layer
+            notifyLower();
+        }
+    }
+}
+
 void LinkXTMAC::sendStrobe()
 {
     if (outPkt == NULL && nStrobe > 0 && strobePkt != NULL) {
@@ -311,16 +334,16 @@ void LinkXTMAC::sendStrobe()
 
 void LinkXTMAC::sendAck(macaddr_t addr)
 {
-    if (outPkt == NULL) {
-        Mac802154Pkt *ack = new Mac802154Pkt();
-        ack->setPktType(MAC802154_ACK);
-        ack->setSrcAddr(macAddr);
-        ack->setDesAddr(addr);
-        ack->setByteLength(ack->getPktSize());
+    Mac802154Pkt *ack = new Mac802154Pkt();
+    ack->setPktType(MAC802154_ACK);
+    ack->setSrcAddr(macAddr);
+    ack->setDesAddr(addr);
+    ack->setByteLength(ack->getPktSize());
 
-        outPkt = ack;
-        notifyLower();
-    }
+    outQueue.insert(ack);
+
+    // Send packet at head of the queue if ready
+    prepareQueuedPkt();
 }
 
 void LinkXTMAC::switchToRx()

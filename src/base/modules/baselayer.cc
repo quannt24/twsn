@@ -89,18 +89,4 @@ void BaseLayer::sendCtlDown(Command* cmd)
     send(cmd, "lowerCtl$o");
 }
 
-void BaseLayer::fetchPacketFromUpper()
-{
-    Command *cmd = new Command();
-    cmd->setCmdId(CMD_DATA_FETCH);
-    sendCtlUp(cmd);
-}
-
-void BaseLayer::notifyLower()
-{
-    Command *cmd = new Command();
-    cmd->setCmdId(CMD_DATA_NOTI);
-    sendCtlDown(cmd);
-}
-
 } // namespace twsn

@@ -46,6 +46,7 @@ class NetEMRP : public BaseNet
         double dBsBn;
         double dBn;
 
+        cPacketQueue outQueue;
         NetEmrpPkt *outPkt; // Packet going to be sent
 
         /* Timers */
@@ -64,7 +65,13 @@ class NetEMRP : public BaseNet
         virtual void handleUpperCtl(cMessage *msg);
         /** Handle message/packet from lower$i */
         virtual void handleLowerMsg(cMessage *msg);
+        /** Handle control message from lowerCtl$i */
+        virtual void handleLowerCtl(cMessage *msg);
 
+        /**
+         * Pop packet from queue and prepare sending if not currently in sending procedures.
+         */
+        void prepareQueuedPkt();
         /** Broadcast request for info of base station/relay/backup node */
         void requestRelay();
         /** Send relay information to specific node */

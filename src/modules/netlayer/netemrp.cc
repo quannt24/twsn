@@ -60,7 +60,6 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
             }
             sendDown(outPkt);
         } else {
-            // TODO Report failure
             printError(INFO, "Cannot find relay node. Dropping packet");
             delete outPkt;
             // Count lost packet
@@ -69,7 +68,7 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
         }
         outPkt = NULL;
         // Fetch next packet in queue
-        fetchPacketFromUpper();
+        prepareQueuedPkt();
     } else if (msg == waitEnergyInfoTimer) {
         // Current relay node cannot report its energy information, replace it.
         rnAddr = 0;
@@ -86,89 +85,74 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
 
 void NetEMRP::handleUpperMsg(cMessage* msg)
 {
-    bool sendDelayed = false; // Delay sending to wait for relay information
+    /* Encapsulate then enqueue packet from upper layer */
+    AppPkt *apppkt = check_and_cast<AppPkt*>(msg);
+    NetEmrpPkt *netpkt = new NetEmrpPkt();
+    netpkt->setSrcAddr(macAddr);
 
-    /* Encapsulate packet from upper layer and start sending procedures. */
-    if (outPkt == NULL) {
-        // Note: Use mac address for routing. Front end address is only set here (setSrcNetAddr).
-        AppPkt *apppkt = check_and_cast<AppPkt*>(msg);
-        apppkt->setSrcNetAddr(macAddr);
+    switch (apppkt->getRoutingType()) {
+        case RT_TO_BS:
+            netpkt->setPktType(EMRP_PAYLOAD_TO_BS);
+            // Destination address will be set later
+            break;
 
-        NetEmrpPkt *netpkt = new NetEmrpPkt();
-        netpkt->setSrcAddr(macAddr);
+        case RT_BROADCAST:
+            netpkt->setPktType(EMRP_PAYLOAD_TO_AN);
+            netpkt->setDesAddr(NET_BROADCAST_ADDR);
+            break;
 
-        switch (apppkt->getRoutingType()) {
-            case RT_TO_BS:
-                netpkt->setPktType(EMRP_PAYLOAD_TO_BS);
-                if (bsAddr != 0) {
-                    netpkt->setDesAddr(bsAddr);
-                } else if (rnAddr != 0) {
-                    netpkt->setDesAddr(rnAddr);
-                } else {
-                    sendDelayed = true;
-                }
-                break;
-
-            case RT_BROADCAST:
-                netpkt->setPktType(EMRP_PAYLOAD_TO_AN);
-                netpkt->setDesAddr(NET_BROADCAST_ADDR);
-                break;
-
-            default:
-                // Default is unicast to an adjacent node
-                netpkt->setPktType(EMRP_PAYLOAD_TO_AN);
-                netpkt->setDesAddr(apppkt->getDesNetAddr());
-                break;
-        }
-
-        // Set preamble flag
-        if (netpkt->getPktType() == EMRP_PAYLOAD_TO_BS) {
-            netpkt->setPreambleFlag(true);
-        } else {
-            netpkt->setPreambleFlag(false);
-        }
-
-        netpkt->setByteLength(netpkt->getPktSize());
-        netpkt->encapsulate(apppkt);
-        outPkt = netpkt;
-
-        if (!sendDelayed) {
-            sendDown(outPkt);
-            outPkt = NULL;
-            fetchPacketFromUpper();
-        } else {
-            // Find relay node
-            requestRelay();
-            // Wait for timeout to retry
-            scheduleAt(simTime() + par("waitRelayInfoTimeout").doubleValue(), waitRelayInfoTimer);
-        }
-    } else {
-        printError(ERROR, "Not ready for sending. Dropping packet");
-        delete msg;
-        // Count lost packet
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countLostNetPkt();
+        default:
+            // Default is unicast to an adjacent node
+            netpkt->setPktType(EMRP_PAYLOAD_TO_AN);
+            netpkt->setDesAddr(apppkt->getDesNetAddr());
+            break;
     }
+
+    // Set preamble flag
+    if (netpkt->getPktType() == EMRP_PAYLOAD_TO_BS) {
+        netpkt->setPreambleFlag(true);
+    } else {
+        netpkt->setPreambleFlag(false);
+    }
+
+    netpkt->setByteLength(netpkt->getPktSize());
+    netpkt->encapsulate(apppkt);
+
+    // Insert packet to queue
+    outQueue.insert(netpkt);
+
+    // Send packet at head of the queue if ready
+    prepareQueuedPkt();
+
+//        if (!sendDelayed) {
+//            sendDown(outPkt);
+//            outPkt = NULL;
+//            fetchPacketFromUpper();
+//        } else {
+//            // Find relay node
+//            requestRelay();
+//            // Wait for timeout to retry
+//            scheduleAt(simTime() + par("waitRelayInfoTimeout").doubleValue(), waitRelayInfoTimer);
+//        }
+//    } else {
+//        printError(ERROR, "Not ready for sending. Dropping packet");
+//        delete msg;
+//        // Count lost packet
+//        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+//        sh->countLostNetPkt();
+//    }
 }
 
 void NetEMRP::handleUpperCtl(cMessage* msg)
 {
     Command *cmd = check_and_cast<Command*>(msg);
 
-    switch (cmd->getCmdId()) {
-        case CMD_DATA_NOTI:
-            if (outPkt == NULL) fetchPacketFromUpper();
-            delete cmd;
-            break;
-
-        default:
-            // Just forward to lower layer
-            if (cmd->getDes() != NETW)
-                sendCtlDown(cmd);
-            else
-                printError(WARNING, "Unknown command");
-                delete cmd; // Unknown command
-            break;
+    // Unknown command, just forward to lower layer
+    if (cmd->getDes() != NETW) {
+        sendCtlDown(cmd);
+    } else {
+        printError(WARNING, "Unknown command from upper");
+        delete cmd; // Unknown command
     }
 }
 
@@ -211,6 +195,55 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
         case EMRP_ENERGY_INFO:
             recvEnergyInfo(pkt);
             break;
+    }
+}
+
+void NetEMRP::handleLowerCtl(cMessage* msg)
+{
+    Command *cmd = check_and_cast<Command*>(msg);
+
+    // Unknown command, just forward to upper layer
+    if (cmd->getDes() != NETW) {
+        sendCtlUp(cmd);
+    } else {
+        printError(WARNING, "Unknown command from lower");
+        delete cmd; // Unknown command
+    }
+}
+
+void NetEMRP::prepareQueuedPkt()
+{
+    if (outPkt == NULL && !outQueue.empty()) {
+        outPkt = check_and_cast<NetEmrpPkt*>(outQueue.pop());
+
+        if (outPkt->getPktType() == EMRP_PAYLOAD_TO_BS) {
+            if (bsAddr != 0 || rnAddr != 0) {
+                if (bsAddr != 0) {
+                    outPkt->setDesAddr(bsAddr);
+                } else {
+                    outPkt->setDesAddr(rnAddr);
+                }
+                // Send immediately
+                sendDown(outPkt);
+                outPkt = NULL;
+
+                // Plan a timer for deadline of updating energy info
+                cancelEvent(waitEnergyInfoTimer);
+                scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimer);
+
+                prepareQueuedPkt(); // Be careful: recursive
+            } else {
+                // Find relay node
+                requestRelay();
+                // Wait for timeout to send
+                scheduleAt(simTime() + par("waitRelayInfoTimeout").doubleValue(), waitRelayInfoTimer);
+            }
+        } else {
+            // Send immediately
+            sendDown(outPkt);
+            outPkt = NULL;
+            prepareQueuedPkt(); // Be careful: recursive
+        }
     }
 }
 
@@ -407,7 +440,6 @@ void NetEMRP::recvRelayedPayload(NetEmrpPkt* pkt)
         sendEnergyInfo(pkt->getSrcAddr());
         delete pkt;
     } else {
-        // Relay packet
         if (bsAddr <= 0 && (rnAddr <= 0 || pkt->getSrcAddr() == rnAddr)) {
             // Here is a deadend, we should prevent loop here
             printError(INFO, "Cannot relay packet, deadend!");
@@ -425,19 +457,8 @@ void NetEMRP::recvRelayedPayload(NetEmrpPkt* pkt)
             sendEnergyInfo(pkt->getSrcAddr());
 
             // Relay to next hop
-            pkt->setSrcAddr(macAddr);
-            if (bsAddr > 0) {
-                pkt->setPreambleFlag(false); // No need to send preamble
-                pkt->setDesAddr(bsAddr);
-            } else {
-                pkt->setDesAddr(rnAddr);
-            }
-            sendDown(pkt);
-
-            // Plan a timer for deadline of updating energy info
-            if (!waitEnergyInfoTimer->isScheduled()) {
-                scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimer);
-            }
+            outQueue.insert(pkt);
+            prepareQueuedPkt();
         }
     }
 }

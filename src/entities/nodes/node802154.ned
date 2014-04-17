@@ -27,7 +27,5 @@ module Node802154 extends BaseWirelessNode
 
         phyType = default("PhyCC2420");
         linkType = default("LinkUnslottedCSMACA");
-        linkQueueType = default("DownQueue"); // Queue buffer upon link layer
         netType = default("NetEMRP");
-        netQueueType = default("DownQueue"); // Queue buffer upon network layer
 }

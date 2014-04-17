@@ -23,7 +23,7 @@ TargetTrace::TargetTrace(double theta, double minDeltaT)
     }
 }
 
-TargetPos& TargetTrace::addTargetPos(TargetPos tp)
+TargetPos TargetTrace::addTargetPos(TargetPos tp)
 {
     if (path.size() == 0) {
         // Just add to path

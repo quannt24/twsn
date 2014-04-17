@@ -51,11 +51,6 @@ class BaseLayer : public BaseSimple
         void sendDown(cPacket *pkt);
         /** Send control message down */
         void sendCtlDown(Command *cmd);
-
-        /** Send command CMD_DATA_FETCH to upper layer */
-        virtual void fetchPacketFromUpper();
-        /** Send command CMD_DATA_NOTI to lower layer */
-        virtual void notifyLower();
 };
 
 } // namespace twsn

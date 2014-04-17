@@ -27,7 +27,6 @@ void LinkUnslottedCSMACA::initialize()
     aMaxBE = par("aMaxBE").longValue();
     macMaxNB = par("macMaxNB").longValue();
     macMinBE = par("macMinBE").longValue();
-
     ifsLen = par("aMinLIFSPeriod").doubleValue();
 
     scheduleAt(0, listenTimer);
@@ -44,37 +43,36 @@ void LinkUnslottedCSMACA::handleSelfMsg(cMessage* msg)
         cmd->setDes(PHYS);
         cmd->setCmdId(CMD_PHY_RX);
         sendCtlDown(cmd);
-    } else if (msg == fetchTimer) {
-        fetchPacketFromUpper();
+    } else if (msg == ifsTimer) {
+        // Send next packet in queue
+        if (!outQueue.empty()) {
+            outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
+            notifyLower();
+        }
     }
 }
 
 void LinkUnslottedCSMACA::handleUpperMsg(cMessage* msg)
 {
     // TODO Limit packet size
-    /* Encapsulate packet from upper layer and start sending procedures. If it's not ready for
-     * for sending (e.g. A packet is being sent), the new packet will be drop. */
-    if (outPkt == NULL) {
-        NetPkt *netpkt = check_and_cast<NetPkt*>(msg);
-        Mac802154Pkt *macpkt = new Mac802154Pkt();
 
-        // TODO Address resolution
-        macpkt->setSrcAddr(netpkt->getSrcAddr());
-        macpkt->setDesAddr(netpkt->getDesAddr());
+    /* Encapsulate then enqueue packet from upper layer */
+    NetPkt *netpkt = check_and_cast<NetPkt*>(msg);
+    Mac802154Pkt *macpkt = new Mac802154Pkt();
 
-        macpkt->setByteLength(macpkt->getPktSize());
-        macpkt->encapsulate(netpkt);
+    // TODO Address resolution
+    macpkt->setSrcAddr(netpkt->getSrcAddr());
+    macpkt->setDesAddr(netpkt->getDesAddr());
 
-        outPkt = macpkt; // Going to send this packet
+    macpkt->setByteLength(macpkt->getPktSize());
+    macpkt->encapsulate(netpkt);
 
-        // Notify physical layer
+    outQueue.insert(macpkt);
+
+    // Send packet at head of the queue if ready
+    if (!transmitting && !ifsTimer->isScheduled()) {
+        outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
         notifyLower();
-    } else {
-        printError(ERROR, "Not ready for sending");
-        delete msg;
-        // Count packet loss
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countLostMacPkt();
     }
 }
 
@@ -82,23 +80,12 @@ void LinkUnslottedCSMACA::handleUpperCtl(cMessage* msg)
 {
     Command *cmd = check_and_cast<Command*>(msg);
 
-    switch (cmd->getCmdId()) {
-        case CMD_DATA_NOTI:
-            if (outPkt == NULL && !fetchTimer->isScheduled()) {
-                // Fetch timer also help bypass continuous notification
-                scheduleAt(simTime(), fetchTimer);
-            }
-            delete cmd;
-            break;
-
-        default:
-            // Just forward to lower layer
-            if (cmd->getDes() != LINK)
-                sendCtlDown(cmd);
-            else
-                printError(WARNING, "Unknown command from upper");
-                delete cmd; // Unknown command
-            break;
+    // Unknown command, just forward to lower layer
+    if (cmd->getDes() != LINK) {
+        sendCtlDown(cmd);
+    } else {
+        printError(WARNING, "Unknown command from upper");
+        delete cmd; // Unknown command
     }
 }
 
@@ -169,11 +156,22 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
             break;
 
         default:
-            // Just forward to upper layer
-            if (cmd->getDes() != LINK) sendCtlUp(cmd);
-            else delete cmd; // Unknown command
+            // Unknown command, just forward to upper layer
+            if (cmd->getDes() != LINK) {
+                sendCtlUp(cmd);
+            } else {
+                printError(WARNING, "Unknown command from lower");
+                delete cmd;
+            }
             break;
     }
+}
+
+void LinkUnslottedCSMACA::notifyLower()
+{
+    Command *cmd = new Command();
+    cmd->setCmdId(CMD_DATA_NOTI);
+    sendCtlDown(cmd);
 }
 
 void LinkUnslottedCSMACA::startSending()
@@ -211,10 +209,8 @@ void LinkUnslottedCSMACA::sendPkt()
 
         // Transmit
         sendDown(outPkt);
+        outPkt = NULL;
         transmitting = true;
-        /* outPkt still holds value here only to mark that there is a packet being sent
-         * and it is not ready to send next packet. Do not use outPkt after this point,
-         * it will be set to NULL after receive CMD_READY from physical layer. */
 
         // Prepare IFS
         if (outPkt->getByteLength() <= par("aMaxSIFSFrameSize").longValue()) {
@@ -234,9 +230,18 @@ void LinkUnslottedCSMACA::deferPkt()
     if (nb <= macMaxNB) {
         backoff();
     } else {
-        // TODO Report failure
         getParentModule()->bubble("Tx failure");
+        printError(INFO, "Tx failure");
+
+        // Prepare IFS
+        if (outPkt->getByteLength() <= par("aMaxSIFSFrameSize").longValue()) {
+            ifsLen = par("aMinSIFSPeriod").doubleValue();
+        } else {
+            ifsLen = par("aMinLIFSPeriod").doubleValue();
+        }
+
         delete outPkt;
+        outPkt = NULL;
         reset();
 
         // Count packet loss
@@ -247,12 +252,11 @@ void LinkUnslottedCSMACA::deferPkt()
 
 void LinkUnslottedCSMACA::reset()
 {
-    // Reset outPkt pointer so that we can send next packet
-    outPkt = NULL;
+    // Reset transmitting flag so that we can send next packet
     transmitting = false;
     // Fetch next packet from queue after IFS
-    if (!fetchTimer->isScheduled()) {
-        scheduleAt(simTime() + ifsLen, fetchTimer);
+    if (!ifsTimer->isScheduled()) {
+        scheduleAt(simTime() + ifsLen, ifsTimer);
     }
     // Switch radio transceiver to listen mode
     Command *rxcmd = new Command();
@@ -268,14 +272,14 @@ LinkUnslottedCSMACA::LinkUnslottedCSMACA()
     transmitting = false;
     backoffTimer = new cMessage("backoffTimer");
     listenTimer = new cMessage("listenTimer");
-    fetchTimer = new cMessage("fetchTimer");
+    ifsTimer = new cMessage("ifsTimer");
 }
 
 LinkUnslottedCSMACA::~LinkUnslottedCSMACA()
 {
     cancelAndDelete(backoffTimer);
     cancelAndDelete(listenTimer);
-    cancelAndDelete(fetchTimer);
+    cancelAndDelete(ifsTimer);
 }
 
 }  // namespace twsn

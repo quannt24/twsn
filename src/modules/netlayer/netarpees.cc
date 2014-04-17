@@ -18,7 +18,6 @@
 #include "apppkt_m.h"
 #include "baseenergy.h"
 #include "basemobility.h"
-#include "downqueue.h"
 
 namespace twsn {
 
@@ -28,6 +27,7 @@ void NetARPEES::handleSelfMsg(cMessage* msg)
 {
     if (msg == waitRelayInfoTimer) {
         if (bsAddr != 0 || rnAddr != 0) {
+            // Send relayed packet
             if (bsAddr != 0) {
                 outPkt->setDesAddr(bsAddr);
             } else if (rnAddr != 0) {
@@ -44,7 +44,7 @@ void NetARPEES::handleSelfMsg(cMessage* msg)
         }
         outPkt = NULL;
         // Fetch next packet in queue
-        fetchPacketFromUpper();
+        prepareQueuedPkt();
     } else {
         // Self messages which are dynamically created (one time use)
         if (msg->getKind() == ARPEES_TIMER_RES_RELAY) {
@@ -57,86 +57,56 @@ void NetARPEES::handleSelfMsg(cMessage* msg)
 
 void NetARPEES::handleUpperMsg(cMessage* msg)
 {
-    bool sendDelayed = false; // Delay sending to wait for relay information
+    /* Encapsulate then enqueue packet from upper layer */
+    AppPkt *apppkt = check_and_cast<AppPkt*>(msg);
+    NetArpeesPkt *netpkt = new NetArpeesPkt();
+    netpkt->setSrcAddr(macAddr);
 
-    /* Encapsulate packet from upper layer and start sending procedures. */
-    if (outPkt == NULL) {
-        // Note: Use mac address for routing. Front end address is only set here (setSrcNetAddr).
-        AppPkt *apppkt = check_and_cast<AppPkt*>(msg);
-        apppkt->setSrcNetAddr(macAddr); // TODO Move to app layer
+    switch (apppkt->getRoutingType()) {
+        case RT_TO_BS:
+            netpkt->setPktType(ARPEES_PAYLOAD_TO_BS);
+            // Destination address will be set later
+            break;
 
-        NetArpeesPkt *netpkt = new NetArpeesPkt();
-        netpkt->setSrcAddr(macAddr);
+        case RT_BROADCAST:
+            netpkt->setPktType(ARPEES_PAYLOAD_TO_AN);
+            netpkt->setDesAddr(NET_BROADCAST_ADDR);
+            break;
 
-        switch (apppkt->getRoutingType()) {
-            case RT_TO_BS:
-                netpkt->setPktType(ARPEES_PAYLOAD_TO_BS);
-                // Reset bsAddr and rnAddr, then request for new relay information
-                bsAddr = 0;
-                rnAddr = 0;
-                sendDelayed = true;
-                break;
-
-            case RT_BROADCAST:
-                netpkt->setPktType(ARPEES_PAYLOAD_TO_AN);
-                netpkt->setDesAddr(NET_BROADCAST_ADDR);
-                break;
-
-            default:
-                // Default is unicast to an adjacent node
-                netpkt->setPktType(ARPEES_PAYLOAD_TO_AN);
-                netpkt->setDesAddr(apppkt->getDesNetAddr());
-                break;
-        }
-
-        // Set preamble flag
-        if (netpkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
-            netpkt->setPreambleFlag(true);
-        } else {
-            netpkt->setPreambleFlag(false);
-        }
-
-        netpkt->setByteLength(netpkt->getPktSize());
-        netpkt->encapsulate(apppkt);
-        outPkt = netpkt;
-
-        if (!sendDelayed) {
-            sendDown(outPkt);
-            outPkt = NULL;
-            fetchPacketFromUpper();
-        } else {
-            // Find relay node
-            requestRelay();
-            // Wait for timeout to retry
-            scheduleAt(simTime() + par("waitRelayInfoTimeout").doubleValue(), waitRelayInfoTimer);
-        }
-    } else {
-        printError(ERROR, "Not ready for sending. Dropping packet");
-        delete msg;
-        // Count lost packet
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countLostNetPkt();
+        default:
+            // Default is unicast to an adjacent node
+            netpkt->setPktType(ARPEES_PAYLOAD_TO_AN);
+            netpkt->setDesAddr(apppkt->getDesNetAddr());
+            break;
     }
+
+    // Set preamble flag
+    if (netpkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
+        netpkt->setPreambleFlag(true);
+    } else {
+        netpkt->setPreambleFlag(false);
+    }
+
+    netpkt->setByteLength(netpkt->getPktSize());
+    netpkt->encapsulate(apppkt);
+
+    // Insert packet to queue
+    outQueue.insert(netpkt);
+
+    // Send packet at head of the queue if ready
+    prepareQueuedPkt();
 }
 
 void NetARPEES::handleUpperCtl(cMessage* msg)
 {
     Command *cmd = check_and_cast<Command*>(msg);
 
-    switch (cmd->getCmdId()) {
-        case CMD_DATA_NOTI:
-            if (outPkt == NULL) fetchPacketFromUpper();
-            delete cmd;
-            break;
-
-        default:
-            // Just forward to lower layer
-            if (cmd->getDes() != NETW)
-                sendCtlDown(cmd);
-            else
-                printError(WARNING, "Unknown command");
-                delete cmd; // Unknown command
-            break;
+    // Unknown command, just forward to lower layer
+    if (cmd->getDes() != NETW) {
+        sendCtlDown(cmd);
+    } else {
+        printError(WARNING, "Unknown command from upper");
+        delete cmd; // Unknown command
     }
 }
 
@@ -180,7 +150,34 @@ void NetARPEES::handleLowerMsg(cMessage* msg)
 
 void NetARPEES::handleLowerCtl(cMessage* msg)
 {
-    // todo
+    Command *cmd = check_and_cast<Command*>(msg);
+
+    // Unknown command, just forward to upper layer
+    if (cmd->getDes() != NETW) {
+        sendCtlUp(cmd);
+    } else {
+        printError(WARNING, "Unknown command from lower");
+        delete cmd; // Unknown command
+    }
+}
+
+void NetARPEES::prepareQueuedPkt()
+{
+    if (outPkt == NULL && !outQueue.empty()) {
+        outPkt = check_and_cast<NetArpeesPkt*>(outQueue.pop());
+
+        if (outPkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
+            // Find relay node
+            requestRelay();
+            // Wait for timeout to send
+            scheduleAt(simTime() + par("waitRelayInfoTimeout").doubleValue(), waitRelayInfoTimer);
+        } else {
+            // Send immediately
+            sendDown(outPkt);
+            outPkt = NULL;
+            prepareQueuedPkt(); // Be careful: recursive
+        }
+    }
 }
 
 void NetARPEES::requestRelay()
@@ -222,16 +219,15 @@ void NetARPEES::recvPayload(NetArpeesPkt* pkt)
 
 void NetARPEES::recvRelayedPayload(NetArpeesPkt* pkt)
 {
-    AppPkt *apppkt = check_and_cast<AppPkt*>(pkt->decapsulate());
     if (par("isBaseStation").boolValue()) {
         // Here is the destination, send packet to upper layer
+        AppPkt *apppkt = check_and_cast<AppPkt*>(pkt->decapsulate());
         sendUp(apppkt);
     } else {
         // Enqueue packet
-        apppkt->setKind(DownQueue::ENQUEUE);
-        sendUp(apppkt);
+        outQueue.insert(pkt);
+        prepareQueuedPkt();
     }
-    delete pkt;
 }
 
 void NetARPEES::recvRelayRequest(NetArpeesPkt* pkt)

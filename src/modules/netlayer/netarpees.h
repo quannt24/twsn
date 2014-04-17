@@ -42,6 +42,7 @@ class NetARPEES : public BaseNet
         double dBsRn; // Distance from relay node to base station in meter
         double dRn; // Distance from relay node to this node
 
+        cPacketQueue outQueue;
         NetArpeesPkt *outPkt; // Packet going to be sent
 
         cMessage *waitRelayInfoTimer;
@@ -57,6 +58,10 @@ class NetARPEES : public BaseNet
         /** Handle control message from lowerCtl$i */
         virtual void handleLowerCtl(cMessage *msg);
 
+        /**
+         * Pop packet from queue and prepare sending if not currently in sending procedures.
+         */
+        void prepareQueuedPkt();
         /** Broadcast request for info of base station/relay node */
         void requestRelay();
         /** Send relay information to specific node */

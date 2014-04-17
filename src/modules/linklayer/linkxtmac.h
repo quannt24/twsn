@@ -59,6 +59,11 @@ class LinkXTMAC : public LinkUnslottedCSMACA
          * state forever.
          */
         void activate(bool forced = false, double duration = 0);
+
+        /**
+         * Pop packet from queue and prepare sending if not currently in sending procedures.
+         */
+        void prepareQueuedPkt();
         void sendStrobe();
         /** Send and ACK to a specific address */
         void sendAck(macaddr_t addr);

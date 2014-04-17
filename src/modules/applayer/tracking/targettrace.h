@@ -44,7 +44,7 @@ class TargetTrace
          * TargetPos as new measurement to track. The actual TargetPos added to pass is calculated
          * (filtered) and returned by the function.
          */
-        TargetPos& addTargetPos(TargetPos tp);
+        TargetPos addTargetPos(TargetPos tp);
         /**
          * Get number of TargetPos in path
          */

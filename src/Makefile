@@ -28,7 +28,6 @@ INCLUDE_PATH = \
     -Ibase/modules/mobility \
     -Ibase/modules/netlayer \
     -Ibase/modules/phylayer \
-    -Ibase/modules/queue \
     -Ibase/networks \
     -Ientities \
     -Ientities/nodes \
@@ -70,7 +69,6 @@ OBJS = \
     $O/base/modules/netlayer/basenet.o \
     $O/base/modules/phylayer/basephy.o \
     $O/base/modules/phylayer/base802154phy.o \
-    $O/base/modules/queue/downqueue.o \
     $O/helpers/stathelper.o \
     $O/helpers/decohelper.o \
     $O/helpers/worldhelper.o \
@@ -196,7 +194,6 @@ clean:
 	$(Q)-rm -f base/modules/mobility/*_m.cc base/modules/mobility/*_m.h
 	$(Q)-rm -f base/modules/netlayer/*_m.cc base/modules/netlayer/*_m.h
 	$(Q)-rm -f base/modules/phylayer/*_m.cc base/modules/phylayer/*_m.h
-	$(Q)-rm -f base/modules/queue/*_m.cc base/modules/queue/*_m.h
 	$(Q)-rm -f base/networks/*_m.cc base/networks/*_m.h
 	$(Q)-rm -f entities/*_m.cc entities/*_m.h
 	$(Q)-rm -f entities/nodes/*_m.cc entities/nodes/*_m.h
@@ -219,7 +216,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/modules/queue/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/applayer/tracking/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc modules/phylayer/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/applayer/tracking/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc modules/phylayer/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \
@@ -308,12 +305,6 @@ $O/base/modules/phylayer/basephy.o: base/modules/phylayer/basephy.cc \
 	base/messages/macpkt_m.h \
 	base/modules/basesimple.h \
 	base/modules/phylayer/basephy.h \
-	util/twsndef.h
-$O/base/modules/queue/downqueue.o: base/modules/queue/downqueue.cc \
-	base/messages/command_m.h \
-	base/modules/baselayer.h \
-	base/modules/basesimple.h \
-	base/modules/queue/downqueue.h \
 	util/twsndef.h
 $O/helpers/decohelper.o: helpers/decohelper.cc \
 	base/modules/basesimple.h \
@@ -419,7 +410,6 @@ $O/modules/netlayer/netarpees.o: modules/netlayer/netarpees.cc \
 	base/modules/energy/baseenergy.h \
 	base/modules/mobility/basemobility.h \
 	base/modules/netlayer/basenet.h \
-	base/modules/queue/downqueue.h \
 	helpers/stathelper.h \
 	modules/netlayer/netarpees.h \
 	modules/netlayer/netarpeespkt_m.h \
