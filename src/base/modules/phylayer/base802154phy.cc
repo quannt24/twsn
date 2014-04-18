@@ -197,6 +197,7 @@ void Base802154Phy::sendCtlUp(Command* cmd)
 void Base802154Phy::performCCA(double duration)
 {
     if (radioMode == RX) {
+        phyEntry->startCCA();
         scheduleAt(simTime() + duration, ccaTimer);
     } else {
         // CCA is only valid in RX mode, send back a busy result
@@ -211,7 +212,9 @@ void Base802154Phy::performCCA(double duration)
 void Base802154Phy::senseChannel()
 {
     bool clearChannel = false;
-    if (phyEntry != NULL && phyEntry->getChannelState() == 0) clearChannel = true;
+    if (phyEntry != NULL) {
+        clearChannel = phyEntry->finishCCA();
+    }
 
     CmdCCAR *cmd = new CmdCCAR();
     cmd->setClearChannel(clearChannel);

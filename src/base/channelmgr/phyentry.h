@@ -23,6 +23,8 @@ class PhyEntry
         /** Number of signals being sent over position of the node (>= 0) */
         int channelState;
         std::list<PhyEntry*> *adjList; // List of entries which is in-range of this node
+        bool performingCCA; // Flag on if performing CCA
+        bool ccaResult; // CCA result, 'true' if channel is clear
 
     public:
         PhyEntry() {
@@ -31,6 +33,8 @@ class PhyEntry
             txRange = 0;
             channelState = 0;
             adjList = new std::list<PhyEntry*>; // Init an empty list
+            performingCCA = false;
+            ccaResult = true;
         }
         PhyEntry(moduleid_t moduleId, Coord coord, distance_t txRange) {
             this->moduleId = moduleId;
@@ -38,6 +42,8 @@ class PhyEntry
             this->txRange = txRange;
             this->channelState = 0;
             this->adjList = new std::list<PhyEntry*>; // Init an empty list
+            performingCCA = false;
+            ccaResult = true;
         }
         virtual ~PhyEntry() { delete adjList; }
 
@@ -50,16 +56,12 @@ class PhyEntry
         distance_t getTxRange() const { return txRange; }
         void setTxRange(distance_t txRange) { this->txRange = txRange; }
 
-        int getChannelState() const { return channelState; }
-        void setChannelState(int state) { this->channelState = state; }
+        int getChannelState() const;
+        void setChannelState(int state);
         /** Increase number of in-air transmission signal at the position of this node */
-        void incChannelState() { channelState++; }
+        void incChannelState();
         /** Decrease number of in-air transmission signal at the position of this node */
-        void decChannelState()
-        {
-            channelState--;
-            if (channelState < 0) channelState = 0;
-        }
+        void decChannelState();
 
         /** Get list of adjacent nodes (PhyEntry) */
         std::list<PhyEntry*>* getAdjList() { return adjList; }
@@ -67,6 +69,11 @@ class PhyEntry
         void clearAdjList();
         /** Add a node to adjacent list */
         void addAdjNode(PhyEntry *pe);
+
+        /** Start performing CCA */
+        void startCCA();
+        /** Finish CCA, return CCA result: true if channel is clear */
+        bool finishCCA();
 };
 
 }
