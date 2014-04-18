@@ -23,7 +23,6 @@ class PhyEntry
         /** Number of signals being sent over position of the node (>= 0) */
         int channelState;
         std::list<PhyEntry*> *adjList; // List of entries which is in-range of this node
-        bool performingCCA; // Flag on if performing CCA
         bool ccaResult; // CCA result, 'true' if channel is clear
 
     public:
@@ -33,7 +32,6 @@ class PhyEntry
             txRange = 0;
             channelState = 0;
             adjList = new std::list<PhyEntry*>; // Init an empty list
-            performingCCA = false;
             ccaResult = true;
         }
         PhyEntry(moduleid_t moduleId, Coord coord, distance_t txRange) {
@@ -42,7 +40,6 @@ class PhyEntry
             this->txRange = txRange;
             this->channelState = 0;
             this->adjList = new std::list<PhyEntry*>; // Init an empty list
-            performingCCA = false;
             ccaResult = true;
         }
         virtual ~PhyEntry() { delete adjList; }

@@ -44,7 +44,7 @@ void BaseSimple::printError(ErrLevel level, const std::string &msg)
             break;
     }
 
-    std::cerr << getName() << '(' << getId() << ')' << ':' << levelName << ": " << msg << endl;
+    std::cerr << '[' << levelName << ']' << " | " << getName() << '(' << getId() << ')' << " | t=" << simTime() << " | " << msg << endl;
 }
 
 }

@@ -253,10 +253,11 @@ void LinkUnslottedCSMACA::reset()
 {
     // Reset outPkt pointer so that we can send next packet
     outPkt = NULL;
+
     // Fetch next packet from queue after IFS
-    if (!ifsTimer->isScheduled()) {
-        scheduleAt(simTime() + ifsLen, ifsTimer);
-    }
+    cancelEvent(ifsTimer);
+    scheduleAt(simTime() + ifsLen, ifsTimer);
+
     // Switch radio transceiver to listen mode
     Command *rxcmd = new Command();
     rxcmd->setSrc(LINK);

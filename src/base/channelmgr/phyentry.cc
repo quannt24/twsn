@@ -17,14 +17,14 @@ int PhyEntry::getChannelState() const
 void PhyEntry::setChannelState(int state)
 {
     channelState = state;
-    if (channelState > 0 && performingCCA) ccaResult = false;
+    if (channelState > 0) ccaResult = false;
 }
 
 /** Increase number of in-air transmission signal at the position of this node */
 void PhyEntry::incChannelState()
 {
     channelState++;
-    if (channelState > 0 && performingCCA) ccaResult = false;
+    if (channelState > 0) ccaResult = false;
 }
 
 /** Decrease number of in-air transmission signal at the position of this node */
@@ -47,13 +47,16 @@ void PhyEntry::addAdjNode(PhyEntry* pe)
 /** Start performing CCA */
 void PhyEntry::startCCA()
 {
-    performingCCA = true;
-    ccaResult = true; // Clear channel
+    if (channelState == 0) {
+        ccaResult = true;
+    } else {
+        ccaResult = false;
+    }
 }
+
 /** Finish CCA, return CCA result: true if channel is clear */
 bool PhyEntry::finishCCA()
 {
-    performingCCA = false;
     return ccaResult;
 }
 

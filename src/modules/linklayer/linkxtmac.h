@@ -35,7 +35,9 @@ class LinkXTMAC : public LinkUnslottedCSMACA
 
         cMessage *deadlineTimer;
         cMessage *strobeTimer;
-        cMessage *mainSendingTimer; // Timer for sending main packet after strobes
+        /* Timer for sending main packet after strobes. This timer will sent main packet without
+         * preceding strobes, used for sending main packet after a strobe ACK received. */
+        cMessage *mainSendingTimer;
         cMessage *dcSleepTimer;
         cMessage *dcListenTimer;
 

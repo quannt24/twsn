@@ -76,10 +76,10 @@ PhyEntry* ChannelMgr::registerChannel(moduleid_t moduleId, Coord coord, distance
         if ((*it)->getModuleId() == moduleId) continue; // For preventing stupid bug self connected
 
         d = distance(coord, (*it)->getCoord());
-        if (d < txRange) {
+        if (d <= txRange) {
             newPe->addAdjNode(*it);
         }
-        if (d < (*it)->getTxRange()) {
+        if (d <= (*it)->getTxRange()) {
             (*it)->addAdjNode(newPe);
         }
     }

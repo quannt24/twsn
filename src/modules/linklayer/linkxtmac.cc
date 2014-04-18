@@ -37,12 +37,13 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
     if (msg == backoffTimer) {
         performCCA();
     } else if (msg == listenTimer) {
-        // Switch radio transceiver to listen mode
+        // Note this is LinkUnslottedCSMACA's timer, it is not used here.
+        /*// Switch radio transceiver to listen mode
         Command *cmd = new Command();
         cmd->setSrc(LINK);
         cmd->setDes(PHYS);
         cmd->setCmdId(CMD_PHY_RX);
-        sendCtlDown(cmd);
+        sendCtlDown(cmd);*/
     } else if (msg == ifsTimer) {
         // Send packet at head of the queue if ready
         prepareQueuedPkt();
@@ -84,7 +85,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
 
                 // Count packet loss
                 StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-                sh->countLostMacPkt();
+                if (mainPkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
             }
         } else {
             printError(WARNING, "NULL main packet, prepare other");
@@ -162,13 +163,15 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
     if (macpkt->hasBitError()) {
         getParentModule()->bubble("Packet error");
         // Count packet loss
-        if (macpkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+        if (macpkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
         delete macpkt;
         return;
     }
 
     // Count received packet
-    if (macpkt->getPktType() != MAC802154_PREAMBLE) sh->countRecvMacPkt();
+    if (macpkt->getPktType() == MAC802154_DATA) {
+        sh->countRecvMacPkt();
+    }
 
     switch (macpkt->getPktType()) {
         case MAC802154_DATA:
@@ -202,8 +205,10 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
 
             // Cancel strobing
             nStrobe = 0;
-            delete strobePkt;
-            strobePkt = NULL;
+            if (strobePkt != NULL) {
+                delete strobePkt;
+                strobePkt = NULL;
+            }
             cancelEvent(strobeTimer);
             cancelEvent(deadlineTimer);
             if (outPkt != NULL && outPkt->getPktType() == MAC802154_PREAMBLE) {
@@ -211,15 +216,17 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
                 delete outPkt;
                 outPkt = NULL;
             }
-            // Send main packet (after an interval equal IFS)
-            scheduleAt(simTime() + ifsLen, mainSendingTimer);
+            if (outPkt == NULL) {
+                // Send main packet if not sending non-preamble packet
+                scheduleAt(simTime() + ifsLen, mainSendingTimer);
+            }
             break;
 
         default:
             printError(WARNING, "Unknown MAC packet type");
             // Count packet loss
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-            if (macpkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+            if (macpkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
             delete macpkt;
             break;
     }
@@ -228,10 +235,6 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
 void LinkXTMAC::reset()
 {
     if (outPkt == mainPkt) {
-        // Main packet sent. Fetch next packet from queue after IFS.
-        if (!ifsTimer->isScheduled()) {
-            scheduleAt(simTime() + ifsLen, ifsTimer);
-        }
         // Reset mainPkt pointer so that we can send next packet
         mainPkt = NULL;
     } else {
@@ -242,6 +245,9 @@ void LinkXTMAC::reset()
 
     // Reset outPkt pointer
     outPkt = NULL;
+
+    cancelEvent(ifsTimer);
+    scheduleAt(simTime() + ifsLen, ifsTimer);
 
     // Switch radio transceiver to listen mode
     Command *rxcmd = new Command();
@@ -316,7 +322,7 @@ void LinkXTMAC::prepareQueuedPkt()
 
 void LinkXTMAC::sendStrobe()
 {
-    if (outPkt == NULL && nStrobe > 0 && strobePkt != NULL) {
+    if (outPkt == NULL && !ifsTimer->isScheduled() && nStrobe > 0 && strobePkt != NULL) {
         outPkt = strobePkt->dup();
         notifyLower();
         // Set deadline
