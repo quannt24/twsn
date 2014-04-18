@@ -62,11 +62,14 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
         }
     } else if (msg == deadlineTimer) {
         if (nStrobe > 0 && strobePkt != NULL) {
-            // Cancel current being sent strobe
+            // Cancel current strobe sending
             printError(INFO, "Strobe deadline is missed");
             nStrobe--;
-            if (outPkt != NULL) delete outPkt;
-            outPkt = NULL;
+            if (outPkt != NULL && outPkt->getOwner() == this) {
+                // Delete strobe if it has not being sent yet
+                delete outPkt;
+                outPkt = NULL;
+            }
             cancelEvent(backoffTimer);
 
             // Switch radio transceiver to listen mode
