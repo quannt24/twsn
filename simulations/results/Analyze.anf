@@ -39,6 +39,7 @@
     <datasets name="Energy">
       <items xsi:type="scave:Add" filterPattern="totalResidualEnergy:vector" type="VECTOR"/>
       <items xsi:type="scave:LineChart" name="Total residual energy" lineNameFormat="">
+        <filters xsi:type="scave:Select" filterPattern="NOT file(/TWSN/simulations/results/Config1-0.vec) " type="VECTOR"/>
         <properties name="Graph.Title" value="Total residual energy"/>
       </items>
     </datasets>

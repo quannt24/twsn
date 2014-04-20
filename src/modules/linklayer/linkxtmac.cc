@@ -30,6 +30,9 @@ void LinkXTMAC::initialize()
     macMaxNB = par("macMaxNB").longValue();
     macMinBE = par("macMinBE").longValue();
     ifsLen = par("aMinLIFSPeriod").doubleValue();
+
+    // Plan initial duty cycling listen
+    scheduleAt(par("sleepInterval").doubleValue(), dcListenTimer);
 }
 
 void LinkXTMAC::handleSelfMsg(cMessage* msg)
@@ -94,6 +97,12 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             printError(WARNING, "NULL main packet, prepare other");
             prepareQueuedPkt();
         }
+    } else if (msg == dcListenTimer) {
+        // Switch radio transceiver to RX mode if currently in IDLE
+        switchToRx();
+        // Plan a sleep timer
+        cancelEvent(dcSleepTimer);
+        scheduleAt(simTime() + par("listenInterval").doubleValue(), dcSleepTimer);
     } else if (msg == dcSleepTimer) {
         active = false;
         forcedActive = false;
@@ -101,12 +110,6 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
         // Plan a listen timer
         cancelEvent(dcListenTimer);
         scheduleAt(simTime() + par("sleepInterval").doubleValue(), dcListenTimer);
-    } else if (msg == dcListenTimer) {
-        // Switch radio transceiver to RX mode if currently in IDLE
-        switchToRx();
-        // Plan a sleep timer
-        cancelEvent(dcSleepTimer);
-        scheduleAt(simTime() + par("listenInterval").doubleValue(), dcSleepTimer);
     }
 }
 
@@ -266,6 +269,7 @@ void LinkXTMAC::activate(bool forced, double duration)
     switchToRx();
 
     active = true;
+    cancelEvent(dcListenTimer);
     if (forced) {
         if (duration > 0) {
             cancelEvent(dcSleepTimer);

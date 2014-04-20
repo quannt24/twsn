@@ -37,7 +37,7 @@ simple AppTrackingBS extends BaseApp
 		// Min junk trace old
 		double minJunkTraceOld @unit(s) = default(3 s);
 		// Max junk trace length
-		int maxJunkTraceLen = default(5);
+		int maxJunkTraceLen = default(3);
 		
 		@signal[sigEtoEDelay](type="double");
         @statistic[EtoEDelay](title="End to end delay"; source="sigEtoEDelay"; record=vector);

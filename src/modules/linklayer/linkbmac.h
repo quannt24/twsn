@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TWSN_LINKXTMAC_H_
-#define __TWSN_LINKXTMAC_H_
+#ifndef __TWSN_LINKBMAC_H_
+#define __TWSN_LINKBMAC_H_
 
 #include <omnetpp.h>
 #include "linkunslottedcsmaca.h"
@@ -24,22 +24,14 @@ namespace twsn {
 /**
  * Link layer with XT-MAC protocol
  */
-class LinkXTMAC : public LinkUnslottedCSMACA
+class LinkBMAC : public LinkUnslottedCSMACA
 {
     protected:
-        Mac802154Pkt *mainPkt; // Main packet being sent
-        Mac802154Pkt *strobePkt;
         bool active;
         bool forcedActive;
-        int nStrobe;
 
-        cMessage *deadlineTimer;
-        cMessage *strobeTimer;
-        /* Timer for sending main packet after strobes. This timer will sent main packet without
-         * preceding strobes, used for sending main packet after a strobe ACK received. */
-        cMessage *mainSendingTimer;
-        cMessage *dcSleepTimer;
-        cMessage *dcListenTimer;
+        cMessage *checkChannelTimer;
+        cMessage *waitTurnaroundTimer;
 
         virtual void initialize();
         /** Handle self message */
@@ -50,10 +42,8 @@ class LinkXTMAC : public LinkUnslottedCSMACA
         virtual void handleUpperCtl(cMessage *msg);
         /** Handle message/packet from lower$i */
         virtual void handleLowerMsg(cMessage *msg);
-        // handleLowerCtl is inherited from parent class
-
-        /** Reset outPkt and switch to RX mode. Fetch next packet after IFS. */
-        void reset();
+        /** Handle control message from lowerCtl$i */
+        virtual void handleLowerCtl(cMessage *msg);
 
         /**
          * Change to active state. If it is a forcedly activation (forced = true), layer will keep
@@ -62,14 +52,17 @@ class LinkXTMAC : public LinkUnslottedCSMACA
          * state forever.
          */
         void activate(bool forced = false, double duration = 0);
+        /**
+         * Deactive, switch transceiver to IDLE mode.
+         */
+        void deactive();
 
         /**
          * Pop packet from queue and prepare sending if not currently in sending procedures.
          */
         void prepareQueuedPkt();
-        void sendStrobe();
-        /** Send and ACK to a specific address */
-        void sendAck(macaddr_t addr);
+        /** Create a preamle MAC packet */
+        Mac802154Pkt *createPreamble();
 
         /** Request physical layer to switch to RX mode if currently in IDLE */
         void switchToRx();
@@ -77,8 +70,8 @@ class LinkXTMAC : public LinkUnslottedCSMACA
         void switchToIdle();
 
     public:
-        LinkXTMAC();
-        ~LinkXTMAC();
+        LinkBMAC();
+        ~LinkBMAC();
 };
 
 }  // namespace twsn

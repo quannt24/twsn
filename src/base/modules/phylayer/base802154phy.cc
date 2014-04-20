@@ -96,7 +96,7 @@ void Base802154Phy::handleSelfMsg(cMessage* msg)
     } else if (msg == ccaTimer) {
         senseChannel();
     } else if (msg == txTimer) {
-        txMacPkt(check_and_cast<Mac802154Pkt*>((Mac802154Pkt*) msg->getContextPointer()));
+        startTx(check_and_cast<Mac802154Pkt*>((Mac802154Pkt*) msg->getContextPointer()));
     }
 }
 
@@ -108,7 +108,7 @@ void Base802154Phy::handleUpperMsg(cMessage* msg)
 
     if (!finishTxTimer->isScheduled()) {
         if (radioMode == TX) {
-            txMacPkt(check_and_cast<Mac802154Pkt*>(msg));
+            startTx(check_and_cast<Mac802154Pkt*>(msg));
         } else {
             // Switch to TX mode then transmit
             if (!switchTxTimer->isScheduled()) switchRadioMode(TX);
@@ -197,8 +197,10 @@ void Base802154Phy::sendCtlUp(Command* cmd)
 void Base802154Phy::performCCA(double duration)
 {
     if (radioMode == RX) {
-        phyEntry->startCCA();
-        scheduleAt(simTime() + duration, ccaTimer);
+        if (!ccaTimer->isScheduled()) {
+            phyEntry->startCCA();
+            scheduleAt(simTime() + duration, ccaTimer);
+        }
     } else {
         // CCA is only valid in RX mode, send back a busy result
         CmdCCAR *cmd = new CmdCCAR();
@@ -229,7 +231,7 @@ void Base802154Phy::fetchPacket()
     sendCtlUp(cmd);
 }
 
-void Base802154Phy::txMacPkt(Mac802154Pkt* pkt)
+void Base802154Phy::startTx(Mac802154Pkt* pkt)
 {
     if (channelMgr == NULL || phyEntry == NULL) {
         printError(ERROR, "Module has not registered with ChannelMgr. Dropping packet.");

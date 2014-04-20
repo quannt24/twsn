@@ -86,7 +86,7 @@ class Base802154Phy : public BasePhy
         virtual void fetchPacket();
 
         /** Transmit a MAC packet (broadcast or unicast) */
-        virtual void txMacPkt(Mac802154Pkt *pkt);
+        virtual void startTx(Mac802154Pkt *pkt);
         /** Finish transmission */
         virtual void finishTx();
 

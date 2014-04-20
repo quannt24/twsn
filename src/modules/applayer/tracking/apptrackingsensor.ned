@@ -28,7 +28,7 @@ simple AppTrackingSensor extends BaseApp
         double sensePeriod = default(0.5);
         
         // Collect measurement interval
-        double collMeaInterval = default(0.2);
+        double collMeaInterval = default(0.1);
         // Report measurement interval (should shorter than collMeaInterval
         double repMeaInterval = default(0.19);
         // Time point for CH broadcasts a synchronization beacon, relative to sensePeriod.
