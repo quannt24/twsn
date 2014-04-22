@@ -68,12 +68,14 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             // Cancel current strobe sending
             printError(INFO, "Strobe deadline is missed");
             nStrobe--;
-            if (outPkt != NULL && outPkt->getOwner() == this) {
+            if (outPkt != NULL
+                    && outPkt->getPktType() == MAC802154_PREAMBLE
+                    && outPkt->getOwner() == this) {
                 // Delete strobe if it has not being sent yet
+                cancelEvent(backoffTimer);
                 delete outPkt;
                 outPkt = NULL;
             }
-            cancelEvent(backoffTimer);
 
             // Switch radio transceiver to listen mode
             switchToRx();
@@ -217,7 +219,10 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             }
             cancelEvent(strobeTimer);
             cancelEvent(deadlineTimer);
-            if (outPkt != NULL && outPkt->getPktType() == MAC802154_PREAMBLE) {
+            if (outPkt != NULL
+                    && outPkt->getPktType() == MAC802154_PREAMBLE
+                    && outPkt->getOwner() == this) {
+                // Delete strobe if it has not being sent yet
                 cancelEvent(backoffTimer);
                 delete outPkt;
                 outPkt = NULL;
@@ -240,6 +245,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
 
 void LinkXTMAC::reset()
 {
+    printError(VERBOSE, "Reset");
     if (outPkt == mainPkt) {
         // Reset mainPkt pointer so that we can send next packet
         mainPkt = NULL;

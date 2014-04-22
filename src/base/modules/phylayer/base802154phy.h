@@ -45,7 +45,6 @@ class Base802154Phy : public BasePhy
 
         /* Timer */
         cMessage *finishTxTimer; // Simulate end of transmission
-        cMessage *fetchTimer; // Timer for send CMD_DATA_FETCH to upper layer
         cMessage *switchTxTimer; // Simulate delay to switch to TX mode
         cMessage *switchRxTimer; // Simulate delay to switch to RX mode
         cMessage *switchIdleTimer; // Simulate delay to switch to IDLE mode

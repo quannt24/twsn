@@ -47,8 +47,15 @@
       <items xsi:type="scave:ComputeScalar" scalarName="MAC Packet loss" valueExpr="'lostMacPkt:sum' / ('lostMacPkt:sum' + 'recvMacPkt:sum')" moduleExpr="" groupByExpr="configname"/>
       <items xsi:type="scave:ComputeScalar" scalarName="Network packet loss" valueExpr="'lostNetPkt:sum' / ('lostNetPkt:sum' + 'recvNetPkt:sum')" moduleExpr="" groupByExpr="configname"/>
     </datasets>
+    <datasets name="Delay">
+      <items xsi:type="scave:Add" filterPattern="EtoEDelay:vector" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="End-to-end delay" lineNameFormat="">
+        <properties name="Graph.Title" value="End-to-end delay"/>
+        <properties name="Line.Type" value="Dots"/>
+      </items>
+    </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.1/@items.1"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.3/@items.1"/>
   </chartSheets>
 </scave:Analysis>

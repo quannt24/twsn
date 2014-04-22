@@ -81,9 +81,7 @@ void Base802154Phy::handleMessage(cMessage *msg)
 
 void Base802154Phy::handleSelfMsg(cMessage* msg)
 {
-    if (msg == fetchTimer) {
-        fetchPacket();
-    } else if (msg == finishTxTimer) {
+    if (msg == finishTxTimer) {
         finishTx();
     } else if (msg == switchTxTimer) {
         setRadioMode(TX);
@@ -152,11 +150,6 @@ void Base802154Phy::handleUpperCtl(cMessage* msg)
             if (!finishTxTimer->isScheduled()) {
                 // It is ready for sending. Send a fetch command immediately
                 fetchPacket();
-            } else {
-                // Fetch data when current tx completes
-                if (!fetchTimer->isScheduled()) {
-                    scheduleAt(finishTxTimer->getArrivalTime(), fetchTimer);
-                }
             }
             break;
 
@@ -424,7 +417,6 @@ void Base802154Phy::setRadioMode(int mode)
     if (radioMode == POWER_DOWN) {
         getParentModule()->bubble("POWER_DOWN");
         // Cancel timers
-        cancelEvent(fetchTimer);
         cancelEvent(switchTxTimer);
         cancelEvent(switchRxTimer);
         cancelEvent(switchIdleTimer);
@@ -502,7 +494,6 @@ Base802154Phy::Base802154Phy()
     phyEntry = NULL;
 
     finishTxTimer = new cMessage("finishTxTimer");
-    fetchTimer = new cMessage("fetchTimer");
     switchTxTimer = new cMessage("switchTxTimer");
     switchRxTimer = new cMessage("switchRxTimer");
     switchIdleTimer = new cMessage("switchIdleTimer");
@@ -514,7 +505,6 @@ Base802154Phy::Base802154Phy()
 Base802154Phy::~Base802154Phy()
 {
     cancelAndDelete(finishTxTimer);
-    cancelAndDelete(fetchTimer);
     cancelAndDelete(switchTxTimer);
     cancelAndDelete(switchRxTimer);
     cancelAndDelete(switchIdleTimer);

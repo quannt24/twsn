@@ -134,7 +134,11 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
 
     switch (cmd->getCmdId()) {
         case CMD_DATA_FETCH:
-            startSending();
+            if (outPkt != NULL
+                    && !backoffTimer->isScheduled()
+                    && !ifsTimer->isScheduled()) {
+                startSending();
+            }
             delete cmd;
             break;
 
