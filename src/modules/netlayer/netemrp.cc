@@ -365,7 +365,7 @@ double NetEMRP::assessRelay(double ener, double dRc, double dBs, double dRcBs)
 void NetEMRP::updateRelayEnergy(NetEmrpEnergyInfoPkt* eiPkt)
 {
     if (bsAddr != 0) return; // No need to update
-    if (eiPkt != NULL) enerRn = eiPkt->getRemainEnergy();
+    if (eiPkt != NULL) enerRn = eiPkt->getRemainEnergy(); // Update enerRn
 
     // Check critical energy value
     if (enerRn < par("criticalEnergy").doubleValue() || rnAddr <= 0) {
@@ -423,8 +423,27 @@ void NetEMRP::recvRelayedPayload(NetEmrpPkt* pkt)
         sendEnergyInfo(pkt->getSrcAddr());
         delete pkt;
     } else {
-        if (bsAddr <= 0 && (rnAddr <= 0 || pkt->getSrcAddr() == rnAddr)) {
-            // Here is a deadend, we should prevent loop here
+        if (bsAddr > 0 || (rnAddr > 0 && rnAddr != pkt->getSrcAddr())) {
+            // Send back a report about energy (like a ACK)
+            sendEnergyInfo(pkt->getSrcAddr());
+
+            // Relay to next hop
+            outQueue.insert(pkt);
+            prepareQueuedPkt();
+        } else if (bnAddr > 0 && bnAddr != pkt->getSrcAddr()) {
+            // Change relay node to break loop
+            rnAddr = 0;
+            switchRelayNode();
+            updateDecoration();
+
+            // Send back a report about energy (like a ACK)
+            sendEnergyInfo(pkt->getSrcAddr());
+
+            // Relay to next hop
+            outQueue.insert(pkt);
+            prepareQueuedPkt();
+        } else {
+            // Deadend, cannot send now. We will drop the packet and repair routes.
             printError(INFO, "Cannot relay packet, deadend!");
             if (pkt->getSrcAddr() == rnAddr) {
                 // Refresh relay node (with hope to break loop)
@@ -432,16 +451,10 @@ void NetEMRP::recvRelayedPayload(NetEmrpPkt* pkt)
                 updateRelayEnergy(NULL);
             }
             delete pkt;
+
             // Count lost packet
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
             sh->countLostNetPkt();
-        } else {
-            // Send back a report about energy (like a ACK)
-            sendEnergyInfo(pkt->getSrcAddr());
-
-            // Relay to next hop
-            outQueue.insert(pkt);
-            prepareQueuedPkt();
         }
     }
 }
@@ -499,7 +512,7 @@ void NetEMRP::updateDecoration()
     } else if (rnAddr > 0) {
         dh->dConnect(getParentModule(), simulation.getModule(rnAddr)->getParentModule(), "ls=#9999ff,1,s");
     }
-    if (bnAddr > 0) {
+    if (bnAddr > 0 && bnAddr != rnAddr) {
         dh->dConnect(getParentModule(), simulation.getModule(bnAddr)->getParentModule(), "ls=#ff9999,1,da");
     }
 }
