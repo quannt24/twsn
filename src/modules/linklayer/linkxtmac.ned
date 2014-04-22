@@ -33,7 +33,7 @@ simple LinkXTMAC extends LinkUnslottedCSMACA
 		// reservedInterval = strobeTime + aMinLIFSPeriod (about 0.004384 s in default)
 		double reservedInterval @unit(s) = strobeTime + aMinLIFSPeriod;
 		// Period for sending strobes. Must larger reservedInterval + sendingTime.
-		double strobePeriod @unit(s) = default(2 * reservedInterval); // about 0.008768 s
+		double strobePeriod @unit(s) = default(strobeTime + reservedInterval); // about 0.008768 s
 		// Deadline (in each period) for sending a strobe. If the deadline is miss, the strobe will
 		// be ignored, not configurable.
 		double strobeDeadline @unit(s) = strobePeriod - reservedInterval;

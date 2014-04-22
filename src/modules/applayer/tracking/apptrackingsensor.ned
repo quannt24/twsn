@@ -25,16 +25,16 @@ simple AppTrackingSensor extends BaseApp
     parameters:
         @class("twsn::AppTrackingSensor");
         
-        double sensePeriod = default(0.5);
+        double sensePeriod @unit(s) = default(0.5 s);
         
-        // Collect measurement interval
-        double collMeaInterval = default(0.1);
+        // Collect measurement interval (after receive measurement from sensor)
+        double collMeaInterval @unit(s) = default(0.1 s);
         // Report measurement interval (should shorter than collMeaInterval
-        double repMeaInterval = default(0.19);
+        double repMeaInterval @unit(s) = default(0.095 s);
         // Time point for CH broadcasts a synchronization beacon, relative to sensePeriod.
         // This point should be near the end of sensePeriod and long enough for beacon arrives
         // before next sensing cycle.
-        double chBeaconTime = default(0.4);
+        double chBeaconTime @unit(s) = default(0.45 s);
         
         // Minimum number of measurement required to estimate target position
         int minNumMeasurement = default(3);

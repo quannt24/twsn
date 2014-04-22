@@ -32,7 +32,7 @@ simple NetEMRP extends BaseNet
         // Timeout for Waiting for packet of energy update of relay node.
         // If updated info is not received before timeout, relay node will be changed (considered
         // as incident happended).
-        double waitEnergyInfoTimeout @unit(s) = default(0.5 s);
+        double waitEnergyInfoTimeout @unit(s) = default(0.1 s);
         // Differential amount of relay/backup nodes' energy that triggers switch nodes
         double switchingEnergy @unit(mWh) = default(5 mWh);
         double criticalEnergy @unit(mWh) = default(0.1 mWh);
