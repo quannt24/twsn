@@ -98,34 +98,56 @@ void AppTrackingBS::cleanJunk()
 void AppTrackingBS::output()
 {
     cConfigurationEx *configEx = ev.getConfigEx();
+    std::ostringstream ossAll;
+    std::ofstream outAll;
     std::ostringstream oss;
     std::ofstream out;
     std::list<TargetTrace>::iterator ttIt;
     std::list<TargetPos> path;
     std::list<TargetPos>::iterator tpIt;
+    double x, y, t;
+
+    ossAll.seekp(0);
+    ossAll << "results/bs_output/";
+    ossAll << configEx->getActiveConfigName() << "_trace_all.data\0";
+    outAll.open(ossAll.str().c_str(), std::ios::out | std::ios::trunc);
 
     for (ttIt = traceList.begin(); ttIt != traceList.end(); ttIt++) {
         oss.seekp(0);
         oss << "results/bs_output/";
         oss << configEx->getActiveConfigName() << "_trace_" << (*ttIt).getId() << ".data\0";
-
         out.open(oss.str().c_str(), std::ios::out | std::ios::trunc);
+
         if (!out) {
             std::cerr << "Cannot open file " << oss.str() << endl;
         } else {
             out << "# Config: " << configEx->getActiveConfigName() << endl;
             out << "# Trace ID " << (*ttIt).getId() << endl;
-            out << "# x y" << endl;
+            out << "# x y t" << endl;
 
             path = (*ttIt).getPath();
             for (tpIt = path.begin(); tpIt != path.end(); tpIt++) {
-                double x = (*tpIt).getCoord().getX();
-                double y = (*tpIt).getCoord().getY();
-                out << x << ' ' << y << endl;
+                x = (*tpIt).getCoord().getX();
+                y = (*tpIt).getCoord().getY();
+                t = (*tpIt).getTimestamp();
+                out << x << ' ' << y << ' ' << t << endl;
             }
             out.close();
         }
+
+        if (!outAll) {
+            std::cerr << "Cannot open file " << ossAll.str() << endl;
+        } else {
+            path = (*ttIt).getPath();
+            for (tpIt = path.begin(); tpIt != path.end(); tpIt++) {
+                x = (*tpIt).getCoord().getX();
+                y = (*tpIt).getCoord().getY();
+                t = (*tpIt).getTimestamp();
+                outAll << x << ' ' << y << ' ' << t << endl;
+            }
+        }
     }
+    outAll.close();
 }
 
 void AppTrackingBS::initialize()
