@@ -116,7 +116,7 @@ void Base802154Phy::handleUpperMsg(cMessage* msg)
         }
     } else {
         Mac802154Pkt *pkt = check_and_cast<Mac802154Pkt*>(msg);
-        if (pkt->getPktType() != MAC802154_PREAMBLE) {
+        if (pkt->getPktType() == MAC802154_DATA) {
             // Count packet loss
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
             sh->countLostMacPkt();
@@ -234,8 +234,10 @@ void Base802154Phy::startTx(Mac802154Pkt* pkt)
     if (radioMode != TX) {
         printError(WARNING, "Cannot transmit when not in TX mode. Dropping packet.");
         // Count packet loss
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        if (pkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+        if (pkt->getPktType() == MAC802154_DATA) {
+            StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+            sh->countLostMacPkt();
+        }
         delete pkt;
         return;
     }
@@ -312,8 +314,10 @@ void Base802154Phy::sendAirFrame(AirFrame* frame)
     printError(ERROR, "Cannot send to an out-ranged node. Dropping frame.");
     Mac802154Pkt *pkt = check_and_cast<Mac802154Pkt*>(frame->getEncapsulatedPacket());
     // Count packet loss
-    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-    if (pkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+    if (pkt->getPktType() == MAC802154_DATA) {
+        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+        sh->countLostMacPkt();
+    }
     delete frame;
 }
 
@@ -331,8 +335,10 @@ void Base802154Phy::recvAirFrame(AirFrame* frame)
         printError(INFO, "Cannot receive when not in RX mode. Dropping frame.");
         Mac802154Pkt *pkt = check_and_cast<Mac802154Pkt*>(frame->getEncapsulatedPacket());
         // Count packet loss
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        if (pkt->getPktType() != MAC802154_PREAMBLE) sh->countLostMacPkt();
+        if (pkt->getPktType() == MAC802154_DATA) {
+            StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+            sh->countLostMacPkt();
+        }
         delete frame;
         return;
     }
