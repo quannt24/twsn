@@ -278,7 +278,6 @@ void LinkXTMAC::activate(bool forced, double duration)
     cancelEvent(dcListenTimer);
     if (forced) {
         if (duration > 0) {
-            cancelEvent(dcSleepTimer);
             scheduleAt(simTime() + duration, dcSleepTimer);
         }
         forcedActive = true;
@@ -286,8 +285,7 @@ void LinkXTMAC::activate(bool forced, double duration)
         if (!forcedActive) {
             // If not in forcedActive interval then set dcSleepTimer as normal. If in forcedActive
             // interval, dcSleepTimer is already set and we will not change it.
-            cancelEvent(dcSleepTimer);
-            scheduleAt(simTime() + par("activeTime"), dcSleepTimer);
+            scheduleAt(simTime() + par("activeTime").doubleValue(), dcSleepTimer);
         }
     }
 }

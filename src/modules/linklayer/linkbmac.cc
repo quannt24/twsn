@@ -214,8 +214,9 @@ void LinkBMAC::activate(bool forced, double duration)
 
     active = true;
     if (forced) {
+        cancelEvent(checkChannelTimer);
         if (duration > 0) {
-            cancelEvent(checkChannelTimer);
+            printError(DEBUG, "Forced active");
             scheduleAt(simTime() + duration, checkChannelTimer);
         }
         forcedActive = true;
@@ -225,7 +226,7 @@ void LinkBMAC::activate(bool forced, double duration)
             // interval, checkChannelTimer is already set and we will not change it. Otherwise, we
             // extend current checkChannelTimer a portion equals activeTime.
             cancelEvent(checkChannelTimer);
-            scheduleAt(simTime() + par("activeTime"), checkChannelTimer);
+            scheduleAt(simTime() + par("activeTime").doubleValue(), checkChannelTimer);
         }
     }
 }
@@ -263,7 +264,7 @@ Mac802154Pkt* LinkBMAC::createPreamble()
 void LinkBMAC::switchToRx()
 {
     Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
-    if (phy->getRadioMode() != RX) {
+    if (phy->getRadioMode() == IDLE) {
         Command *cmd = new Command();
         cmd->setSrc(LINK);
         cmd->setDes(PHYS);
