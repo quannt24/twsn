@@ -188,6 +188,9 @@ void LinkUnslottedCSMACA::startSending()
 
 void LinkUnslottedCSMACA::backoff()
 {
+    if (backoffTimer->isScheduled()) {
+        printError(ERROR, "Backoff is already scheduled");
+    }
     double backoffDur = intuniform(0, (int) (pow(2, be) - 1)) * par("aUnitBP").doubleValue();
     scheduleAt(simTime() + backoffDur, backoffTimer);
 }

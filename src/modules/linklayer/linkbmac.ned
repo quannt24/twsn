@@ -25,9 +25,14 @@ simple LinkBMAC extends LinkUnslottedCSMACA
 		
 		// Check interval (radio is in idle mode), greater sleep interval save more rx energy
 		// but causes more delay and txt energy
-		double checkInterval @unit(s) = default(0.2 s);
-		// Preamble length, should equal 'byteRoundup(bitRate * (checkInterval + turnAroundTime + ccaDur)' 
-        int preambleLen @unit(byte) = default(6260 byte); // 0.1s ~ 3135 byte; 0.2s ~ 6260 byte
+		double checkInterval @unit(s) = default(0.1 s);
+		// Preamble length, should equal 'byteRoundup(bitRate * (checkInterval + turnAroundTime + ccaDur)'
+		// 0.01s ~ 323 byte
+		// 0.02s ~ 635 byte
+		// 0.05s ~ 1573 byte
+		// 0.1s ~ 3135 byte
+		// 0.2s ~ 6260 byte
+        int preambleLen @unit(byte) = default(3135 byte);
         // Timeout to stay active without any activities
         double activeTime @unit(s) = default(2s);
 }
