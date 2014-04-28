@@ -188,10 +188,8 @@ void LinkUnslottedCSMACA::startSending()
 
 void LinkUnslottedCSMACA::backoff()
 {
-    if (backoffTimer->isScheduled()) {
-        printError(ERROR, "Backoff is already scheduled");
-    }
     double backoffDur = intuniform(0, (int) (pow(2, be) - 1)) * par("aUnitBP").doubleValue();
+    cancelEvent(backoffTimer);
     scheduleAt(simTime() + backoffDur, backoffTimer);
 }
 
@@ -247,7 +245,11 @@ void LinkUnslottedCSMACA::deferPkt()
             ifsLen = par("aMinLIFSPeriod").doubleValue();
         }
 
-        delete outPkt;
+        if (outPkt != NULL
+                && outPkt->getPktType() == MAC802154_PREAMBLE
+                && outPkt->getOwner() == this) {
+            delete outPkt;
+        }
         reset();
 
         // Count packet loss
@@ -265,7 +267,7 @@ void LinkUnslottedCSMACA::reset()
     cancelEvent(ifsTimer);
     scheduleAt(simTime() + ifsLen, ifsTimer);
 
-    // Switch radio transceiver to listen mode
+    // Switch radio transceiver to RX mode
     Command *rxcmd = new Command();
     rxcmd->setSrc(LINK);
     rxcmd->setDes(PHYS);

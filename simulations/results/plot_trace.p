@@ -5,8 +5,8 @@ set ylabel "y (m)"
 #set xrange [100:220]
 #set yrange [90:100]
 
-#set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
-#set output 'trace.eps'
+set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
+set output 'trace.eps'
 
 set border linewidth 0.5
 set pointsize 1
@@ -25,6 +25,6 @@ set style line 7 lt 1 lw 0.5 lc rgb '#0000ff' pt 9 pi 20
 set style line 8 lt 1 lw 0.5 lc rgb '#3333ff' pt 7 pi 20
 set style line 9 lt 1 lw 0.5 lc rgb '#6666ff' pt 5 pi 20
 
-plot "../path1.txt" u 1:2 t "trace 0" w l ls 10, \
-     "bs_output/Config1_trace_all.data" u 1:2 t "trace 0" w l ls 1, \
-     "bs_output/Config2_trace_all.data" u 1:2 t "trace 1" w l ls 4
+plot "../path1.txt" u 1:2 t "True path" w l ls 10, \
+     "bs_output/Config1_trace_all.data" u 1:2 t "Tracked path 1" w l ls 1, \
+     "bs_output/Config2_trace_all.data" u 1:2 t "Tracked path 2" w l ls 4

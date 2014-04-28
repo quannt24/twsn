@@ -247,9 +247,9 @@ void Base802154Phy::startTx(Mac802154Pkt* pkt)
 
     /* Create physical frame */
     AirFrame *frame = new AirFrame();
+    frame->setSender(getId());
     frame->setByteLength(frame->getFrameSize()); // Physical frame size only
     frame->encapsulate(pkt); // Frame length will be increased by payload
-    frame->setSender(getId());
 
     /* Calculate transmission time */
     simtime_t txTime = ((double) frame->getBitLength()) / par("bitRate").doubleValue();
