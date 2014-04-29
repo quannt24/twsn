@@ -31,8 +31,15 @@ void LinkBMAC::initialize()
     macMinBE = par("macMinBE").longValue();
     ifsLen = par("aMinLIFSPeriod").doubleValue();
 
-    // Plan initial check channel timer
-    scheduleAt(par("checkInterval").doubleValue(), checkChannelTimer);
+    enableDutyCycling = par("enableDutyCycling").boolValue();
+
+    if (enableDutyCycling) {
+        // Plan initial check channel timer
+        gotoSleep();
+    } else {
+        // Switch transceiver to RX
+        scheduleAt(0, listenTimer);
+    }
 }
 
 void LinkBMAC::handleSelfMsg(cMessage* msg)
@@ -40,22 +47,32 @@ void LinkBMAC::handleSelfMsg(cMessage* msg)
     if (msg == backoffTimer) {
         performCCA();
     } else if (msg == listenTimer) {
-        // Note this is LinkUnslottedCSMACA's timer, it is not used here.
-        /*// Switch radio transceiver to listen mode
-         Command *cmd = new Command();
-         cmd->setSrc(LINK);
-         cmd->setDes(PHYS);
-         cmd->setCmdId(CMD_PHY_RX);
-         sendCtlDown(cmd);*/
+        // Switch radio transceiver to listen mode
+        Command *cmd = new Command();
+        cmd->setSrc(LINK);
+        cmd->setDes(PHYS);
+        cmd->setCmdId(CMD_PHY_RX);
+        sendCtlDown(cmd);
     } else if (msg == ifsTimer) {
         // Send packet at head of the queue if ready
         prepareQueuedPkt();
+    } else if (msg == deferNotiTimer) {
+        notifyLower();
+    } else if (msg == sleepTimer) {
+        if (enableDutyCycling) gotoSleep();
     } else if (msg == checkChannelTimer) {
-        switchToRx();
-        // Wait aTurnAroundTime before performing CCA
-        scheduleAt(simTime() + par("aTurnaroundTime").doubleValue(), waitTurnaroundTimer);
-    } else if (msg == waitTurnaroundTimer) {
-        performCCA();
+        if (enableDutyCycling) {
+            Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
+            if (phy->getRadioMode() == RX) {
+                performCCA();
+            } else {
+                switchToRx();
+                // Wait aTurnAroundTime before performing CCA
+                scheduleAt(simTime() + par("aTurnaroundTime").doubleValue(), deferCCATimer);
+            }
+        }
+    } else if (msg == deferCCATimer) {
+        if (enableDutyCycling) performCCA();
     }
 }
 
@@ -80,7 +97,6 @@ void LinkBMAC::handleUpperMsg(cMessage* msg)
     }
 
     outQueue.insert(macpkt);
-    activate();
 
     // Send packet at head of the queue if ready
     prepareQueuedPkt();
@@ -92,12 +108,13 @@ void LinkBMAC::handleUpperCtl(cMessage* msg)
     Command *cmd = check_and_cast<Command*>(msg);
 
     switch (cmd->getCmdId()) {
-        case CMD_LIN_FORCE_ACTIVE: {
-            CmdForceActive *cfa = check_and_cast<CmdForceActive*>(cmd);
-            activate(true, cfa->getDuration());
+        case CMD_LIN_FORCE_ACTIVE:
+            if (enableDutyCycling) {
+                CmdForceActive *cfa = check_and_cast<CmdForceActive*>(cmd);
+                wakeup(true, cfa->getDuration());
+            }
             delete cmd;
             break;
-        }
 
         default:
             // Just forward to lower layer
@@ -132,7 +149,8 @@ void LinkBMAC::handleLowerMsg(cMessage* msg)
 
     switch (macpkt->getPktType()) {
         case MAC802154_DATA:
-            activate();
+            if (enableDutyCycling) wakeup();
+
             // Forward network packet to upper layer
             netpkt = macpkt->decapsulate();
             if (netpkt != NULL) {
@@ -178,17 +196,16 @@ void LinkBMAC::handleLowerCtl(cMessage* msg)
                 if (outPkt != NULL) {
                     // CCA success, send packet to physical layer
                     sendPkt();
-                    activate();
-                } else {
+                } else if (enableDutyCycling) {
                     // Come back to inactive state
-                    deactive();
+                    gotoSleep();
                 }
             } else {
                 if (outPkt != NULL) {
                     // Channel is busy, update variables and backoff again
                     deferPkt();
                 }
-                activate();
+                if (enableDutyCycling) wakeup();
             }
             delete cmd;
             break;
@@ -211,45 +228,29 @@ void LinkBMAC::handleLowerCtl(cMessage* msg)
     }
 }
 
-void LinkBMAC::activate(bool forced, double duration)
-{
-    // Switch radio transceiver to RX mode
-    switchToRx();
 
-    active = true;
-    if (forced) {
-        cancelEvent(checkChannelTimer);
-        if (duration > 0) {
-            printError(DEBUG, "Forced active");
-            scheduleAt(simTime() + duration, checkChannelTimer);
-        }
-        forcedActive = true;
-    } else {
-        if (!forcedActive) {
-            // If not in forcedActive interval then set dcSleepTimer as normal. If in forcedActive
-            // interval, checkChannelTimer is already set and we will not change it. Otherwise, we
-            // extend current checkChannelTimer a portion equals activeTime.
-            cancelEvent(checkChannelTimer);
-            scheduleAt(simTime() + par("activeTime").doubleValue(), checkChannelTimer);
-        }
+void LinkBMAC::reset()
+{
+    LinkUnslottedCSMACA::reset();
+    if (enableDutyCycling) {
+        // Keep awake
+        wakeup();
     }
-}
-
-void LinkBMAC::deactive()
-{
-    active = false;
-    forcedActive = false;
-    switchToIdle();
-    // Plan a check channel timer
-    cancelEvent(checkChannelTimer);
-    scheduleAt(simTime() + par("checkInterval").doubleValue(), checkChannelTimer);
 }
 
 void LinkBMAC::prepareQueuedPkt()
 {
-    if (outPkt == NULL && !ifsTimer->isScheduled() && !outQueue.empty()) {
+    if (outPkt == NULL && !ifsTimer->isScheduled()
+            && !outQueue.empty() && ! deferNotiTimer->isScheduled()) {
         outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
-        notifyLower();
+
+        Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
+        if (phy->getRadioMode() == RX) {
+            notifyLower();
+        } else {
+            switchToRx();
+            scheduleAt(simTime() + par("aTurnaroundTime").doubleValue(), deferNotiTimer);
+        }
     }
 }
 
@@ -260,9 +261,46 @@ Mac802154Pkt* LinkBMAC::createPreamble()
     pre->setPktType(MAC802154_PREAMBLE);
     pre->setSrcAddr(macAddr);
     pre->setDesAddr(MAC_BROADCAST_ADDR);
-    pre->setByteLength(par("preambleLen").longValue());
+    pre->setPktSize(par("preambleLen").longValue());
+    pre->setByteLength(pre->getPktSize());
 
     return pre;
+}
+
+void LinkBMAC::wakeup(bool forced, double duration)
+{
+    // Switch radio transceiver to RX mode (if currently in IDLE)
+    switchToRx();
+
+    awake = true;
+    cancelEvent(checkChannelTimer);
+    cancelEvent(deferCCATimer);
+
+    if (forced) {
+        cancelEvent(sleepTimer);
+        if (duration > 0) {
+            printError(DEBUG, "Forced active");
+            scheduleAt(simTime() + duration, sleepTimer);
+        }
+        forcedAwake = true;
+    } else {
+        if (!forcedAwake) {
+            // If in forcedAwake interval, sleepTimer is already set and we will not change it;
+            // Otherwise, we extend (or set new) current sleepTimer a portion equals listenTimeout.
+            cancelEvent(sleepTimer);
+            scheduleAt(simTime() + par("listenTimeout").doubleValue(), sleepTimer);
+        }
+    }
+}
+
+void LinkBMAC::gotoSleep()
+{
+    awake = false;
+    forcedAwake = false;
+    switchToIdle();
+    // Plan a check channel timer
+    cancelEvent(checkChannelTimer);
+    scheduleAt(simTime() + par("checkInterval").doubleValue(), checkChannelTimer);
 }
 
 void LinkBMAC::switchToRx()
@@ -291,17 +329,21 @@ void LinkBMAC::switchToIdle()
 
 LinkBMAC::LinkBMAC()
 {
-    active = false;
-    forcedActive = false;
+    awake = false;
+    forcedAwake = false;
 
+    deferNotiTimer = new cMessage("deferNotiTimer");
     checkChannelTimer = new cMessage("checkChannelTimer");
-    waitTurnaroundTimer = new cMessage("waitTurnaroundTimer");
+    deferCCATimer = new cMessage("deferCCATimer");
+    sleepTimer = new cMessage("sleepTimer");
 }
 
 LinkBMAC::~LinkBMAC()
 {
+    cancelAndDelete(deferNotiTimer);
     cancelAndDelete(checkChannelTimer);
-    cancelAndDelete(waitTurnaroundTimer);
+    cancelAndDelete(deferCCATimer);
+    cancelAndDelete(sleepTimer);
 }
 
 }  // namespace twsn

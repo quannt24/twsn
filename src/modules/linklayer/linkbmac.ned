@@ -23,16 +23,17 @@ simple LinkBMAC extends LinkUnslottedCSMACA
     parameters:
         @class("twsn::LinkBMAC");
 		
+		bool enableDutyCycling = default(false);
 		// Check interval (radio is in idle mode), greater sleep interval save more rx energy
 		// but causes more delay and txt energy
-		double checkInterval @unit(s) = default(0.1 s);
+		double checkInterval @unit(s) = default(0.05 s);
 		// Preamble length, should equal 'byteRoundup(bitRate * (checkInterval + turnAroundTime + ccaDur)'
 		// 0.01s ~ 323 byte
 		// 0.02s ~ 635 byte
 		// 0.05s ~ 1573 byte
 		// 0.1s ~ 3135 byte
 		// 0.2s ~ 6260 byte
-        int preambleLen @unit(byte) = default(3135 byte);
+        int preambleLen @unit(byte) = default(1573 byte);
         // Timeout to stay active without any activities
-        double activeTime @unit(s) = default(2s);
+        double listenTimeout @unit(s) = default(1 s);
 }

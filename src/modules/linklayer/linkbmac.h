@@ -27,11 +27,14 @@ namespace twsn {
 class LinkBMAC : public LinkUnslottedCSMACA
 {
     protected:
-        bool active;
-        bool forcedActive;
+        bool enableDutyCycling;
+        bool awake;
+        bool forcedAwake;
 
+        cMessage *deferNotiTimer; // Wait for transceiver turned to TX mode
         cMessage *checkChannelTimer;
-        cMessage *waitTurnaroundTimer;
+        cMessage *deferCCATimer; // Wait for transceiver turned to RX mode to perform CCA
+        cMessage *sleepTimer;
 
         virtual void initialize();
         /** Handle self message */
@@ -45,17 +48,8 @@ class LinkBMAC : public LinkUnslottedCSMACA
         /** Handle control message from lowerCtl$i */
         virtual void handleLowerCtl(cMessage *msg);
 
-        /**
-         * Change to active state. If it is a forcedly activation (forced = true), layer will keep
-         * active state for an interval specified by 'duration' before come back to normal duty
-         * cycling. Passing a non-positive value to 'duration' when forced = true will keep active
-         * state forever.
-         */
-        void activate(bool forced = false, double duration = 0);
-        /**
-         * Deactive, switch transceiver to IDLE mode.
-         */
-        void deactive();
+        /** Reset state after sending */
+        virtual void reset();
 
         /**
          * Pop packet from queue and prepare sending if not currently in sending procedures.
@@ -63,6 +57,18 @@ class LinkBMAC : public LinkUnslottedCSMACA
         void prepareQueuedPkt();
         /** Create a preamle MAC packet */
         Mac802154Pkt *createPreamble();
+
+        /**
+         * Change to active state. If it is a forcedly activation (forced = true), layer will keep
+         * active state for an interval specified by 'duration' before come back to normal duty
+         * cycling. Passing a non-positive value to 'duration' when forced = true will keep active
+         * state forever.
+         */
+        void wakeup(bool forced = false, double duration = 0);
+        /**
+         * Go to sleep state
+         */
+        void gotoSleep();
 
         /** Request physical layer to switch to RX mode if currently in IDLE */
         void switchToRx();
