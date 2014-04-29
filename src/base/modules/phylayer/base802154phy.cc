@@ -352,6 +352,14 @@ void Base802154Phy::recvAirFrame(AirFrame* frame)
 
 void Base802154Phy::switchRadioMode(int mode)
 {
+    // Draw energy before switching mode
+    BaseEnergy *ener = check_and_cast<BaseEnergy*>(getModuleByPath("^.energy"));
+    if (ener->par("hasLinePower").boolValue() || ener->getCapacity() > 0) {
+        draw(); // Check for capacity before call draw() to prevent infinite loop
+    } else {
+        mode = POWER_DOWN;
+    }
+
     double switchDelay = 0;
 
     cancelEvent(switchIdleTimer);
@@ -372,6 +380,7 @@ void Base802154Phy::switchRadioMode(int mode)
             }
             scheduleAt(simTime() + switchDelay, switchIdleTimer);
             break;
+
         case RX:
             if (radioMode == IDLE) {
                 switchDelay = par("delayIdleToRx").doubleValue();
@@ -380,6 +389,7 @@ void Base802154Phy::switchRadioMode(int mode)
             }
             scheduleAt(simTime() + switchDelay, switchRxTimer);
             break;
+
         case TX:
             if (radioMode == IDLE) {
                 switchDelay = par("delayIdleToTx").doubleValue();
@@ -388,24 +398,20 @@ void Base802154Phy::switchRadioMode(int mode)
             }
             scheduleAt(simTime() + switchDelay, switchTxTimer);
             break;
+
+        case POWER_DOWN:
+            setRadioMode(POWER_DOWN);
+            break;
+
         default:
             printError(ERROR, "Unexpected radio mode. Set to POWER_DOWN.");
             setRadioMode(POWER_DOWN);
-            return;
+            break;
     }
 }
 
 void Base802154Phy::setRadioMode(int mode)
 {
-    // Draw energy before switching mode
-    BaseEnergy *ener = check_and_cast<BaseEnergy*>(getModuleByPath("^.energy"));
-    if (ener->par("hasLinePower").boolValue() || ener->getCapacity() > 0) {
-        draw(); // Check for capacity before call draw() to prevent infinite loop
-    } else {
-        radioMode = POWER_DOWN;
-        return;
-    }
-
     switch (mode) {
         case POWER_DOWN:
         case IDLE:
