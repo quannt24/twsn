@@ -59,20 +59,20 @@ void LinkBMAC::handleSelfMsg(cMessage* msg)
     } else if (msg == deferNotiTimer) {
         notifyLower();
     } else if (msg == sleepTimer) {
-        if (enableDutyCycling) gotoSleep();
+        if (enableDutyCycling) gotoSleep(); // Go to sleep whatever forcedAwake or not
     } else if (msg == checkChannelTimer) {
-        if (enableDutyCycling) {
+        if (enableDutyCycling && outPkt == NULL && !transmitting) {
             Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
             if (phy->getRadioMode() == RX) {
                 performCCA();
             } else {
-                switchToRx();
+                switchIdleToRx();
                 // Wait aTurnAroundTime before performing CCA
                 scheduleAt(simTime() + par("aTurnaroundTime").doubleValue(), deferCCATimer);
             }
         }
     } else if (msg == deferCCATimer) {
-        if (enableDutyCycling) performCCA();
+        performCCA();
     }
 }
 
@@ -91,8 +91,7 @@ void LinkBMAC::handleUpperMsg(cMessage* msg)
     macpkt->setByteLength(macpkt->getPktSize());
     macpkt->encapsulate(netpkt);
 
-    if (netpkt->getPreambleFlag()) {
-        // Insert a preamble packet before the payload
+    if (!forcedAwake) {
         outQueue.insert(createPreamble());
     }
 
@@ -149,7 +148,9 @@ void LinkBMAC::handleLowerMsg(cMessage* msg)
 
     switch (macpkt->getPktType()) {
         case MAC802154_DATA:
-            if (enableDutyCycling) wakeup();
+            if (enableDutyCycling) {
+                wakeup();
+            }
 
             // Forward network packet to upper layer
             netpkt = macpkt->decapsulate();
@@ -196,7 +197,7 @@ void LinkBMAC::handleLowerCtl(cMessage* msg)
                 if (outPkt != NULL) {
                     // CCA success, send packet to physical layer
                     sendPkt();
-                } else if (enableDutyCycling) {
+                } else if (enableDutyCycling && !forcedAwake) {
                     // Come back to inactive state
                     gotoSleep();
                 }
@@ -211,8 +212,19 @@ void LinkBMAC::handleLowerCtl(cMessage* msg)
             break;
 
         case CMD_READY:
-            // Reset outPkt and switch to RX
+            // Reset outPkt and 'transmitting' flag
             reset();
+            if (enableDutyCycling && !forcedAwake) {
+                // Go to sleep after sending
+                gotoSleep();
+            } else {
+                // Switch to RX if not duty cycling
+                Command *rxcmd = new Command();
+                rxcmd->setSrc(LINK);
+                rxcmd->setDes(PHYS);
+                rxcmd->setCmdId(CMD_PHY_RX);
+                sendCtlDown(rxcmd);
+            }
             delete cmd;
             break;
 
@@ -231,24 +243,27 @@ void LinkBMAC::handleLowerCtl(cMessage* msg)
 
 void LinkBMAC::reset()
 {
-    LinkUnslottedCSMACA::reset();
-    if (enableDutyCycling) {
-        // Keep awake
-        wakeup();
-    }
+    // Reset outPkt pointer so that we can send next packet
+    outPkt = NULL;
+    transmitting = false;
+
+    // Fetch next packet from queue after IFS
+    cancelEvent(ifsTimer);
+    scheduleAt(simTime() + ifsLen, ifsTimer);
 }
 
 void LinkBMAC::prepareQueuedPkt()
 {
-    if (outPkt == NULL && !ifsTimer->isScheduled()
+    if (outPkt == NULL && !transmitting && !ifsTimer->isScheduled()
             && !outQueue.empty() && ! deferNotiTimer->isScheduled()) {
+
         outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
 
         Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
         if (phy->getRadioMode() == RX) {
             notifyLower();
         } else {
-            switchToRx();
+            switchIdleToRx();
             scheduleAt(simTime() + par("aTurnaroundTime").doubleValue(), deferNotiTimer);
         }
     }
@@ -270,7 +285,7 @@ Mac802154Pkt* LinkBMAC::createPreamble()
 void LinkBMAC::wakeup(bool forced, double duration)
 {
     // Switch radio transceiver to RX mode (if currently in IDLE)
-    switchToRx();
+    switchIdleToRx();
 
     awake = true;
     cancelEvent(checkChannelTimer);
@@ -303,7 +318,7 @@ void LinkBMAC::gotoSleep()
     scheduleAt(simTime() + par("checkInterval").doubleValue(), checkChannelTimer);
 }
 
-void LinkBMAC::switchToRx()
+void LinkBMAC::switchIdleToRx()
 {
     Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
     if (phy->getRadioMode() == IDLE) {

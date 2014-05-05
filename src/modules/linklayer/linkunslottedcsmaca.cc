@@ -70,7 +70,7 @@ void LinkUnslottedCSMACA::handleUpperMsg(cMessage* msg)
     outQueue.insert(macpkt);
 
     // Send packet at head of the queue if ready
-    if (outPkt == NULL && !ifsTimer->isScheduled()) {
+    if (outPkt == NULL && !transmitting && !ifsTimer->isScheduled()) {
         outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
         notifyLower();
     }
@@ -97,14 +97,14 @@ void LinkUnslottedCSMACA::handleLowerMsg(cMessage* msg)
 
     if (macpkt->hasBitError()) {
         getParentModule()->bubble("Packet error");
-        delete msg;
         // Count packet loss
-        sh->countLostMacPkt();
+        if (macpkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
+        delete msg;
         return;
     }
 
     // Count received packet
-    sh->countRecvMacPkt();
+    if (macpkt->getPktType() == MAC802154_DATA) sh->countRecvMacPkt();
 
     switch (macpkt->getPktType()) {
         case MAC802154_DATA:
@@ -205,13 +205,6 @@ void LinkUnslottedCSMACA::performCCA()
 void LinkUnslottedCSMACA::sendPkt()
 {
     if (outPkt != NULL) {
-        // Switch radio to TX mode
-        Command *txcmd = new Command();
-        txcmd->setSrc(LINK);
-        txcmd->setDes(PHYS);
-        txcmd->setCmdId(CMD_PHY_TX);
-        sendCtlDown(txcmd);
-
         // Prepare IFS
         if (outPkt->getByteLength() <= par("aMaxSIFSFrameSize").longValue()) {
             ifsLen = par("aMinSIFSPeriod").doubleValue();
@@ -221,8 +214,8 @@ void LinkUnslottedCSMACA::sendPkt()
 
         // Transmit
         sendDown(outPkt);
-        /* NOTE: We do not set outPkt = NULL here to indicate that it is being sent by physical
-         * layer. Do not change content of this pointer after this point. */
+        outPkt = NULL;
+        transmitting = true;
     }
 }
 
@@ -245,16 +238,16 @@ void LinkUnslottedCSMACA::deferPkt()
             ifsLen = par("aMinLIFSPeriod").doubleValue();
         }
 
-        if (outPkt != NULL
-                && outPkt->getPktType() == MAC802154_PREAMBLE
-                && outPkt->getOwner() == this) {
+        if (outPkt != NULL && !transmitting) {
+            if (outPkt->getPktType() == MAC802154_DATA) {
+                // Count packet loss
+                StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+                sh->countLostMacPkt();
+            }
             delete outPkt;
+            outPkt = NULL;
+            reset();
         }
-        reset();
-
-        // Count packet loss
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countLostMacPkt();
     }
 }
 
@@ -262,6 +255,7 @@ void LinkUnslottedCSMACA::reset()
 {
     // Reset outPkt pointer so that we can send next packet
     outPkt = NULL;
+    transmitting = false;
 
     // Fetch next packet from queue after IFS
     cancelEvent(ifsTimer);
@@ -278,6 +272,7 @@ void LinkUnslottedCSMACA::reset()
 LinkUnslottedCSMACA::LinkUnslottedCSMACA()
 {
     outPkt = NULL;
+    transmitting = false;
     backoffTimer = new cMessage("backoffTimer");
     listenTimer = new cMessage("listenTimer");
     ifsTimer = new cMessage("ifsTimer");

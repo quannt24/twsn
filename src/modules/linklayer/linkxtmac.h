@@ -50,10 +50,11 @@ class LinkXTMAC : public LinkUnslottedCSMACA
         virtual void handleUpperCtl(cMessage *msg);
         /** Handle message/packet from lower$i */
         virtual void handleLowerMsg(cMessage *msg);
-        // handleLowerCtl is inherited from parent class
+        /** Handle control message from lowerCtl$i */
+        //virtual void handleLowerCtl(cMessage *msg);
 
         /** Reset outPkt and switch to RX mode. Fetch next packet after IFS. */
-        void reset();
+        virtual void reset();
 
         /**
          * Change to active state. If it is a forcedly activation (forced = true), layer will keep

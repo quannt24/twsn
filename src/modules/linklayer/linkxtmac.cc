@@ -61,6 +61,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
 
             // Send main packet anyway
             outPkt = mainPkt;
+            mainPkt = NULL;
             notifyLower();
         }
     } else if (msg == deadlineTimer) {
@@ -82,9 +83,10 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
         }
     } else if (msg == mainSendingTimer) {
         if (mainPkt != NULL) {
-            if (outPkt == NULL) {
+            if (outPkt == NULL && !transmitting) {
                 printError(INFO, "Send main packet");
                 outPkt = mainPkt;
+                mainPkt = NULL;
                 notifyLower();
             } else {
                 printError(ERROR, "Not ready for sending");
@@ -227,7 +229,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
                 delete outPkt;
                 outPkt = NULL;
             }
-            if (outPkt == NULL) {
+            if (outPkt == NULL && !transmitting) {
                 // Send main packet if not sending non-preamble packet
                 scheduleAt(simTime() + ifsLen, mainSendingTimer);
             }
@@ -245,18 +247,11 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
 
 void LinkXTMAC::reset()
 {
-    printError(VERBOSE, "Reset");
-    if (outPkt == mainPkt) {
-        // Reset mainPkt pointer so that we can send next packet
-        mainPkt = NULL;
-    } else {
-        // Strobe sent
-        nStrobe--;
-        cancelEvent(deadlineTimer);
-    }
+    cancelEvent(deadlineTimer); // In case we are sending strobe
 
     // Reset outPkt pointer
     outPkt = NULL;
+    transmitting = false;
 
     cancelEvent(ifsTimer);
     scheduleAt(simTime() + ifsLen, ifsTimer);
@@ -297,6 +292,8 @@ void LinkXTMAC::prepareQueuedPkt()
 {
     if (nStrobe <= 0
             && mainPkt == NULL
+            && outPkt == NULL
+            && !transmitting
             && !ifsTimer->isScheduled()
             && !mainSendingTimer->isScheduled()
             && !outQueue.empty()) {
@@ -323,12 +320,14 @@ void LinkXTMAC::prepareQueuedPkt()
                 // Send main packet immediately
                 nStrobe = 0;
                 outPkt = mainPkt;
+                mainPkt = NULL;
                 notifyLower();
             }
         } else {
             // Send main packet immediately
             nStrobe = 0;
             outPkt = mainPkt;
+            mainPkt = NULL;
             notifyLower();
         }
     }
@@ -336,7 +335,8 @@ void LinkXTMAC::prepareQueuedPkt()
 
 void LinkXTMAC::sendStrobe()
 {
-    if (outPkt == NULL && !ifsTimer->isScheduled() && nStrobe > 0 && strobePkt != NULL) {
+    if (outPkt == NULL && !transmitting && !ifsTimer->isScheduled() && nStrobe > 0 && strobePkt != NULL) {
+        nStrobe--;
         outPkt = strobePkt->dup();
         notifyLower();
         // Set deadline

@@ -32,6 +32,7 @@ class LinkUnslottedCSMACA : public BaseLink
         /* Packet being sent. Note: this pointer will be non-null if a packet is being sent, even
          * if it is already hold by physical layer. */
         Mac802154Pkt *outPkt;
+        bool transmitting;
 
         int aMaxBE;
         int macMaxNB;

@@ -71,7 +71,7 @@ class LinkBMAC : public LinkUnslottedCSMACA
         void gotoSleep();
 
         /** Request physical layer to switch to RX mode if currently in IDLE */
-        void switchToRx();
+        void switchIdleToRx();
         /** Request physical layer to switch to IDLE mode */
         void switchToIdle();
 
