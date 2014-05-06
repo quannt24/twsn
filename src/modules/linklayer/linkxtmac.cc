@@ -390,6 +390,7 @@ LinkXTMAC::LinkXTMAC()
     nStrobe = 0;
     active = false;
     forcedActive = false;
+
     deadlineTimer = new cMessage("deadlineTimer");
     strobeTimer = new cMessage("strobeTimer");
     mainSendingTimer = new cMessage("mainSendingTimer");

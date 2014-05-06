@@ -30,7 +30,7 @@ simple LinkXTMAC extends LinkUnslottedCSMACA
 		// strobeTime = aTurnaroundTime + 2^macMinBE * aUnitBP + ccaDur + phyFrameSize / bitRate
 		double strobeTime @unit(s) = default(aTurnaroundTime + 8 * aUnitBP + ccaDur + 0.000864 s); // about 0.003744 s
 		// Reserved interval at end of each strobe period, not configurable
-		// reservedInterval = strobeTime + aMinLIFSPeriod (about 0.004384 s in default)
+		// reservedInterval = strobeTime (about 0.003744 s in default)
 		double reservedInterval @unit(s) = strobeTime;
 		// Period for sending strobes. Must larger reservedInterval + sendingTime.
 		double strobePeriod @unit(s) = default(strobeTime + reservedInterval); // about 0.008768 s
