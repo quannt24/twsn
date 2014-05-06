@@ -26,5 +26,5 @@ simple NetARPEES extends BaseNet
         @class("twsn::NetARPEES");
         
         // Timeout for waiting relay information after sending a relay request
-        double waitRelayInfoTimeout @unit(s) = default(0.1 s);
+        double waitRelayInfoTimeout @unit(s) = default(0.2 s);
 }

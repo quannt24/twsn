@@ -81,11 +81,7 @@ void NetARPEES::handleUpperMsg(cMessage* msg)
     }
 
     // Set preamble flag
-    if (netpkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
-        netpkt->setPreambleFlag(true);
-    } else {
-        netpkt->setPreambleFlag(false);
-    }
+    netpkt->setPreambleFlag(false);
 
     netpkt->setByteLength(netpkt->getPktSize());
     netpkt->encapsulate(apppkt);
@@ -145,6 +141,13 @@ void NetARPEES::handleLowerMsg(cMessage* msg)
         case ARPEES_RELAY_INFO:
             recvRelayInfo(pkt);
             break;
+
+        default:
+            printError(WARNING, "Unknown packet type");
+            delete pkt;
+            // Count lost packet
+            sh->countLostNetPkt();
+            break;
     }
 }
 
@@ -187,6 +190,7 @@ void NetARPEES::requestRelay()
     NetArpeesPkt *pkt = new NetArpeesPkt();
     pkt->setSrcAddr(macAddr);
     pkt->setDesAddr(NET_BROADCAST_ADDR);
+    pkt->setPreambleFlag(true); // Use preamble for requesting relay
     pkt->setPktType(ARPEES_RELAY_REQ);
     pkt->setByteLength(pkt->getPktSize());
 
@@ -224,6 +228,7 @@ void NetARPEES::recvRelayedPayload(NetArpeesPkt* pkt)
         // Here is the destination, send packet to upper layer
         AppPkt *apppkt = check_and_cast<AppPkt*>(pkt->decapsulate());
         sendUp(apppkt);
+        delete pkt;
     } else {
         // Enqueue packet
         outQueue.insert(pkt);
