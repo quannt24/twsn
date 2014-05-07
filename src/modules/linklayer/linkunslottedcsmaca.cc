@@ -280,6 +280,16 @@ LinkUnslottedCSMACA::LinkUnslottedCSMACA()
 
 LinkUnslottedCSMACA::~LinkUnslottedCSMACA()
 {
+    if (!outQueue.empty()) {
+        printError(WARNING, "Sending queue is not empty, cleaning");
+        cPacket *pkt = NULL;
+        while (!outQueue.empty()) {
+            pkt = outQueue.pop();
+            delete pkt;
+        }
+    }
+    if (outPkt != NULL) delete outPkt;
+
     cancelAndDelete(backoffTimer);
     cancelAndDelete(listenTimer);
     cancelAndDelete(ifsTimer);

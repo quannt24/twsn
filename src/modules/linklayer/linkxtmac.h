@@ -27,6 +27,7 @@ namespace twsn {
 class LinkXTMAC : public LinkUnslottedCSMACA
 {
     protected:
+        bool enableDutyCycling;
         Mac802154Pkt *mainPkt; // Main packet being sent
         Mac802154Pkt *strobePkt;
         bool active;

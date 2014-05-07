@@ -28,4 +28,6 @@ set style line 9 lt 1 lw 0.5 lc rgb '#6666ff' pt 5 pi 20
 plot "../path1.txt" u 1:2 t "True path" w l ls 10, \
      "bs_output/Config1_trace_all.data" u 1:2 t "Tracked path 1" w l ls 1, \
      "bs_output/Config2_trace_all.data" u 1:2 t "Tracked path 2" w l ls 4, \
-     "bs_output/Config3_trace_all.data" u 1:2 t "Tracked path 3" w l ls 7
+     "bs_output/Config3_trace_all.data" u 1:2 t "Tracked path 3" w l ls 7, \
+     "bs_output/Config4_trace_all.data" u 1:2 t "Tracked path 4" w l ls 8, \
+     "bs_output/Config5_trace_all.data" u 1:2 t "Tracked path 5" w l ls 9

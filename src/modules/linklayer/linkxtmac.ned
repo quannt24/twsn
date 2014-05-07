@@ -23,6 +23,9 @@ simple LinkXTMAC extends LinkUnslottedCSMACA
     parameters:
         @class("twsn::LinkXTMAC");
         
+        // If disabled, node will not go to inactive state. Strobes still be sent as normal.
+        bool enableDutyCycling = default(true);
+        
 		// Sender
 		// ===================================
 		// Strobe time is estimated sending time of a MAC packet without payload and

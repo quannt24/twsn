@@ -31,6 +31,8 @@ void LinkXTMAC::initialize()
     macMinBE = par("macMinBE").longValue();
     ifsLen = par("aMinLIFSPeriod").doubleValue();
 
+    enableDutyCycling = par("enableDutyCycling").boolValue();
+
     // Plan initial duty cycling listen
     scheduleAt(par("sleepInterval").doubleValue(), dcListenTimer);
 }
@@ -66,12 +68,14 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
         }
     } else if (msg == deadlineTimer) {
         if (nStrobe > 0 && strobePkt != NULL) {
+            delete strobePkt;
+            strobePkt = NULL;
             // Cancel current strobe sending
             printError(INFO, "Strobe deadline is missed");
             nStrobe--;
             if (outPkt != NULL
                     && outPkt->getPktType() == MAC802154_PREAMBLE
-                    && outPkt->getOwner() == this) {
+                    && !transmitting) {
                 // Delete strobe if it has not being sent yet
                 cancelEvent(backoffTimer);
                 delete outPkt;
@@ -90,12 +94,13 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
                 notifyLower();
             } else {
                 printError(ERROR, "Not ready for sending");
-                delete mainPkt;
-                mainPkt = NULL;
 
                 // Count packet loss
                 StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
                 if (mainPkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
+
+                delete mainPkt;
+                mainPkt = NULL;
             }
         } else {
             printError(WARNING, "NULL main packet, prepare other");
@@ -106,14 +111,18 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
         switchToRx();
         // Plan a sleep timer
         cancelEvent(dcSleepTimer);
-        scheduleAt(simTime() + par("listenInterval").doubleValue(), dcSleepTimer);
+        if (enableDutyCycling) {
+            scheduleAt(simTime() + par("listenInterval").doubleValue(), dcSleepTimer);
+        }
     } else if (msg == dcSleepTimer) {
-        active = false;
-        forcedActive = false;
-        switchToIdle();
-        // Plan a listen timer
-        cancelEvent(dcListenTimer);
-        scheduleAt(simTime() + par("sleepInterval").doubleValue(), dcListenTimer);
+        if (enableDutyCycling) {
+            active = false;
+            forcedActive = false;
+            switchToIdle();
+            // Plan a listen timer
+            cancelEvent(dcListenTimer);
+            scheduleAt(simTime() + par("sleepInterval").doubleValue(), dcListenTimer);
+        }
     }
 }
 
@@ -223,7 +232,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             cancelEvent(deadlineTimer);
             if (outPkt != NULL
                     && outPkt->getPktType() == MAC802154_PREAMBLE
-                    && outPkt->getOwner() == this) {
+                    && !transmitting) {
                 // Delete strobe if it has not being sent yet
                 cancelEvent(backoffTimer);
                 delete outPkt;
@@ -239,7 +248,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             printError(WARNING, "Unknown MAC packet type");
             // Count packet loss
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-            if (macpkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
+            sh->countLostMacPkt();
             delete macpkt;
             break;
     }
@@ -273,12 +282,12 @@ void LinkXTMAC::activate(bool forced, double duration)
     if (forced) {
         cancelEvent(dcSleepTimer);
         cancelEvent(dcListenTimer);
-        if (duration > 0) {
+        if (duration > 0 && enableDutyCycling) {
             scheduleAt(simTime() + duration, dcSleepTimer);
         }
         forcedActive = true;
     } else {
-        if (!forcedActive) {
+        if (!forcedActive && enableDutyCycling) {
             // If not in forcedActive interval then set dcSleepTimer as normal. If in forcedActive
             // interval, dcSleepTimer is already set and we will not change it.
             cancelEvent(dcSleepTimer);
@@ -344,6 +353,10 @@ void LinkXTMAC::sendStrobe()
         // Set timer for next period
         scheduleAt(simTime() + par("strobePeriod").doubleValue(), strobeTimer);
     }
+    if (nStrobe <= 0 && strobePkt != NULL) {
+        delete strobePkt;
+        strobePkt = NULL;
+    }
 }
 
 void LinkXTMAC::sendAck(macaddr_t addr)
@@ -374,6 +387,9 @@ void LinkXTMAC::switchToRx()
 
 void LinkXTMAC::switchToIdle()
 {
+    if (getId() == 2059) {
+        printError(ERROR, "Something wrong");
+    }
     Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
     if (phy->getRadioMode() != IDLE) {
         Command *cmd = new Command();
@@ -386,7 +402,9 @@ void LinkXTMAC::switchToIdle()
 
 LinkXTMAC::LinkXTMAC()
 {
+    enableDutyCycling = true;
     mainPkt = NULL;
+    strobePkt = NULL;
     nStrobe = 0;
     active = false;
     forcedActive = false;
@@ -400,6 +418,9 @@ LinkXTMAC::LinkXTMAC()
 
 LinkXTMAC::~LinkXTMAC()
 {
+    if (mainPkt != NULL) delete mainPkt;
+    if (strobePkt != NULL) delete strobePkt;
+
     cancelAndDelete(deadlineTimer);
     cancelAndDelete(strobeTimer);
     cancelAndDelete(mainSendingTimer);
