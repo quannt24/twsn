@@ -23,6 +23,10 @@ Define_Module(AppTrackingBS);
 
 void AppTrackingBS::processTarPos(TargetPos &tp)
 {
+    // Store raw target position for reference
+    rawTpList.push_back(tp);
+
+    // Process data and collect traces
     if (traceList.size() == 0) {
         // Add new trace with this TargetPos
         TargetTrace trace(par("theta").doubleValue(), par("minDeltaT").doubleValue());
@@ -98,41 +102,78 @@ void AppTrackingBS::cleanJunk()
 void AppTrackingBS::output()
 {
     cConfigurationEx *configEx = ev.getConfigEx();
+    // Output raw data
+    std::ostringstream ossRaw;
+    std::ofstream outRaw;
+    // Output all trace
     std::ostringstream ossAll;
     std::ofstream outAll;
-    std::ostringstream oss;
-    std::ofstream out;
+    // Output individual trace
+    std::ostringstream ossTrace;
+    std::ofstream outTrace;
     std::list<TargetTrace>::iterator ttIt;
     std::list<TargetPos> path;
     std::list<TargetPos>::iterator tpIt;
     double x, y, t;
 
+    // Output raw data
+    // =================
+    ossRaw.seekp(0);
+    ossRaw << "results/bs_output/";
+    ossRaw << configEx->getActiveConfigName() << "_raw.data\0";
+    outRaw.open(ossRaw.str().c_str(), std::ios::out | std::ios::trunc);
+
+    if (outRaw) {
+        outRaw << "# Config: " << configEx->getActiveConfigName() << endl;
+        outRaw << "# Raw positioning data" << endl;
+        outRaw << "# x y t" << endl;
+        for (tpIt = rawTpList.begin(); tpIt != rawTpList.end(); tpIt++) {
+            x = (*tpIt).getCoord().getX();
+            y = (*tpIt).getCoord().getY();
+            t = (*tpIt).getTimestamp();
+            outRaw << x << ' ' << y << ' ' << t << endl;
+        }
+    } else {
+        std::cerr << "Cannot open file " << ossRaw.str() << endl;
+    }
+    outRaw.close();
+
+    // Output trace data
+    // =================
     ossAll.seekp(0);
     ossAll << "results/bs_output/";
     ossAll << configEx->getActiveConfigName() << "_trace_all.data\0";
     outAll.open(ossAll.str().c_str(), std::ios::out | std::ios::trunc);
 
-    for (ttIt = traceList.begin(); ttIt != traceList.end(); ttIt++) {
-        oss.seekp(0);
-        oss << "results/bs_output/";
-        oss << configEx->getActiveConfigName() << "_trace_" << (*ttIt).getId() << ".data\0";
-        out.open(oss.str().c_str(), std::ios::out | std::ios::trunc);
+    if (outAll) {
+        outAll << "# Config: " << configEx->getActiveConfigName() << endl;
+        outAll << "# All traces sequenced" << endl;
+        outAll << "# x y t" << endl;
+    } else {
+        std::cerr << "Cannot open file " << ossAll.str() << endl;
+    }
 
-        if (!out) {
-            std::cerr << "Cannot open file " << oss.str() << endl;
+    for (ttIt = traceList.begin(); ttIt != traceList.end(); ttIt++) {
+        ossTrace.seekp(0);
+        ossTrace << "results/bs_output/";
+        ossTrace << configEx->getActiveConfigName() << "_trace_" << (*ttIt).getId() << ".data\0";
+        outTrace.open(ossTrace.str().c_str(), std::ios::out | std::ios::trunc);
+
+        if (!outTrace) {
+            std::cerr << "Cannot open file " << ossTrace.str() << endl;
         } else {
-            out << "# Config: " << configEx->getActiveConfigName() << endl;
-            out << "# Trace ID " << (*ttIt).getId() << endl;
-            out << "# x y t" << endl;
+            outTrace << "# Config: " << configEx->getActiveConfigName() << endl;
+            outTrace << "# Trace ID " << (*ttIt).getId() << endl;
+            outTrace << "# x y t" << endl;
 
             path = (*ttIt).getPath();
             for (tpIt = path.begin(); tpIt != path.end(); tpIt++) {
                 x = (*tpIt).getCoord().getX();
                 y = (*tpIt).getCoord().getY();
                 t = (*tpIt).getTimestamp();
-                out << x << ' ' << y << ' ' << t << endl;
+                outTrace << x << ' ' << y << ' ' << t << endl;
             }
-            out.close();
+            outTrace.close();
         }
 
         if (!outAll) {
@@ -201,6 +242,8 @@ void AppTrackingBS::finish()
         }
     }
 
+    /* Tracking result can be outputted in real-time. However, for efficiency, we output all at
+     * finish of simulation. */
     output();
 }
 

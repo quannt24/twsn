@@ -28,6 +28,7 @@ namespace twsn {
 class AppTrackingBS : public BaseApp
 {
     private:
+        std::list<TargetPos> rawTpList;
         std::list<TargetTrace> traceList;
         int numTrace; // Number of trace tracked (including noise)
 
