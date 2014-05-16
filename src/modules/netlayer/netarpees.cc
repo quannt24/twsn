@@ -190,7 +190,7 @@ void NetARPEES::requestRelay()
     NetArpeesPkt *pkt = new NetArpeesPkt();
     pkt->setSrcAddr(macAddr);
     pkt->setDesAddr(NET_BROADCAST_ADDR);
-    pkt->setPreambleFlag(true); // Use preamble for requesting relay
+    pkt->setPreambleFlag(false);
     pkt->setPktType(ARPEES_RELAY_REQ);
     pkt->setByteLength(pkt->getPktSize());
 
@@ -205,6 +205,7 @@ void NetARPEES::sendRelayInfo(netaddr_t desAddr)
 
     pkt->setSrcAddr(macAddr);
     pkt->setDesAddr(desAddr);
+    pkt->setPreambleFlag(false);
     pkt->setBsFlag(par("isBaseStation").boolValue());
     pkt->setEnergy(ener->getCapacity());
     pkt->setPosX(mob->getCoordX());

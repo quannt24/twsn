@@ -36,7 +36,7 @@ simple LinkXTMAC extends LinkUnslottedCSMACA
 		// reservedInterval = strobeTime (about 0.003744 s in default)
 		double reservedInterval @unit(s) = strobeTime;
 		// Period for sending strobes. Must larger reservedInterval + sendingTime.
-		double strobePeriod @unit(s) = default(strobeTime + reservedInterval); // about 0.008768 s
+		double strobePeriod @unit(s) = default(strobeTime + reservedInterval); // about 0.007488 s
 		// Deadline (in each period) for sending a strobe. If the deadline is miss, the strobe will
 		// be ignored, not configurable.
 		double strobeDeadline @unit(s) = strobePeriod - reservedInterval;
@@ -48,7 +48,7 @@ simple LinkXTMAC extends LinkUnslottedCSMACA
 		double listenInterval @unit(s) = default(2 * strobePeriod - reservedInterval);
 		// Sleep interval (radio is in idle mode), greater sleep interval save more rx energy
 		// but causes more delay
-		double sleepInterval @unit(s) = default(0.1 s);
+		double sleepInterval @unit(s) = default(0.2 s);
 		
         // Active time length
         double activeTime @unit(s) = default(2 s);
