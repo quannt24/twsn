@@ -316,7 +316,9 @@ $O/helpers/decohelper.o: helpers/decohelper.cc \
 $O/helpers/stathelper.o: helpers/stathelper.cc \
 	base/modules/basesimple.h \
 	base/modules/energy/baseenergy.h \
+	base/modules/mobility/basemobility.h \
 	helpers/stathelper.h \
+	util/coord.h \
 	util/twsndef.h
 $O/helpers/worldhelper.o: helpers/worldhelper.cc \
 	base/messages/command_m.h \

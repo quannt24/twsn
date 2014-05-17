@@ -40,10 +40,13 @@ class StatHelper : public BaseSimple
 
         /** Poll total residual energy */
         void pollTotalResEnergy();
+        /** Record remaining energy at end of simulation */
+        void recResEnergy();
 
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
+        virtual void finish();
 
     public:
         StatHelper();

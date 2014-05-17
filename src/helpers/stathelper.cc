@@ -15,6 +15,8 @@
 
 #include "stathelper.h"
 #include "baseenergy.h"
+#include "basemobility.h"
+#include <fstream>
 
 namespace twsn {
 
@@ -25,7 +27,7 @@ void StatHelper::pollTotalResEnergy()
     cModule *wsn = getModuleByPath("^");
     BaseEnergy *ener;
     int n = wsn->par("numNodes").longValue();
-    double tre = 0;
+    double tre = 0; // Total residual energy
     int i;
 
     for (i = 0; i < n; i++) {
@@ -34,6 +36,39 @@ void StatHelper::pollTotalResEnergy()
     }
 
     emit(sigTRE, tre);
+}
+
+void StatHelper::recResEnergy()
+{
+    cConfigurationEx *configEx = ev.getConfigEx();
+    std::ostringstream ossEner;
+    std::ofstream outEner;
+
+    cModule *wsn = getModuleByPath("^");
+    BaseEnergy *ener;
+    BaseMobility *mob;
+    int n = wsn->par("numNodes").longValue();
+    int i;
+
+    ossEner.seekp(0);
+    ossEner << "results/";
+    ossEner << configEx->getActiveConfigName() << "_resEner.data\0";
+    outEner.open(ossEner.str().c_str(), std::ios::out | std::ios::trunc);
+
+    if (outEner) {
+        outEner << "# Config: " << configEx->getActiveConfigName() << endl;
+        outEner << "# Residual energy of each node" << endl;
+        outEner << "# row col energy" << endl;
+
+        for (i = 0; i < n; i++) {
+            ener = check_and_cast<BaseEnergy*>(wsn->getSubmodule("node", i)->getSubmodule("energy"));
+            mob = check_and_cast<BaseMobility*>(wsn->getSubmodule("node", i)->getSubmodule("mobility"));
+            outEner << mob->getRow() << ' ' << mob->getCol() << ' ' << ener->getCapacity() << endl;
+        }
+    } else {
+        std::cerr << "Cannot open file " << ossEner.str() << endl;
+    }
+    outEner.close();
 }
 
 void StatHelper::initialize()
@@ -59,6 +94,11 @@ void StatHelper::handleMessage(cMessage* msg)
     } else {
         delete msg;
     }
+}
+
+void StatHelper::finish()
+{
+    recResEnergy();
 }
 
 StatHelper::StatHelper()
