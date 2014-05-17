@@ -18,6 +18,7 @@
 
 #include <omnetpp.h>
 #include "baseapp.h"
+#include "basemobility.h"
 #include "sensemsg_m.h"
 #include "targetpos.h"
 
@@ -29,6 +30,8 @@ namespace twsn {
 class AppTrackingSensor : public BaseApp
 {
     private:
+        BaseMobility *mobility;
+
         // Tracking filter
         double fR, fVr; // Filtered R and Vr (changing speed of R)
         int fRound; // Round number of filter, reset to 0 when have new target

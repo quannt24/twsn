@@ -66,6 +66,14 @@ void AppTrackingSensor::promoteCH()
 
         if (tp != NULL) {
             getParentModule()->bubble("Target tracked");
+
+            // todo Bound for valid estimation
+            double ssRange = getModuleByPath("target[0].generator")->par("ssRange").doubleValue();
+            if (distance(tp->getCoord(), mobility->getCoord()) > ssRange) {
+                // Set target position as node position when having invalid estimation
+                tp->setCoord(mobility->getCoord());
+            }
+
             // Record true coordination for reference
             tp->setTrueCoord(measurement.getTarCoord());
             // Punch time stamp
@@ -137,6 +145,7 @@ TargetPos* AppTrackingSensor::estimatePosition(std::list<Measurement> &meaList)
 void AppTrackingSensor::initialize()
 {
     BaseApp::initialized();
+    mobility = check_and_cast<BaseMobility*>(getModuleByPath("^.mobility"));
 
     // Start sensing, simulate unsynchronized sensing
     if (!senseTimer->isScheduled()) {
@@ -262,9 +271,8 @@ void AppTrackingSensor::handleSenseMsg(SenseMsg* msg)
             syncSense = true;
         } else {
             /* Add node's information to measurement object */
-            BaseMobility *mob = check_and_cast<BaseMobility*>(getModuleByPath("^.mobility"));
             BaseEnergy *ener = check_and_cast<BaseEnergy*>(getModuleByPath("^.energy"));
-            measurement.setNodeCoord(mob->getCoord());
+            measurement.setNodeCoord(mobility->getCoord());
             measurement.setNodeEnergy(ener->getCapacity());
 
             // Clear measurement of previous round
@@ -286,6 +294,8 @@ void AppTrackingSensor::handleSenseMsg(SenseMsg* msg)
 
 AppTrackingSensor::AppTrackingSensor()
 {
+    mobility = NULL;
+
     syncSense = false;
     hasMeasurement = false;
 

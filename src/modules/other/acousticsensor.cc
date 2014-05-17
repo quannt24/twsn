@@ -56,7 +56,9 @@ void AcousticSensor::startSense()
 void AcousticSensor::processSignal(SenseSignal* ss)
 {
     double md = ss->getDistance() + noise->nextNoise();; // Measured distance
+    double ssRange = getModuleByPath("target[0].generator")->par("ssRange").doubleValue();
     if (md < 0) md = 0;
+    if (md > ssRange) md = ssRange;
 
     Measurement mea;
     //mea.setTarId(ss->getTarId());

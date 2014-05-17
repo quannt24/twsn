@@ -20,11 +20,11 @@ unset key
 #set terminal qt
 set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
 
-set output 'Config1_raw.eps'
+set output 'Config1_raw_3d.eps'
 splot 'bs_output/Config1_raw.data' w p ls 1 lt palette
 
-set output 'Config2_raw.eps'
+set output 'Config2_raw_3d.eps'
 splot 'bs_output/Config2_raw.data' w p ls 1 lt palette
 
-set output 'Config3_raw.eps'
+set output 'Config3_raw_3d.eps'
 splot 'bs_output/Config3_raw.data' w p ls 1 lt palette

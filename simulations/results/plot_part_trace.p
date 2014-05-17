@@ -1,12 +1,4 @@
-set title "Tracked paths"
-set key outside right
-set xlabel "x (m)"
-set ylabel "y (m)"
-#set xrange [100:220]
-#set yrange [90:100]
-
-set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
-set output 'trace.eps'
+reset
 
 set border linewidth 0.5
 set pointsize 1
@@ -25,9 +17,16 @@ set style line 7 lt 1 lw 0.5 lc rgb '#0000ff' pt 9 pi 20
 set style line 8 lt 1 lw 0.5 lc rgb '#3333ff' pt 7 pi 20
 set style line 9 lt 1 lw 0.5 lc rgb '#6666ff' pt 5 pi 20
 
+set title "A part of tracked path"
+set key outside right
+set xlabel "x (m)"
+set ylabel "y (m)"
+set xrange [300:400]
+set yrange [50:150]
+
+set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
+set output 'trace_part.eps'
+
 plot "../path1.txt" u 1:2 t "True path" w l ls 10, \
-     "bs_output/Config1_trace_all.data" u 1:2 t "Tracked path 1" w l ls 1, \
      "bs_output/Config2_trace_all.data" u 1:2 t "Tracked path 2" w l ls 4, \
-     "bs_output/Config3_trace_all.data" u 1:2 t "Tracked path 3" w l ls 7, \
-     "bs_output/Config4_trace_all.data" u 1:2 t "Tracked path 4" w l ls 8, \
-     "bs_output/Config5_trace_all.data" u 1:2 t "Tracked path 5" w l ls 9
+     "bs_output/Config3_trace_all.data" u 1:2 t "Tracked path 3" w l ls 7
