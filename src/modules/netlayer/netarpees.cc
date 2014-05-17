@@ -37,10 +37,12 @@ void NetARPEES::handleSelfMsg(cMessage* msg)
         } else {
             // TODO Report failure
             printError(INFO, "Cannot find relay node. Dropping packet");
+            if (outPkt->getPktType() == ARPEES_PAYLOAD_TO_AN || outPkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
+                // Count lost packet
+                StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+                sh->countLostNetPkt();
+            }
             delete outPkt;
-            // Count lost packet
-            StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-            sh->countLostNetPkt();
         }
         outPkt = NULL;
         // Fetch next packet in queue
@@ -115,14 +117,18 @@ void NetARPEES::handleLowerMsg(cMessage* msg)
     pkt->setHopLimit(pkt->getHopLimit() - 1);
     if (pkt->getHopLimit() <= 0) {
         printError(INFO, "Hop limit exceeded. Dropping packet.");
+        if (pkt->getPktType() == ARPEES_PAYLOAD_TO_AN || pkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
+            // Count lost packet
+            sh->countLostNetPkt();
+        }
         delete pkt;
-        // Count lost packet
-        sh->countLostNetPkt();
         return;
     }
 
-    // Count received packet
-    sh->countRecvNetPkt();
+    if (pkt->getPktType() == ARPEES_PAYLOAD_TO_AN || pkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
+        // Count received packet
+        sh->countRecvNetPkt();
+    }
 
     // Process packet
     switch (pkt->getPktType()) {
@@ -144,9 +150,11 @@ void NetARPEES::handleLowerMsg(cMessage* msg)
 
         default:
             printError(WARNING, "Unknown packet type");
+            if (pkt->getPktType() == ARPEES_PAYLOAD_TO_AN || pkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
+                // Count lost packet
+                sh->countLostNetPkt();
+            }
             delete pkt;
-            // Count lost packet
-            sh->countLostNetPkt();
             break;
     }
 }
