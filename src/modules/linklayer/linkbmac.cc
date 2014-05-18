@@ -120,7 +120,7 @@ void LinkBMAC::handleUpperCtl(cMessage* msg)
             if (cmd->getDes() != LINK) {
                 sendCtlDown(cmd);
             } else {
-                printError(WARNING, "Unknown command from upper");
+                printError(LV_WARNING, "Unknown command from upper");
                 delete cmd; // Unknown command
             }
             break;
@@ -157,7 +157,7 @@ void LinkBMAC::handleLowerMsg(cMessage* msg)
             if (netpkt != NULL) {
                 sendUp(netpkt);
             } else {
-                printError(WARNING, "NULL payload");
+                printError(LV_WARNING, "NULL payload");
             }
             delete macpkt;
             break;
@@ -168,7 +168,7 @@ void LinkBMAC::handleLowerMsg(cMessage* msg)
             break;
 
         default:
-            printError(WARNING, "Unknown MAC packet type");
+            printError(LV_WARNING, "Unknown MAC packet type");
             // Count packet loss
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
             if (macpkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
@@ -233,7 +233,7 @@ void LinkBMAC::handleLowerCtl(cMessage* msg)
             if (cmd->getDes() != LINK) {
                 sendCtlUp(cmd);
             } else {
-                printError(WARNING, "Unknown command from lower");
+                printError(LV_WARNING, "Unknown command from lower");
                 delete cmd;
             }
             break;
@@ -294,7 +294,7 @@ void LinkBMAC::wakeup(bool forced, double duration)
     if (forced) {
         cancelEvent(sleepTimer);
         if (duration > 0) {
-            printError(DEBUG, "Forced active");
+            printError(LV_DEBUG, "Forced active");
             scheduleAt(simTime() + duration, sleepTimer);
         }
         forcedAwake = true;

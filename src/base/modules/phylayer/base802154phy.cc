@@ -172,7 +172,7 @@ void Base802154Phy::sendUp(cPacket* pkt)
     if (gate("upper$o")->isPathOK()) {
         send(pkt, "upper$o");
     } else {
-        printError(ERROR, "Gate is not connected. Deleting message.");
+        printError(LV_ERROR, "Gate is not connected. Deleting message.");
         delete pkt;
     }
 }
@@ -182,7 +182,7 @@ void Base802154Phy::sendCtlUp(Command* cmd)
     if (gate("upperCtl$o")->isPathOK()) {
         send(cmd, "upperCtl$o");
     } else {
-        printError(ERROR, "Gate is not connected. Deleting message.");
+        printError(LV_ERROR, "Gate is not connected. Deleting message.");
         delete cmd;
     }
 }
@@ -200,7 +200,7 @@ void Base802154Phy::performCCA(double duration)
         cmd->setClearChannel(false);
         sendCtlUp(cmd);
 
-        printError(WARNING, "Cannot perform CCA when radio is not in RX mode");
+        printError(LV_WARNING, "Cannot perform CCA when radio is not in RX mode");
     }
 }
 
@@ -227,12 +227,12 @@ void Base802154Phy::fetchPacket()
 void Base802154Phy::startTx(Mac802154Pkt* pkt)
 {
     if (channelMgr == NULL || phyEntry == NULL) {
-        printError(ERROR, "Module has not registered with ChannelMgr. Dropping packet.");
+        printError(LV_ERROR, "Module has not registered with ChannelMgr. Dropping packet.");
         delete pkt;
         return;
     }
     if (radioMode != TX) {
-        printError(WARNING, "Cannot transmit when not in TX mode. Dropping packet.");
+        printError(LV_WARNING, "Cannot transmit when not in TX mode. Dropping packet.");
         // Count packet loss
         if (pkt->getPktType() == MAC802154_DATA) {
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
@@ -311,7 +311,7 @@ void Base802154Phy::sendAirFrame(AirFrame* frame)
 
     /* Receiver is out-ranged. Transmission (in this node) is still simulated, but frame will be
      * dropped here.*/
-    printError(ERROR, "Cannot send to an out-ranged node. Dropping frame.");
+    printError(LV_ERROR, "Cannot send to an out-ranged node. Dropping frame.");
     Mac802154Pkt *pkt = check_and_cast<Mac802154Pkt*>(frame->getEncapsulatedPacket());
     // Count packet loss
     if (pkt->getPktType() == MAC802154_DATA) {
@@ -324,7 +324,7 @@ void Base802154Phy::sendAirFrame(AirFrame* frame)
 void Base802154Phy::recvAirFrame(AirFrame* frame)
 {
     if (channelMgr == NULL) {
-        printError(ERROR, "Module has not registered with ChannelMgr. Dropping frame.");
+        printError(LV_ERROR, "Module has not registered with ChannelMgr. Dropping frame.");
         delete frame;
         return;
     }
@@ -332,7 +332,7 @@ void Base802154Phy::recvAirFrame(AirFrame* frame)
     channelMgr->releaseAirFrame(frame); // Remove frame from management list of ChannelMgr
 
     if (radioMode != RX) {
-        printError(INFO, "Cannot receive when not in RX mode. Dropping frame.");
+        printError(LV_INFO, "Cannot receive when not in RX mode. Dropping frame.");
         Mac802154Pkt *pkt = check_and_cast<Mac802154Pkt*>(frame->getEncapsulatedPacket());
         // Count packet loss
         if (pkt->getPktType() == MAC802154_DATA) {
@@ -367,7 +367,7 @@ void Base802154Phy::switchRadioMode(int mode)
     cancelEvent(switchTxTimer);
 
     if (radioMode != IDLE && radioMode != RX && radioMode != TX) {
-        printError(WARNING, "Cannot switch radio mode when power down");
+        printError(LV_WARNING, "Cannot switch radio mode when power down");
         return;
     }
 
@@ -404,7 +404,7 @@ void Base802154Phy::switchRadioMode(int mode)
             break;
 
         default:
-            printError(ERROR, "Unexpected radio mode. Set to POWER_DOWN.");
+            printError(LV_ERROR, "Unexpected radio mode. Set to POWER_DOWN.");
             setRadioMode(POWER_DOWN);
             break;
     }
@@ -420,7 +420,7 @@ void Base802154Phy::setRadioMode(int mode)
             radioMode = mode;
             break;
         default:
-            printError(ERROR, "Unexpected radio mode");
+            printError(LV_ERROR, "Unexpected radio mode");
             break;
     }
 

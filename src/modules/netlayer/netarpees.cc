@@ -36,7 +36,7 @@ void NetARPEES::handleSelfMsg(cMessage* msg)
             sendDown(outPkt);
         } else {
             // TODO Report failure
-            printError(INFO, "Cannot find relay node. Dropping packet");
+            printError(LV_INFO, "Cannot find relay node. Dropping packet");
             if (outPkt->getPktType() == ARPEES_PAYLOAD_TO_AN || outPkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
                 // Count lost packet
                 StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
@@ -103,7 +103,7 @@ void NetARPEES::handleUpperCtl(cMessage* msg)
     if (cmd->getDes() != NETW) {
         sendCtlDown(cmd);
     } else {
-        printError(WARNING, "Unknown command from upper");
+        printError(LV_WARNING, "Unknown command from upper");
         delete cmd; // Unknown command
     }
 }
@@ -116,7 +116,7 @@ void NetARPEES::handleLowerMsg(cMessage* msg)
     // Check hop limit
     pkt->setHopLimit(pkt->getHopLimit() - 1);
     if (pkt->getHopLimit() <= 0) {
-        printError(INFO, "Hop limit exceeded. Dropping packet.");
+        printError(LV_INFO, "Hop limit exceeded. Dropping packet.");
         if (pkt->getPktType() == ARPEES_PAYLOAD_TO_AN || pkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
             // Count lost packet
             sh->countLostNetPkt();
@@ -149,7 +149,7 @@ void NetARPEES::handleLowerMsg(cMessage* msg)
             break;
 
         default:
-            printError(WARNING, "Unknown packet type");
+            printError(LV_WARNING, "Unknown packet type");
             if (pkt->getPktType() == ARPEES_PAYLOAD_TO_AN || pkt->getPktType() == ARPEES_PAYLOAD_TO_BS) {
                 // Count lost packet
                 sh->countLostNetPkt();
@@ -167,7 +167,7 @@ void NetARPEES::handleLowerCtl(cMessage* msg)
     if (cmd->getDes() != NETW) {
         sendCtlUp(cmd);
     } else {
-        printError(WARNING, "Unknown command from lower");
+        printError(LV_WARNING, "Unknown command from lower");
         delete cmd; // Unknown command
     }
 }
@@ -261,12 +261,12 @@ void NetARPEES::recvRelayInfo(NetArpeesPkt* pkt)
 
     if (ri->getBsFlag() == true) {
         bsAddr = ri->getSrcAddr();
-        printError(INFO, "Found new BS");
+        printError(LV_INFO, "Found new BS");
     } else {
         // No need to consider relay node if having connection with BS
         if (bsAddr <= 0) {
             if (considerRelay(ri)) {
-                printError(INFO, "Found new relay node");
+                printError(LV_INFO, "Found new relay node");
             }
         }
     }

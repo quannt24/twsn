@@ -7,6 +7,7 @@
 *.eps
 *.pdf
 *.ods
+*.data
 .tkenvrc
 out/
 /results/
@@ -15,6 +16,4 @@ simulations/.tkenvlog
 simulations/results/*.vec
 simulations/results/*.vci
 simulations/results/*.sca
-simulations/results/*.data
 simulations/results/*.csv
-simulations/results/bs_output/

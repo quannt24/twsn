@@ -64,7 +64,7 @@ void BaseLayer::sendUp(cPacket* pkt)
     if (gate("upper$o")->isPathOK()) {
         send(pkt, "upper$o");
     } else {
-        printError(ERROR, "Gate is not connected. Deleting message.");
+        printError(LV_ERROR, "Gate is not connected. Deleting message.");
         delete pkt;
     }
 }
@@ -74,7 +74,7 @@ void BaseLayer::sendCtlUp(Command* cmd)
     if (gate("upperCtl$o")->isPathOK()) {
         send(cmd, "upperCtl$o");
     } else {
-        printError(ERROR, "Gate is not connected. Deleting message.");
+        printError(LV_ERROR, "Gate is not connected. Deleting message.");
         delete cmd;
     }
 }

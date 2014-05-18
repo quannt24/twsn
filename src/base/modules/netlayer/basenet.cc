@@ -32,7 +32,7 @@ void BaseNet::initialize(int stage)
             macAddr = check_and_cast<BaseLink*>(getModuleByPath("^.link"))->getMacAddr();
             char msg[100];
             sprintf(msg, "MAC address %d", (int) macAddr);
-            printError(VERBOSE, msg);
+            printError(LV_VERBOSE, msg);
             break;
     }
 }

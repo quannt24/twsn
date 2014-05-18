@@ -24,19 +24,19 @@ void BaseSimple::printError(ErrLevel level, const std::string &msg)
     std::string levelName;
 
     switch (level) {
-        case VERBOSE:
+        case LV_VERBOSE:
             levelName = "Verbose";
             break;
-        case DEBUG:
+        case LV_DEBUG:
             levelName = "Debug";
             break;
-        case INFO:
+        case LV_INFO:
             levelName = "Info";
             break;
-        case WARNING:
+        case LV_WARNING:
             levelName = "Warning";
             break;
-        case ERROR:
+        case LV_ERROR:
             levelName = "Error";
             break;
         default:

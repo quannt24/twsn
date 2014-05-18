@@ -60,7 +60,7 @@ void NetEMRP::handleSelfMsg(cMessage* msg)
             }
             sendDown(outPkt);
         } else {
-            printError(INFO, "Cannot find relay node. Dropping packet");
+            printError(LV_INFO, "Cannot find relay node. Dropping packet");
             if (outPkt->getPktType() == EMRP_PAYLOAD_TO_AN || outPkt->getPktType() == EMRP_PAYLOAD_TO_BS) {
                 // Count lost packet
                 StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
@@ -135,7 +135,7 @@ void NetEMRP::handleUpperCtl(cMessage* msg)
     if (cmd->getDes() != NETW) {
         sendCtlDown(cmd);
     } else {
-        printError(WARNING, "Unknown command from upper");
+        printError(LV_WARNING, "Unknown command from upper");
         delete cmd; // Unknown command
     }
 }
@@ -148,7 +148,7 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
     // Check hop limit
     pkt->setHopLimit(pkt->getHopLimit() - 1);
     if (pkt->getHopLimit() <= 0) {
-        printError(INFO, "Hop limit exceeded. Dropping packet.");
+        printError(LV_INFO, "Hop limit exceeded. Dropping packet.");
         if (pkt->getPktType() == EMRP_PAYLOAD_TO_AN || pkt->getPktType() == EMRP_PAYLOAD_TO_BS) {
             // Count lost packet
             sh->countLostNetPkt();
@@ -194,7 +194,7 @@ void NetEMRP::handleLowerCtl(cMessage* msg)
     if (cmd->getDes() != NETW) {
         sendCtlUp(cmd);
     } else {
-        printError(WARNING, "Unknown command from lower");
+        printError(LV_WARNING, "Unknown command from lower");
         delete cmd; // Unknown command
     }
 }
@@ -450,7 +450,7 @@ void NetEMRP::recvRelayedPayload(NetEmrpPkt* pkt)
             prepareQueuedPkt();
         } else {
             // Deadend, cannot send now. We will drop the packet and repair routes.
-            printError(INFO, "Cannot relay packet, deadend!");
+            printError(LV_INFO, "Cannot relay packet, deadend!");
             if (pkt->getSrcAddr() == rnAddr) {
                 // Refresh relay node (with hope to break loop)
                 rnAddr = 0;
@@ -483,16 +483,16 @@ void NetEMRP::recvRelayInfo(NetEmrpPkt* pkt)
 
     if (ri->getBsFlag() == true) {
         bsAddr = ri->getSrcAddr();
-        printError(INFO, "Found new BS");
+        printError(LV_INFO, "Found new BS");
     } else {
         // No need to consider relay node if having connection with BS
         if (bsAddr <= 0) {
             bool ret = considerRelay(ri);
             if (ret) {
-                printError(INFO, "Found new relay node");
+                printError(LV_INFO, "Found new relay node");
             } else {
                 if (considerBackup(ri)) {
-                    printError(INFO, "Found new backup node");
+                    printError(LV_INFO, "Found new backup node");
                 }
             }
         }

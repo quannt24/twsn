@@ -71,7 +71,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             delete strobePkt;
             strobePkt = NULL;
             // Cancel current strobe sending
-            printError(INFO, "Strobe deadline is missed");
+            printError(LV_INFO, "Strobe deadline is missed");
             nStrobe--;
             if (outPkt != NULL
                     && outPkt->getPktType() == MAC802154_PREAMBLE
@@ -88,12 +88,12 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
     } else if (msg == mainSendingTimer) {
         if (mainPkt != NULL) {
             if (outPkt == NULL && !transmitting) {
-                printError(INFO, "Send main packet");
+                printError(LV_INFO, "Send main packet");
                 outPkt = mainPkt;
                 mainPkt = NULL;
                 notifyLower();
             } else {
-                printError(ERROR, "Not ready for sending");
+                printError(LV_ERROR, "Not ready for sending");
 
                 // Count packet loss
                 StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
@@ -103,7 +103,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
                 mainPkt = NULL;
             }
         } else {
-            printError(WARNING, "NULL main packet, prepare other");
+            printError(LV_WARNING, "NULL main packet, prepare other");
             prepareQueuedPkt();
         }
     } else if (msg == dcListenTimer) {
@@ -166,7 +166,7 @@ void LinkXTMAC::handleUpperCtl(cMessage* msg)
             if (cmd->getDes() != LINK) {
                 sendCtlDown(cmd);
             } else {
-                printError(WARNING, "Unknown command from upper");
+                printError(LV_WARNING, "Unknown command from upper");
                 delete cmd; // Unknown command
             }
             break;
@@ -200,13 +200,13 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             if (netpkt != NULL) {
                 sendUp(netpkt);
             } else {
-                printError(WARNING, "NULL payload");
+                printError(LV_WARNING, "NULL payload");
             }
             delete macpkt;
             break;
 
         case MAC802154_PREAMBLE:
-            printError(INFO, "Strobe received");
+            printError(LV_INFO, "Strobe received");
             if (macpkt->getDesAddr() == macAddr) {
                 activate();
                 sendAck(macpkt->getSrcAddr());
@@ -218,7 +218,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             break;
 
         case MAC802154_ACK:
-            printError(INFO, "ACK received");
+            printError(LV_INFO, "ACK received");
             delete macpkt;
             activate();
 
@@ -245,7 +245,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             break;
 
         default:
-            printError(WARNING, "Unknown MAC packet type");
+            printError(LV_WARNING, "Unknown MAC packet type");
             // Count packet loss
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
             sh->countLostMacPkt();
@@ -388,7 +388,7 @@ void LinkXTMAC::switchToRx()
 void LinkXTMAC::switchToIdle()
 {
     if (getId() == 2059) {
-        printError(ERROR, "Something wrong");
+        printError(LV_ERROR, "Something wrong");
     }
     Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
     if (phy->getRadioMode() != IDLE) {

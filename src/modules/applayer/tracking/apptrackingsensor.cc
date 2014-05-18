@@ -64,16 +64,8 @@ void AppTrackingSensor::promoteCH()
         // Estimate target position
         TargetPos *tp = estimatePosition(meaCollection);
 
-        if (tp != NULL) {
-            getParentModule()->bubble("Target tracked");
-
-            // todo Bound for valid estimation
-            double ssRange = getModuleByPath("target[0].generator")->par("ssRange").doubleValue();
-            if (distance(tp->getCoord(), mobility->getCoord()) > ssRange) {
-                // Set target position as node position when having invalid estimation
-                tp->setCoord(mobility->getCoord());
-            }
-
+        double ssRange = getModuleByPath("target[0].generator")->par("ssRange").doubleValue();
+        if (tp != NULL && distance(tp->getCoord(), mobility->getCoord()) > ssRange) {
             // Record true coordination for reference
             tp->setTrueCoord(measurement.getTarCoord());
             // Punch time stamp
@@ -89,6 +81,20 @@ void AppTrackingSensor::promoteCH()
             sendDown(tpPkt);
 
             delete tp;
+        } else {
+            TargetPos tpnode; // TargetPos with coordinates of this node
+            tpnode.setCoord(mobility->getCoord());
+            tpnode.setTrueCoord(measurement.getTarCoord());
+            tpnode.setTimestamp(senseTimestamp);
+
+            // Record positioning error
+            StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+            sh->recPosError(distance(tpnode.getCoord(), measurement.getTarCoord()));
+
+            // Send result to BS
+            AT_TargetPosPkt *tpPkt = new AT_TargetPosPkt();
+            tpPkt->setTargetPos(tpnode);
+            sendDown(tpPkt);
         }
 
         // CH plans a timer for synchronizing sensing cycle in cluster
