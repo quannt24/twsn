@@ -18,7 +18,7 @@ set style line 8 lt 1 lw 0.5 lc rgb '#3333ff' pt 9 pi 20
 set style line 9 lt 1 lw 0.5 lc rgb '#6666ff' pt 5 pi 20
 
 set title "A part of tracked path"
-set key outside right
+set key bottom right
 set xlabel "x (m)"
 set ylabel "y (m)"
 set xrange [300:400]
