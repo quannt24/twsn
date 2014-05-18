@@ -67,7 +67,7 @@ void AppTrackingSensor::promoteCH()
         if (tp != NULL) {
             getParentModule()->bubble("Target tracked");
 
-            // todo Bound for valid estimation
+            // Bound for valid estimation
             double ssRange = getModuleByPath("target[0].generator")->par("ssRange").doubleValue();
             if (distance(tp->getCoord(), mobility->getCoord()) > ssRange) {
                 // Set target position as node position when having invalid estimation

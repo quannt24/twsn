@@ -99,7 +99,7 @@ void AcousticSensor::handleMessage(cMessage *msg)
             } else if (sm->getMsgType() == SS_CANCEL) {
                 cancelEvent(responseTimer);
             } else {
-                printError(ERROR, "Unknown message");
+                printError(LV_ERROR, "Unknown message");
             }
 
             delete msg;
@@ -107,7 +107,7 @@ void AcousticSensor::handleMessage(cMessage *msg)
             SenseSignal *ss = check_and_cast<SenseSignal*>(msg);
             processSignal(ss);
         } else {
-            printError(ERROR, "Unknown message");
+            printError(LV_ERROR, "Unknown message");
             delete msg;
         }
     }

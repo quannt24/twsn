@@ -21,7 +21,7 @@
 
 namespace twsn {
 
-enum ErrLevel {VERBOSE, DEBUG, INFO, WARNING, ERROR};
+enum ErrLevel {LV_VERBOSE, LV_DEBUG, LV_INFO, LV_WARNING, LV_ERROR};
 
 /**
  * Base class for simple module of a host.

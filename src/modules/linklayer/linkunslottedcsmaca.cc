@@ -84,7 +84,7 @@ void LinkUnslottedCSMACA::handleUpperCtl(cMessage* msg)
     if (cmd->getDes() != LINK) {
         sendCtlDown(cmd);
     } else {
-        printError(WARNING, "Unknown command from upper");
+        printError(LV_WARNING, "Unknown command from upper");
         delete cmd; // Unknown command
     }
 }
@@ -113,13 +113,13 @@ void LinkUnslottedCSMACA::handleLowerMsg(cMessage* msg)
             if (netpkt != NULL) {
                 sendUp(netpkt);
             } else {
-                printError(WARNING, "NULL payload");
+                printError(LV_WARNING, "NULL payload");
             }
             delete macpkt;
             break;
 
         default:
-            printError(WARNING, "Unknown MAC packet type");
+            printError(LV_WARNING, "Unknown MAC packet type");
             delete macpkt;
             // Count packet loss
             StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
@@ -164,7 +164,7 @@ void LinkUnslottedCSMACA::handleLowerCtl(cMessage* msg)
             if (cmd->getDes() != LINK) {
                 sendCtlUp(cmd);
             } else {
-                printError(WARNING, "Unknown command from lower");
+                printError(LV_WARNING, "Unknown command from lower");
                 delete cmd;
             }
             break;
@@ -229,7 +229,7 @@ void LinkUnslottedCSMACA::deferPkt()
         backoff();
     } else {
         getParentModule()->bubble("Tx failure");
-        printError(INFO, "Tx failure");
+        printError(LV_INFO, "Tx failure");
 
         // Prepare IFS
         if (outPkt->getByteLength() <= par("aMaxSIFSFrameSize").longValue()) {
@@ -281,7 +281,7 @@ LinkUnslottedCSMACA::LinkUnslottedCSMACA()
 LinkUnslottedCSMACA::~LinkUnslottedCSMACA()
 {
     if (!outQueue.empty()) {
-        printError(WARNING, "Sending queue is not empty, cleaning");
+        printError(LV_WARNING, "Sending queue is not empty, cleaning");
         cPacket *pkt = NULL;
         while (!outQueue.empty()) {
             pkt = outQueue.pop();
