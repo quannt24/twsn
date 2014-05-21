@@ -15,6 +15,7 @@
 
 #include "apptrackingbs.h"
 #include "apptrackingpkt_m.h"
+#include "stathelper.h"
 #include <fstream>
 
 namespace twsn {
@@ -221,6 +222,10 @@ void AppTrackingBS::handleLowerMsg(cMessage* msg)
 
         // Record end-to-end delay
         emit(sigEtoEDelay, simTime() - tp.getTimestamp());
+
+        // Count delivered relay packet
+        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+        sh->countDeliveredRelayPkt();
 
         // Process data
         processTarPos(tp);

@@ -27,6 +27,5 @@ set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
 
 set title "End-to-end delay"
 set output 'delay.eps'
-plot "Config1_delay.csv" u 1:2 t "without duty cycling" w p ls 10, \
-     "Config2_delay.csv" u 1:2 t "with XT-MAC" w p ls 1, \
+plot "Config2_delay.csv" u 1:2 t "with XT-MAC" w p ls 1, \
      "Config3_delay.csv" u 1:2 t "with B-MAC" w p ls 8

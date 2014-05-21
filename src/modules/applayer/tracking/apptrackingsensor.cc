@@ -88,6 +88,9 @@ void AppTrackingSensor::promoteCH()
             tpPkt->setTargetPos(*tp);
             sendDown(tpPkt);
 
+            // Count created relay packet
+            sh->countCreatedRelayPkt();
+
             delete tp;
         }
 

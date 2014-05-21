@@ -51,9 +51,17 @@ simple StatHelper extends BaseSimple
         @signal[sigRecvNetPkt](type="int");
         @statistic[recvNetPkt](title="Number of received network packets"; source="sigRecvNetPkt"; record=sum);
         
-        // Packet lsot at link and physical layers
+        // Packet lost at link and physical layers
         @signal[sigLostNetPkt](type="int");
         @statistic[lostNetPkt](title="Number of lost network packets"; source="sigLostNetPkt"; record=sum);
+        
+        // Relay packet created at CH
+        @signal[sigCreatedRelayPkt](type="int");
+        @statistic[createdRelayPkt](title="Number of created relay packet"; source="sigCreatedRelayPkt"; record=sum);
+        
+        // Relay packet delivered to BS
+        @signal[sigDeliveredRelayPkt](type="int");
+        @statistic[deliveredRelayPkt](title="Number of delivered relay packet"; source="sigDeliveredRelayPkt"; record=sum);
         
         @display("i=block/table2");
 }

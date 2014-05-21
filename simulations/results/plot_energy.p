@@ -21,12 +21,11 @@ set key top right
 set xlabel "Time (s)"
 set ylabel "Total residual energy (mWh)"
 #set xrange [0:150]
-#set yrange [90:100]
+set yrange [0:1300]
 
 set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
 
 set title "Total residual energy"
 set output 'energy.eps'
-plot "Config1_energy.csv" u 1:2 t "without duty cycling" w lp ls 10, \
-     "Config2_energy.csv" u 1:2 t "with XT-MAC" w lp ls 1, \
+plot "Config2_energy.csv" u 1:2 t "with XT-MAC" w lp ls 1, \
      "Config3_energy.csv" u 1:2 t "with B-MAC" w lp ls 8

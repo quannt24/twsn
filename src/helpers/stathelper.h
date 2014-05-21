@@ -37,6 +37,8 @@ class StatHelper : public BaseSimple
         simsignal_t sigLostMacPkt; // Packet lost at link layer and physical layer
         simsignal_t sigRecvNetPkt; // Packet received at network layer
         simsignal_t sigLostNetPkt; // Packet lost at network layer
+        simsignal_t sigCreatedRelayPkt; // Relay packet created at CH
+        simsignal_t sigDeliveredRelayPkt; // Relay packet delivered to BS
 
         /** Poll total residual energy */
         void pollTotalResEnergy();
@@ -64,6 +66,10 @@ class StatHelper : public BaseSimple
         void countRecvNetPkt();
         /** Emit a signal with value 1 to count number of lost network packets */
         void countLostNetPkt();
+        /** Emit a signal with value 1 to count number of created relay packets */
+        void countCreatedRelayPkt();
+        /** Emit a signal with value 1 to count number of delivered relay packets */
+        void countDeliveredRelayPkt();
 };
 
 }  // namespace twsn

@@ -43,9 +43,10 @@
       </items>
     </datasets>
     <datasets name="Packet count">
-      <items xsi:type="scave:Add" filterPattern="lostMacPkt:sum OR lostNetPkt:sum OR recvMacPkt:sum OR recvNetPkt:sum"/>
+      <items xsi:type="scave:Add" filterPattern="lostMacPkt:sum OR lostNetPkt:sum OR recvMacPkt:sum OR recvNetPkt:sum OR createdRelayPkt:sum OR deliveredRelayPkt:sum"/>
       <items xsi:type="scave:ComputeScalar" scalarName="MAC Packet loss" valueExpr="'lostMacPkt:sum' / ('lostMacPkt:sum' + 'recvMacPkt:sum')" moduleExpr="" groupByExpr="configname"/>
       <items xsi:type="scave:ComputeScalar" scalarName="Network packet loss" valueExpr="'lostNetPkt:sum' / ('lostNetPkt:sum' + 'recvNetPkt:sum')" moduleExpr="" groupByExpr="configname"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="RPDR" valueExpr="'deliveredRelayPkt:sum' / 'createdRelayPkt:sum'" moduleExpr="" groupByExpr=""/>
     </datasets>
     <datasets name="Delay">
       <items xsi:type="scave:Add" filterPattern="EtoEDelay:vector" type="VECTOR"/>

@@ -335,6 +335,7 @@ $O/modules/applayer/tracking/apptrackingbs.o: modules/applayer/tracking/apptrack
 	base/modules/applayer/baseapp.h \
 	base/modules/baselayer.h \
 	base/modules/basesimple.h \
+	helpers/stathelper.h \
 	modules/applayer/tracking/apptrackingbs.h \
 	modules/applayer/tracking/apptrackingpkt_m.h \
 	modules/applayer/tracking/targetpos.h \

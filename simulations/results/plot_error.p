@@ -27,12 +27,10 @@ set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
 
 set title "Positioning error (at CH)"
 set output 'posErr.eps'
-plot "Config1_posErr.csv" u 1:2 t "without duty cycling" w p ls 10, \
-     "Config2_posErr.csv" u 1:2 t "with XT-MAC" w p ls 1, \
+plot "Config2_posErr.csv" u 1:2 t "with XT-MAC" w p ls 1, \
      "Config3_posErr.csv" u 1:2 t "with B-MAC" w p ls 8
 
 set title "Tracking error (at BS)"
 set output 'trackErr.eps'
-plot "Config1_trackErr.csv" u 1:2 t "without duty cycling" w p ls 10, \
-     "Config2_trackErr.csv" u 1:2 t "with XT-MAC" w p ls 1, \
+plot "Config2_trackErr.csv" u 1:2 t "with XT-MAC" w p ls 1, \
      "Config3_trackErr.csv" u 1:2 t "with B-MAC" w p ls 8
