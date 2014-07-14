@@ -371,7 +371,13 @@ double NetEMRP::assessRelay(double ener, double dRc, double dBs, double dRcBs)
 void NetEMRP::updateRelayEnergy(NetEmrpEnergyInfoPkt* eiPkt)
 {
     if (bsAddr != 0) return; // No need to update
-    if (eiPkt != NULL) enerRn = eiPkt->getRemainEnergy(); // Update enerRn
+    if (eiPkt != NULL) {
+        if (eiPkt->getSrcAddr() == rnAddr) {
+            enerRn = eiPkt->getRemainEnergy(); // Update enerRn
+        } else if (eiPkt->getSrcAddr() == bnAddr) {
+            enerBn = eiPkt->getRemainEnergy(); // Update enerBn
+        }
+    }
 
     // Check critical energy value
     if (enerRn < par("criticalEnergy").doubleValue() || rnAddr <= 0) {
@@ -383,7 +389,8 @@ void NetEMRP::updateRelayEnergy(NetEmrpEnergyInfoPkt* eiPkt)
             switchRelayNode();
         }
         return;
-    } else if (enerBn - enerRn > par("switchingEnergy").doubleValue()) {
+    } else if (rnAddr > 0 && bnAddr > 0
+            && enerBn - enerRn > par("switchingEnergy").doubleValue()) {
         switchRelayNode();
     }
 
@@ -516,11 +523,14 @@ void NetEMRP::updateDecoration()
 
     dh->disconnect(getParentModule());
     if (bsAddr > 0) {
-        dh->dConnect(getParentModule(), simulation.getModule(bsAddr)->getParentModule(), "ls=#9999ff,1,s");
+        dh->dConnect(getParentModule(), simulation.getModule(bsAddr)->getParentModule(), "ls=#7777ff,1,s");
     } else if (rnAddr > 0) {
         dh->dConnect(getParentModule(), simulation.getModule(rnAddr)->getParentModule(), "ls=#9999ff,1,s");
     }
     if (bnAddr > 0 && bnAddr != rnAddr) {
+        if (rnAddr == 0) {
+            printError(LV_ERROR, "Missing relay node when backup node available");
+        }
         dh->dConnect(getParentModule(), simulation.getModule(bnAddr)->getParentModule(), "ls=#ff9999,1,da");
     }
 }

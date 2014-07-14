@@ -209,6 +209,16 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
             printError(LV_INFO, "Strobe received");
             if (macpkt->getDesAddr() == macAddr) {
                 activate();
+                // Cancel current prepared sending so that we can send ACK immediately
+                mainPkt = NULL;
+                nStrobe = 0;
+                if (strobePkt != NULL) {
+                    delete strobePkt;
+                    strobePkt = NULL;
+                }
+                cancelEvent(strobeTimer);
+                cancelEvent(deadlineTimer);
+                // Send back an ACK
                 sendAck(macpkt->getSrcAddr());
             } else if (macpkt->getDesAddr() == MAC_BROADCAST_ADDR) {
                 activate();
@@ -367,7 +377,13 @@ void LinkXTMAC::sendAck(macaddr_t addr)
     ack->setDesAddr(addr);
     ack->setByteLength(ack->getPktSize());
 
-    outQueue.insert(ack);
+    // Insert ACK at front of queue
+    cPacket *front = outQueue.front();
+    if (front == NULL) {
+        outQueue.insert(ack);
+    } else {
+        outQueue.insertBefore(front, ack);
+    }
 
     // Send packet at head of the queue if ready
     prepareQueuedPkt();

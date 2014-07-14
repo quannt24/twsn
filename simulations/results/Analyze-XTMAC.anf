@@ -54,9 +54,14 @@
         <properties name="Graph.Title" value="End-to-end delay"/>
         <properties name="Line.Type" value="Dots"/>
       </items>
+      <items xsi:type="scave:LineChart" name="End-to-end delay (cropped)" lineNameFormat="">
+        <properties name="Graph.Title" value="End-to-end delay"/>
+        <properties name="Y.Axis.Max" value="2.0"/>
+        <properties name="Line.Type" value="Dots"/>
+      </items>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.3/@items.1"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.3/@items.1 //@datasets/@datasets.3/@items.2"/>
   </chartSheets>
 </scave:Analysis>
