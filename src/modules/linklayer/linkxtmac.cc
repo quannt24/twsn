@@ -39,6 +39,8 @@ void LinkXTMAC::initialize()
 
 void LinkXTMAC::handleSelfMsg(cMessage* msg)
 {
+    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+
     if (msg == backoffTimer) {
         performCCA();
     } else if (msg == listenTimer) {
@@ -94,11 +96,9 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
                 notifyLower();
             } else {
                 printError(LV_ERROR, "Not ready for sending");
-
                 // Count packet loss
-                StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
                 if (mainPkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
-
+                mainPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
                 delete mainPkt;
                 mainPkt = NULL;
             }
@@ -122,6 +122,24 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             // Plan a listen timer
             cancelEvent(dcListenTimer);
             scheduleAt(simTime() + par("sleepInterval").doubleValue(), dcListenTimer);
+        }
+    } else if (msg == sendTimeout) {
+        // Cancel current prepared sending when it takes too long
+        if (!outQueue.isEmpty()) {
+            mainPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
+            // Record packet loss
+            if (mainPkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
+
+            // Discard packet
+            delete mainPkt;
+            mainPkt = NULL;
+            nStrobe = 0;
+            if (strobePkt != NULL) {
+                delete strobePkt;
+                strobePkt = NULL;
+            }
+            cancelEvent(strobeTimer);
+            cancelEvent(deadlineTimer);
         }
     }
 }
@@ -267,6 +285,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
 void LinkXTMAC::reset()
 {
     cancelEvent(deadlineTimer); // In case we are sending strobe
+    cancelEvent(sendTimeout); // Unset sending timeout when sending completes
 
     // Reset outPkt pointer
     outPkt = NULL;
@@ -318,6 +337,10 @@ void LinkXTMAC::prepareQueuedPkt()
             && !outQueue.empty()) {
 
         mainPkt = check_and_cast<Mac802154Pkt*>(outQueue.front());
+        // Set a timeout
+        if (!sendTimeout->isScheduled()) {
+            scheduleAt(simTime() + par("sendTimeout").doubleValue(), sendTimeout);
+        }
 
         if (mainPkt->getPktType() == MAC802154_DATA) {
             NetPkt *encPkt = check_and_cast<NetPkt*>(mainPkt->getEncapsulatedPacket());
@@ -430,6 +453,7 @@ LinkXTMAC::LinkXTMAC()
     mainSendingTimer = new cMessage("mainSendingTimer");
     dcSleepTimer = new cMessage("dcSleepTimer");
     dcListenTimer = new cMessage("dcListenTimer");
+    sendTimeout = new cMessage("sendTimeout");
 }
 
 LinkXTMAC::~LinkXTMAC()
@@ -441,6 +465,7 @@ LinkXTMAC::~LinkXTMAC()
     cancelAndDelete(mainSendingTimer);
     cancelAndDelete(dcSleepTimer);
     cancelAndDelete(dcListenTimer);
+    cancelAndDelete(sendTimeout);
 }
 
 }  // namespace twsn

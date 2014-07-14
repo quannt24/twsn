@@ -41,6 +41,7 @@ class LinkXTMAC : public LinkUnslottedCSMACA
         cMessage *mainSendingTimer;
         cMessage *dcSleepTimer;
         cMessage *dcListenTimer;
+        cMessage *sendTimeout;
 
         virtual void initialize();
         /** Handle self message */

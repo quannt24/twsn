@@ -52,4 +52,7 @@ simple LinkXTMAC extends LinkUnslottedCSMACA
 		
         // Active time length
         double activeTime @unit(s) = default(2 s);
+        
+        // Timeout for cancel main packet sending (should around traffic load)
+        double sendTimeout @unit(s) = default (0.5 s);
 }
