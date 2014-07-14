@@ -214,22 +214,30 @@ void AppTrackingBS::initialize()
 
 void AppTrackingBS::handleLowerMsg(cMessage* msg)
 {
+    StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
     AppTrackingPkt *pkt = check_and_cast<AppTrackingPkt*>(msg);
 
     if (pkt->getPktType() == AT_TARGET_POSITION) {
         AT_TargetPosPkt *tpPkt = check_and_cast<AT_TargetPosPkt*>(msg);
         TargetPos tp = tpPkt->getTargetPos();
 
-        // Record end-to-end delay
-        emit(sigEtoEDelay, simTime() - tp.getTimestamp());
+        // Check timestamp before using packet
+        double delay = simTime().dbl() - tp.getTimestamp();
+        if (delay > par("timeThreshold").doubleValue()) {
+            printError(LV_DEBUG, "Too long delay");
+            // Discard packet
+            sh->countLostNetPkt();
+        } else {
+            // Record end-to-end delay
+            emit(sigEtoEDelay, delay);
 
-        // Count delivered relay packet
-        StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
-        sh->countDeliveredRelayPkt();
+            // Count delivered relay packet
+            sh->countDeliveredRelayPkt();
 
-        // Process data
-        processTarPos(tp);
-        cleanJunk();
+            // Process data
+            processTarPos(tp);
+            cleanJunk();
+        }
     }
     delete msg;
 }

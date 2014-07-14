@@ -94,13 +94,6 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
                 outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
                 mainPkt = NULL;
                 notifyLower();
-            } else {
-                printError(LV_ERROR, "Not ready for sending");
-                // Count packet loss
-                if (mainPkt->getPktType() == MAC802154_DATA) sh->countLostMacPkt();
-                mainPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
-                delete mainPkt;
-                mainPkt = NULL;
             }
         } else {
             printError(LV_WARNING, "NULL main packet, prepare other");
@@ -141,6 +134,8 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             cancelEvent(strobeTimer);
             cancelEvent(deadlineTimer);
         }
+        // Process next packet
+        prepareQueuedPkt();
     }
 }
 
