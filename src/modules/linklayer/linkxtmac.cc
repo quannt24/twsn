@@ -62,7 +62,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             strobePkt = NULL;
 
             // Send main packet anyway
-            outPkt = mainPkt;
+            outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
             mainPkt = NULL;
             notifyLower();
         }
@@ -89,7 +89,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
         if (mainPkt != NULL) {
             if (outPkt == NULL && !transmitting) {
                 printError(LV_INFO, "Send main packet");
-                outPkt = mainPkt;
+                outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
                 mainPkt = NULL;
                 notifyLower();
             } else {
@@ -307,7 +307,7 @@ void LinkXTMAC::prepareQueuedPkt()
             && !mainSendingTimer->isScheduled()
             && !outQueue.empty()) {
 
-        mainPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
+        mainPkt = check_and_cast<Mac802154Pkt*>(outQueue.front());
 
         if (mainPkt->getPktType() == MAC802154_DATA) {
             NetPkt *encPkt = check_and_cast<NetPkt*>(mainPkt->getEncapsulatedPacket());
@@ -328,14 +328,14 @@ void LinkXTMAC::prepareQueuedPkt()
             } else {
                 // Send main packet immediately
                 nStrobe = 0;
-                outPkt = mainPkt;
+                outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());;
                 mainPkt = NULL;
                 notifyLower();
             }
         } else {
             // Send main packet immediately
             nStrobe = 0;
-            outPkt = mainPkt;
+            outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
             mainPkt = NULL;
             notifyLower();
         }
@@ -418,7 +418,6 @@ LinkXTMAC::LinkXTMAC()
 
 LinkXTMAC::~LinkXTMAC()
 {
-    if (mainPkt != NULL) delete mainPkt;
     if (strobePkt != NULL) delete strobePkt;
 
     cancelAndDelete(deadlineTimer);
