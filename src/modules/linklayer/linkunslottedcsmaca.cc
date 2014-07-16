@@ -221,6 +221,12 @@ void LinkUnslottedCSMACA::sendPkt()
 
 void LinkUnslottedCSMACA::deferPkt()
 {
+    // Check if sending is cancelled
+    if (outPkt == NULL) {
+        reset();
+        return;
+    }
+
     nb++;
     be++;
     if (be > aMaxBE) be = aMaxBE;

@@ -76,6 +76,7 @@ OBJS = \
     $O/modules/applayer/tracking/apptrackingbs.o \
     $O/modules/applayer/tracking/apptrackingsensor.o \
     $O/modules/applayer/tracking/targettrace.o \
+    $O/modules/linklayer/linkxmac.o \
     $O/modules/linklayer/linkbmac.o \
     $O/modules/linklayer/linkxtmac.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
@@ -400,6 +401,24 @@ $O/modules/linklayer/linkunslottedcsmaca.o: modules/linklayer/linkunslottedcsmac
 	base/modules/linklayer/baselink.h \
 	helpers/stathelper.h \
 	modules/linklayer/linkunslottedcsmaca.h \
+	util/twsndef.h
+$O/modules/linklayer/linkxmac.o: modules/linklayer/linkxmac.cc \
+	base/channelmgr/channelmgr.h \
+	base/channelmgr/phyentry.h \
+	base/messages/airframe_m.h \
+	base/messages/command_m.h \
+	base/messages/mac802154pkt_m.h \
+	base/messages/macpkt_m.h \
+	base/messages/netpkt_m.h \
+	base/modules/baselayer.h \
+	base/modules/basesimple.h \
+	base/modules/linklayer/baselink.h \
+	base/modules/phylayer/base802154phy.h \
+	base/modules/phylayer/basephy.h \
+	helpers/stathelper.h \
+	modules/linklayer/linkunslottedcsmaca.h \
+	modules/linklayer/linkxmac.h \
+	util/coord.h \
 	util/twsndef.h
 $O/modules/linklayer/linkxtmac.o: modules/linklayer/linkxtmac.cc \
 	base/channelmgr/channelmgr.h \

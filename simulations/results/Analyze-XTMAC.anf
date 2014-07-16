@@ -3,6 +3,8 @@
   <inputs>
     <inputs name="Config2*.vec"/>
     <inputs name="Config2*.sca"/>
+    <inputs name="Config6*.vec"/>
+    <inputs name="Config6*.sca"/>
   </inputs>
   <datasets>
     <datasets name="Error">
