@@ -29,14 +29,15 @@ simple LinkXTMAC extends LinkUnslottedCSMACA
 		// Sender
 		// ===================================
 		// Strobe time is estimated sending time of a MAC packet without payload and
-		// having only ONE worst backoff.
-		// strobeTime = aTurnaroundTime + 2^macMinBE * aUnitBP + ccaDur + phyFrameSize / bitRate
-		double strobeTime @unit(s) = default(aTurnaroundTime + 8 * aUnitBP + ccaDur + 0.000864 s); // about 0.003744 s
+		// having only ONE worst backoff. Only reconfigure this parameter in omnetpp.ini if change
+		// CSMA parameters
+		// strobeTime = 2 * aTurnaroundTime + (2^macMinBE - 1) * aUnitBP + ccaDur + phyFrameSize / bitRate
+		double strobeTime @unit(s) = default(2 * aTurnaroundTime + 7 * aUnitBP + ccaDur + 0.000864 s); // about 0.003616 s
 		// Reserved interval at end of each strobe period, not configurable
-		// reservedInterval = strobeTime (about 0.003744 s in default)
+		// reservedInterval = strobeTime by default
 		double reservedInterval @unit(s) = strobeTime;
 		// Period for sending strobes. Must larger reservedInterval + sendingTime.
-		double strobePeriod @unit(s) = default(strobeTime + reservedInterval); // about 0.007488 s
+		double strobePeriod @unit(s) = default(strobeTime + reservedInterval); // about 0.007232 s
 		// Deadline (in each period) for sending a strobe. If the deadline is miss, the strobe will
 		// be ignored, not configurable.
 		double strobeDeadline @unit(s) = strobePeriod - reservedInterval;
@@ -51,7 +52,7 @@ simple LinkXTMAC extends LinkUnslottedCSMACA
 		double sleepInterval @unit(s) = default(0.2 s);
 		
         // Active time length
-        double activeTime @unit(s) = default(2 s);
+        double activeTime @unit(s) = default(1 s);
         
         // Timeout for cancel main packet sending (should around traffic load)
         double sendTimeout @unit(s) = default (0.5 s);
