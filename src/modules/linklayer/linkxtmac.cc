@@ -367,6 +367,9 @@ void LinkXTMAC::prepareQueuedPkt()
             mainPkt = NULL;
             notifyLower();
         }
+    } else if (outPkt != NULL) {
+        // Notify lower layer in case sending is interrupted by receiving
+        notifyLower();
     }
 }
 
@@ -389,6 +392,17 @@ void LinkXTMAC::sendStrobe()
 
 void LinkXTMAC::sendAck(macaddr_t addr)
 {
+    // Check for existed identical ack
+    int i;
+    Mac802154Pkt *pkt;
+    for (i = 0; i < outQueue.getLength(); i++) {
+        pkt = check_and_cast<Mac802154Pkt*>(outQueue.get(i));
+        if (pkt->getPktType() == MAC802154_ACK && pkt->getDesAddr() == addr) {
+            if (i == 0) prepareQueuedPkt(); // Send prepared ack at head of the queue
+            return; // Duplicated
+        }
+    }
+
     Mac802154Pkt *ack = new Mac802154Pkt();
     ack->setPktType(MAC802154_ACK);
     ack->setSrcAddr(macAddr);
