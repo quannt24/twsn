@@ -50,6 +50,7 @@ class Base802154Phy : public BasePhy
         cMessage *switchIdleTimer; // Simulate delay to switch to IDLE mode
         cMessage *pcTimer; // Power consumption timer (simulate continuous draw)
         cMessage *ccaTimer; // Simulating CCA delay
+        cMessage *ccaWait; // Wait for RX mode to CCA
         cMessage *txTimer;
 
         /** Override to use multiple initialization stages */

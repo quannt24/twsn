@@ -22,9 +22,9 @@
 namespace twsn {
 
 /**
- * Link layer with XT-MAC protocol
+ * Link layer with X-MAC protocol
  */
-class LinkXTMAC : public LinkUnslottedCSMACA
+class LinkXMAC : public LinkUnslottedCSMACA
 {
     protected:
         bool enableDutyCycling;
@@ -82,8 +82,8 @@ class LinkXTMAC : public LinkUnslottedCSMACA
         void switchToIdle();
 
     public:
-        LinkXTMAC();
-        ~LinkXTMAC();
+        LinkXMAC();
+        ~LinkXMAC();
 };
 
 }  // namespace twsn

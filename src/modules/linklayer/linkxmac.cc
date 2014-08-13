@@ -13,16 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "linkxtmac.h"
+#include "linkxmac.h"
 #include "netpkt_m.h"
 #include "stathelper.h"
 #include "base802154phy.h"
 
 namespace twsn {
 
-Define_Module(LinkXTMAC);
+Define_Module(LinkXMAC);
 
-void LinkXTMAC::initialize()
+void LinkXMAC::initialize()
 {
     // Just copy LinkUnslottedCSMACA::initialize() without turning transceiver to RX mode
     BaseLink::initialize();
@@ -37,7 +37,7 @@ void LinkXTMAC::initialize()
     scheduleAt(par("sleepInterval").doubleValue(), dcListenTimer);
 }
 
-void LinkXTMAC::handleSelfMsg(cMessage* msg)
+void LinkXMAC::handleSelfMsg(cMessage* msg)
 {
     StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
 
@@ -73,7 +73,9 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
             // Cancel current strobe sending
             printError(LV_INFO, "Strobe deadline is missed");
             nStrobe--;
-            if (outPkt != NULL && outPkt->getPktType() == MAC802154_PREAMBLE && !transmitting) {
+            if (outPkt != NULL
+                    && outPkt->getPktType() == MAC802154_PREAMBLE
+                    && !transmitting) {
                 // Delete strobe if it has not being sent yet
                 cancelEvent(backoffTimer);
                 delete outPkt;
@@ -147,7 +149,7 @@ void LinkXTMAC::handleSelfMsg(cMessage* msg)
     }
 }
 
-void LinkXTMAC::handleUpperMsg(cMessage* msg)
+void LinkXMAC::handleUpperMsg(cMessage* msg)
 {
     // TODO Limit packet size
 
@@ -169,13 +171,16 @@ void LinkXTMAC::handleUpperMsg(cMessage* msg)
     prepareQueuedPkt();
 }
 
-void LinkXTMAC::handleUpperCtl(cMessage* msg)
+void LinkXMAC::handleUpperCtl(cMessage* msg)
 {
     // Copy LinkUnslottedCSMACA::handleUpperCtl and add more functions
     Command *cmd = check_and_cast<Command*>(msg);
 
     switch (cmd->getCmdId()) {
         case CMD_LIN_FORCE_ACTIVE: {
+            /* Note: X-MAC doesn't have "force active" feature. However to improve network
+             * initializing phase simply, we use this code segment as if we disable duty
+             * cycling during intialization. */
             CmdForceActive *cfa = check_and_cast<CmdForceActive*>(cmd);
             activate(true, cfa->getDuration());
             delete cmd;
@@ -194,7 +199,7 @@ void LinkXTMAC::handleUpperCtl(cMessage* msg)
     }
 }
 
-void LinkXTMAC::handleLowerMsg(cMessage* msg)
+void LinkXMAC::handleLowerMsg(cMessage* msg)
 {
     Mac802154Pkt *macpkt = check_and_cast<Mac802154Pkt*>(msg);
     cPacket *netpkt = NULL;
@@ -285,7 +290,7 @@ void LinkXTMAC::handleLowerMsg(cMessage* msg)
     }
 }
 
-void LinkXTMAC::sendPkt()
+void LinkXMAC::sendPkt()
 {
     if (outPkt != NULL) {
         // Prepare IFS
@@ -304,7 +309,7 @@ void LinkXTMAC::sendPkt()
     }
 }
 
-void LinkXTMAC::reset()
+void LinkXMAC::reset()
 {
     cancelEvent(deadlineTimer); // In case we are sending strobe
     cancelEvent(sendTimeout); // Unset sending timeout when sending completes
@@ -324,7 +329,7 @@ void LinkXTMAC::reset()
     sendCtlDown(rxcmd);
 }
 
-void LinkXTMAC::activate(bool forced, double duration)
+void LinkXMAC::activate(bool forced, double duration)
 {
     // Switch radio transceiver to RX mode if currently in IDLE
     switchToRx();
@@ -348,7 +353,7 @@ void LinkXTMAC::activate(bool forced, double duration)
     }
 }
 
-void LinkXTMAC::prepareQueuedPkt()
+void LinkXMAC::prepareQueuedPkt()
 {
     if (nStrobe <= 0
             && mainPkt == NULL
@@ -364,29 +369,19 @@ void LinkXTMAC::prepareQueuedPkt()
             scheduleAt(simTime() + par("sendTimeout").doubleValue(), sendTimeout);
         }
 
-        if (mainPkt->getPktType() == MAC802154_DATA) {
-            NetPkt *encPkt = check_and_cast<NetPkt*>(mainPkt->getEncapsulatedPacket());
+        if (mainPkt->getPktType() == MAC802154_DATA && !forcedActive) {
+            // Prepare strobes
+            nStrobe = (int) ceil(par("sleepInterval").doubleValue() / par("strobePeriod").doubleValue()) + 1;
+            std::cerr << "Sending " << nStrobe << " strobes t=" << simTime() << endl;
 
-            if (encPkt->getPreambleFlag()) {
-                // Prepare strobes
-                nStrobe = (int) ceil(par("sleepInterval").doubleValue() / par("strobePeriod").doubleValue()) + 1;
-                std::cerr << "Sending " << nStrobe << " strobes t=" << simTime() << endl;
+            strobePkt = new Mac802154Pkt();
+            strobePkt->setPktType(MAC802154_PREAMBLE);
+            strobePkt->setSrcAddr(this->macAddr);
+            strobePkt->setDesAddr(mainPkt->getDesAddr());
+            strobePkt->setByteLength(strobePkt->getPktSize());
 
-                strobePkt = new Mac802154Pkt();
-                strobePkt->setPktType(MAC802154_PREAMBLE);
-                strobePkt->setSrcAddr(this->macAddr);
-                strobePkt->setDesAddr(mainPkt->getDesAddr());
-                strobePkt->setByteLength(strobePkt->getPktSize());
-
-                // Send strobe
-                sendStrobe();
-            } else {
-                // Send main packet immediately
-                nStrobe = 0;
-                outPkt = check_and_cast<Mac802154Pkt*>(outQueue.pop());
-                mainPkt = NULL;
-                notifyLower();
-            }
+            // Send strobe
+            sendStrobe();
         } else {
             // Send main packet immediately
             nStrobe = 0;
@@ -400,7 +395,7 @@ void LinkXTMAC::prepareQueuedPkt()
     }
 }
 
-void LinkXTMAC::sendStrobe()
+void LinkXMAC::sendStrobe()
 {
     if (outPkt == NULL && !transmitting && !ifsTimer->isScheduled() && nStrobe > 0 && strobePkt != NULL) {
         nStrobe--;
@@ -417,7 +412,7 @@ void LinkXTMAC::sendStrobe()
     }
 }
 
-void LinkXTMAC::sendAck(macaddr_t addr)
+void LinkXMAC::sendAck(macaddr_t addr)
 {
     // Check for existed identical ack
     int i;
@@ -448,7 +443,7 @@ void LinkXTMAC::sendAck(macaddr_t addr)
     prepareQueuedPkt();
 }
 
-void LinkXTMAC::switchToRx()
+void LinkXMAC::switchToRx()
 {
     Base802154Phy *phy = check_and_cast<Base802154Phy*>(getModuleByPath("^.phy"));
     if (phy->getRadioMode() == IDLE) {
@@ -460,7 +455,7 @@ void LinkXTMAC::switchToRx()
     }
 }
 
-void LinkXTMAC::switchToIdle()
+void LinkXMAC::switchToIdle()
 {
     if (getId() == 2059) {
         printError(LV_ERROR, "Something wrong");
@@ -475,7 +470,7 @@ void LinkXTMAC::switchToIdle()
     }
 }
 
-LinkXTMAC::LinkXTMAC()
+LinkXMAC::LinkXMAC()
 {
     enableDutyCycling = true;
     mainPkt = NULL;
@@ -492,7 +487,7 @@ LinkXTMAC::LinkXTMAC()
     sendTimeout = new cMessage("sendTimeout");
 }
 
-LinkXTMAC::~LinkXTMAC()
+LinkXMAC::~LinkXMAC()
 {
     if (strobePkt != NULL) delete strobePkt;
 

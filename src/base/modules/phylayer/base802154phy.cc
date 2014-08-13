@@ -93,6 +93,11 @@ void Base802154Phy::handleSelfMsg(cMessage* msg)
         draw();
     } else if (msg == ccaTimer) {
         senseChannel();
+    } else if (msg == ccaWait) {
+        if (!ccaTimer->isScheduled()) {
+            phyEntry->startCCA();
+            // ccaTimer should have been scheduled
+        }
     } else if (msg == txTimer) {
         startTx(check_and_cast<Mac802154Pkt*>((Mac802154Pkt*) msg->getContextPointer()));
     }
@@ -194,13 +199,19 @@ void Base802154Phy::performCCA(double duration)
             phyEntry->startCCA();
             scheduleAt(simTime() + duration, ccaTimer);
         }
+    } else if (radioMode == IDLE
+            && !ccaWait->isScheduled()
+            && !ccaTimer->isScheduled()) {
+        if (!switchRxTimer->isScheduled()) switchRadioMode(RX);
+        scheduleAt(switchRxTimer->getArrivalTime(), ccaWait);
+        scheduleAt(ccaWait->getArrivalTime() + duration, ccaTimer);
     } else {
-        // CCA is only valid in RX mode, send back a busy result
+        // CCA is only valid in RX mode, send back a busy result if in TX mode
         CmdCCAR *cmd = new CmdCCAR();
         cmd->setClearChannel(false);
         sendCtlUp(cmd);
 
-        printError(LV_WARNING, "Cannot perform CCA when radio is not in RX mode");
+        printError(LV_WARNING, "Cannot perform CCA when radio is in TX mode");
     }
 }
 
@@ -511,6 +522,7 @@ Base802154Phy::Base802154Phy()
     switchIdleTimer = new cMessage("switchIdleTimer");
     pcTimer = new cMessage("PcTimer");
     ccaTimer = new cMessage("CCATimer");
+    ccaWait = new cMessage("CCAWait");
     txTimer = new cMessage("txTimer");
 }
 
@@ -522,6 +534,7 @@ Base802154Phy::~Base802154Phy()
     cancelAndDelete(switchIdleTimer);
     cancelAndDelete(pcTimer);
     cancelAndDelete(ccaTimer);
+    cancelAndDelete(ccaWait);
     cancelAndDelete(txTimer);
 }
 

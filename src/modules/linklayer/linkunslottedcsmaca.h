@@ -68,15 +68,15 @@ class LinkUnslottedCSMACA : public BaseLink
          */
         void notifyLower();
         /** Start sending procedures to send outPkt */
-        void startSending();
+        virtual void startSending();
         /** Backoff with random backoff expenent */
-        void backoff();
+        virtual void backoff();
         /** Request physical layer to perform CCA for a specific duration */
-        void performCCA();
+        virtual void performCCA();
         /** Send packet to physical layer, leaded by a command for switching to TX mode */
-        void sendPkt();
+        virtual void sendPkt();
         /** Defer sending of packet, update variables and begin next round */
-        void deferPkt();
+        virtual void deferPkt();
         /** Reset outPkt and switch to RX mode. Fetch next packet after IFS. */
         virtual void reset();
 
