@@ -34,6 +34,8 @@ simple LinkBMAC extends LinkUnslottedCSMACA
 		// 0.1s ~ 3135 byte
 		// 0.2s ~ 6260 byte
         int preambleLen @unit(byte) = default(1573 byte);
-        // Timeout to stay active without any activities
-        double listenTimeout @unit(s) = default(1 s);
+        // Timeout to stay active without any activities, must be greater worst sending time of a
+        // packet (including LIFS and around 0.032672)
+        // In general, longer listenTimeout may be more reliable, but consumpts more energy
+        double listenTimeout @unit(s) = default(0.08 s);
 }

@@ -48,6 +48,8 @@ class LinkBMAC : public LinkUnslottedCSMACA
         /** Handle control message from lowerCtl$i */
         virtual void handleLowerCtl(cMessage *msg);
 
+        /** Send packet to physical layer, leaded by a command for switching to TX mode */
+        virtual void sendPkt();
         /** Reset state after sending */
         virtual void reset();
 

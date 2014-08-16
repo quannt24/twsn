@@ -240,6 +240,24 @@ void LinkBMAC::handleLowerCtl(cMessage* msg)
     }
 }
 
+void LinkBMAC::sendPkt()
+{
+    if (outPkt != NULL) {
+        // Prepare IFS
+        if (outPkt->getByteLength() <= par("aMaxSIFSFrameSize").longValue()) {
+            ifsLen = par("aMinSIFSPeriod").doubleValue();
+        } else {
+            ifsLen = par("aMinLIFSPeriod").doubleValue();
+        }
+
+        wakeup();
+
+        // Transmit
+        sendDown(outPkt);
+        outPkt = NULL;
+        transmitting = true;
+    }
+}
 
 void LinkBMAC::reset()
 {
@@ -294,7 +312,6 @@ void LinkBMAC::wakeup(bool forced, double duration)
     if (forced) {
         cancelEvent(sleepTimer);
         if (duration > 0) {
-            printError(LV_DEBUG, "Forced active");
             scheduleAt(simTime() + duration, sleepTimer);
         }
         forcedAwake = true;
@@ -315,7 +332,9 @@ void LinkBMAC::gotoSleep()
     switchToIdle();
     // Plan a check channel timer
     cancelEvent(checkChannelTimer);
-    scheduleAt(simTime() + par("checkInterval").doubleValue(), checkChannelTimer);
+    cancelEvent(deferCCATimer);
+    scheduleAt(simTime() + par("aTurnaroundTime").doubleValue()
+            + par("checkInterval").doubleValue(), checkChannelTimer);
 }
 
 void LinkBMAC::switchIdleToRx()
