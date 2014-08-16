@@ -53,7 +53,7 @@ simple LinkXMAC extends LinkUnslottedCSMACA
 		
         // Active time length, must be greater worst sending time of a packet (including
         // LIFS and around 0.032672)
-        // // In general, longer listenTimeout may be more reliable, but consumpts more energy
+        // In general, longer listenTimeout may be more reliable, but consumpts more energy
         // Note: Only change this parameter if CSMA parameters are changed
         double activeTime @unit(s) = default(0.05 s);
         

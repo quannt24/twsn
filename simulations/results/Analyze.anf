@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="Config*.vec"/>
-    <inputs name="Config*.sca"/>
+    <inputs name="Config2*.sca"/>
+    <inputs name="Config2*.vec"/>
+    <inputs name="Config3*.sca"/>
+    <inputs name="Config3*.vec"/>
+    <inputs name="Config6*.sca"/>
+    <inputs name="Config6*.vec"/>
   </inputs>
   <datasets>
     <datasets name="Error">
