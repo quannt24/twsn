@@ -37,5 +37,5 @@ simple LinkBMAC extends LinkUnslottedCSMACA
         // Timeout to stay active without any activities, must be greater worst sending time of a
         // packet (including LIFS and around 0.032672)
         // In general, longer listenTimeout may be more reliable, but consumpts more energy
-        double listenTimeout @unit(s) = default(0.08 s);
+        double listenTimeout @unit(s) = default(0.05 s);
 }
