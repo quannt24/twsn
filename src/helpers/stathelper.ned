@@ -39,6 +39,10 @@ simple StatHelper extends BaseSimple
         @signal[sigTRE](type="double");
         @statistic[totalResidualEnergy](title="Total residual energy"; source="sigTRE"; record=vector);
         
+        // Hop delay in relaying process (RHD)
+        @signal[sigRHD](type="double");
+        @statistic[relayHopDelay](title="Hop delay in relaying"; source="sigRHD"; record=stats);
+        
         // Packet received at link and physical layers
         @signal[sigRecvMacPkt](type="int");
         @statistic[recvMacPkt](title="Number of received MAC packets"; source="sigRecvMacPkt"; record=sum);

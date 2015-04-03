@@ -5,8 +5,8 @@
     <inputs name="Config2*.vec"/>
     <inputs name="Config3*.sca"/>
     <inputs name="Config3*.vec"/>
-    <inputs name="Config6*.sca"/>
-    <inputs name="Config6*.vec"/>
+    <inputs name="Config5*.sca"/>
+    <inputs name="Config5*.vec"/>
   </inputs>
   <datasets>
     <datasets name="Error">
@@ -58,9 +58,14 @@
         <properties name="Graph.Title" value="End-to-end delay"/>
         <properties name="Line.Type" value="Dots"/>
       </items>
+      <items xsi:type="scave:Add" filterPattern="relayHopDelay:stats:mean"/>
+      <items xsi:type="scave:BarChart" name="Mean relaying hop delay">
+        <properties name="Graph.Title" value="Mean relaying hop delay"/>
+        <properties name="Y.Axis.Title" value="Mean hop delay (s)"/>
+      </items>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.3/@items.1"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.3/@items.1 //@datasets/@datasets.3/@items.3"/>
   </chartSheets>
 </scave:Analysis>

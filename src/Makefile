@@ -36,7 +36,6 @@ INCLUDE_PATH = \
     -Imodules \
     -Imodules/applayer \
     -Imodules/applayer/tracking \
-    -Imodules/applayer/tracking-asr \
     -Imodules/energy \
     -Imodules/linklayer \
     -Imodules/mobility \
@@ -70,30 +69,30 @@ OBJS = \
     $O/base/modules/netlayer/basenet.o \
     $O/base/modules/phylayer/basephy.o \
     $O/base/modules/phylayer/base802154phy.o \
-    $O/helpers/stathelper.o \
     $O/helpers/decohelper.o \
     $O/helpers/worldhelper.o \
-    $O/modules/applayer/tracking/apptrackingbs.o \
+    $O/helpers/stathelper.o \
     $O/modules/applayer/tracking/apptrackingsensor.o \
     $O/modules/applayer/tracking/targettrace.o \
-    $O/modules/linklayer/linkxmac.o \
-    $O/modules/linklayer/linkbmac.o \
+    $O/modules/applayer/tracking/apptrackingbs.o \
     $O/modules/linklayer/linkxtmac.o \
+    $O/modules/linklayer/linkxmac.o \
     $O/modules/linklayer/linkunslottedcsmaca.o \
+    $O/modules/linklayer/linkbmac.o \
     $O/modules/mobility/mobilitypath.o \
     $O/modules/netlayer/netarpees.o \
     $O/modules/netlayer/netemrp.o \
     $O/modules/other/acousticgenerator.o \
     $O/modules/other/acousticsensor.o \
-    $O/util/matrix.o \
-    $O/util/coord.o \
     $O/util/measurement.o \
+    $O/util/coord.o \
+    $O/util/matrix.o \
     $O/util/gaussiannoise.o \
-    $O/base/messages/airframe_m.o \
     $O/base/messages/apppkt_m.o \
+    $O/base/messages/airframe_m.o \
+    $O/base/messages/macpkt_m.o \
     $O/base/messages/netpkt_m.o \
     $O/base/messages/command_m.o \
-    $O/base/messages/macpkt_m.o \
     $O/base/messages/mac802154pkt_m.o \
     $O/modules/applayer/tracking/apptrackingpkt_m.o \
     $O/modules/netlayer/netarpeespkt_m.o \
@@ -102,11 +101,11 @@ OBJS = \
 
 # Message files
 MSGFILES = \
-    base/messages/airframe.msg \
     base/messages/apppkt.msg \
+    base/messages/airframe.msg \
+    base/messages/macpkt.msg \
     base/messages/netpkt.msg \
     base/messages/command.msg \
-    base/messages/macpkt.msg \
     base/messages/mac802154pkt.msg \
     modules/applayer/tracking/apptrackingpkt.msg \
     modules/netlayer/netarpeespkt.msg \
@@ -205,7 +204,6 @@ clean:
 	$(Q)-rm -f modules/*_m.cc modules/*_m.h
 	$(Q)-rm -f modules/applayer/*_m.cc modules/applayer/*_m.h
 	$(Q)-rm -f modules/applayer/tracking/*_m.cc modules/applayer/tracking/*_m.h
-	$(Q)-rm -f modules/applayer/tracking-asr/*_m.cc modules/applayer/tracking-asr/*_m.h
 	$(Q)-rm -f modules/energy/*_m.cc modules/energy/*_m.h
 	$(Q)-rm -f modules/linklayer/*_m.cc modules/linklayer/*_m.h
 	$(Q)-rm -f modules/mobility/*_m.cc modules/mobility/*_m.h
@@ -220,7 +218,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/applayer/tracking/*.cc modules/applayer/tracking-asr/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc modules/phylayer/*.cc networks/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc base/*.cc base/channelmgr/*.cc base/entities/*.cc base/entities/nodes/*.cc base/messages/*.cc base/modules/*.cc base/modules/applayer/*.cc base/modules/energy/*.cc base/modules/linklayer/*.cc base/modules/mobility/*.cc base/modules/netlayer/*.cc base/modules/phylayer/*.cc base/networks/*.cc entities/*.cc entities/nodes/*.cc entities/other/*.cc helpers/*.cc modules/*.cc modules/applayer/*.cc modules/applayer/tracking/*.cc modules/energy/*.cc modules/linklayer/*.cc modules/mobility/*.cc modules/netlayer/*.cc modules/other/*.cc modules/phylayer/*.cc networks/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/base/channelmgr/channelmgr.o: base/channelmgr/channelmgr.cc \

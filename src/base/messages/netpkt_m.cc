@@ -40,6 +40,7 @@ NetPkt::NetPkt(const char *name, int kind) : ::cPacket(name,kind)
     this->preambleFlag_var = false;
     this->hopLimit_var = 32;
     this->pktSize_var = 18;
+    this->relayTimestamp_var = 0;
 }
 
 NetPkt::NetPkt(const NetPkt& other) : ::cPacket(other)
@@ -66,6 +67,7 @@ void NetPkt::copy(const NetPkt& other)
     this->preambleFlag_var = other.preambleFlag_var;
     this->hopLimit_var = other.hopLimit_var;
     this->pktSize_var = other.pktSize_var;
+    this->relayTimestamp_var = other.relayTimestamp_var;
 }
 
 void NetPkt::parsimPack(cCommBuffer *b)
@@ -76,6 +78,7 @@ void NetPkt::parsimPack(cCommBuffer *b)
     doPacking(b,this->preambleFlag_var);
     doPacking(b,this->hopLimit_var);
     doPacking(b,this->pktSize_var);
+    doPacking(b,this->relayTimestamp_var);
 }
 
 void NetPkt::parsimUnpack(cCommBuffer *b)
@@ -86,6 +89,7 @@ void NetPkt::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->preambleFlag_var);
     doUnpacking(b,this->hopLimit_var);
     doUnpacking(b,this->pktSize_var);
+    doUnpacking(b,this->relayTimestamp_var);
 }
 
 twsn::netaddr_t& NetPkt::getSrcAddr()
@@ -138,6 +142,16 @@ void NetPkt::setPktSize(int pktSize)
     this->pktSize_var = pktSize;
 }
 
+double NetPkt::getRelayTimestamp() const
+{
+    return relayTimestamp_var;
+}
+
+void NetPkt::setRelayTimestamp(double relayTimestamp)
+{
+    this->relayTimestamp_var = relayTimestamp;
+}
+
 class NetPktDescriptor : public cClassDescriptor
 {
   public:
@@ -185,7 +199,7 @@ const char *NetPktDescriptor::getProperty(const char *propertyname) const
 int NetPktDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 5+basedesc->getFieldCount(object) : 5;
+    return basedesc ? 6+basedesc->getFieldCount(object) : 6;
 }
 
 unsigned int NetPktDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -202,8 +216,9 @@ unsigned int NetPktDescriptor::getFieldTypeFlags(void *object, int field) const
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<5) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<6) ? fieldTypeFlags[field] : 0;
 }
 
 const char *NetPktDescriptor::getFieldName(void *object, int field) const
@@ -220,8 +235,9 @@ const char *NetPktDescriptor::getFieldName(void *object, int field) const
         "preambleFlag",
         "hopLimit",
         "pktSize",
+        "relayTimestamp",
     };
-    return (field>=0 && field<5) ? fieldNames[field] : NULL;
+    return (field>=0 && field<6) ? fieldNames[field] : NULL;
 }
 
 int NetPktDescriptor::findField(void *object, const char *fieldName) const
@@ -233,6 +249,7 @@ int NetPktDescriptor::findField(void *object, const char *fieldName) const
     if (fieldName[0]=='p' && strcmp(fieldName, "preambleFlag")==0) return base+2;
     if (fieldName[0]=='h' && strcmp(fieldName, "hopLimit")==0) return base+3;
     if (fieldName[0]=='p' && strcmp(fieldName, "pktSize")==0) return base+4;
+    if (fieldName[0]=='r' && strcmp(fieldName, "relayTimestamp")==0) return base+5;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -250,8 +267,9 @@ const char *NetPktDescriptor::getFieldTypeString(void *object, int field) const
         "bool",
         "int",
         "int",
+        "double",
     };
-    return (field>=0 && field<5) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<6) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *NetPktDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -296,6 +314,7 @@ std::string NetPktDescriptor::getFieldAsString(void *object, int field, int i) c
         case 2: return bool2string(pp->getPreambleFlag());
         case 3: return long2string(pp->getHopLimit());
         case 4: return long2string(pp->getPktSize());
+        case 5: return double2string(pp->getRelayTimestamp());
         default: return "";
     }
 }
@@ -313,6 +332,7 @@ bool NetPktDescriptor::setFieldAsString(void *object, int field, int i, const ch
         case 2: pp->setPreambleFlag(string2bool(value)); return true;
         case 3: pp->setHopLimit(string2long(value)); return true;
         case 4: pp->setPktSize(string2long(value)); return true;
+        case 5: pp->setRelayTimestamp(string2double(value)); return true;
         default: return false;
     }
 }
@@ -331,8 +351,9 @@ const char *NetPktDescriptor::getFieldStructName(void *object, int field) const
         NULL,
         NULL,
         NULL,
+        NULL,
     };
-    return (field>=0 && field<5) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<6) ? fieldStructNames[field] : NULL;
 }
 
 void *NetPktDescriptor::getFieldStructPointer(void *object, int field, int i) const

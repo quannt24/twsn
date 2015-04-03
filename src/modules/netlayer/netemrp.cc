@@ -95,6 +95,8 @@ void NetEMRP::handleUpperMsg(cMessage* msg)
     switch (apppkt->getRoutingType()) {
         case RT_TO_BS:
             netpkt->setPktType(EMRP_PAYLOAD_TO_BS);
+            // Reset relay timestamp
+            netpkt->setRelayTimestamp(simTime().dbl());
             // Destination address will be set later
             break;
 
@@ -144,6 +146,12 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
 {
     NetEmrpPkt *pkt = check_and_cast<NetEmrpPkt*>(msg);
     StatHelper *sh = check_and_cast<StatHelper*>(getModuleByPath("statHelper"));
+    double current = simTime().dbl();
+
+    // Record relaying hop delay
+    if (pkt->getPktType() == EMRP_PAYLOAD_TO_BS) {
+        sh->recRelayHopDelay(current - pkt->getRelayTimestamp());
+    }
 
     // Check hop limit
     pkt->setHopLimit(pkt->getHopLimit() - 1);
@@ -169,6 +177,8 @@ void NetEMRP::handleLowerMsg(cMessage* msg)
             break;
 
         case EMRP_PAYLOAD_TO_BS:
+            // Reset relay timestamp
+            pkt->setRelayTimestamp(current);
             recvRelayedPayload(pkt);
             break;
 

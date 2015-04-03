@@ -221,8 +221,11 @@ void AppTrackingBS::handleLowerMsg(cMessage* msg)
         AT_TargetPosPkt *tpPkt = check_and_cast<AT_TargetPosPkt*>(msg);
         TargetPos tp = tpPkt->getTargetPos();
 
+        // Record delay of relaying process
+        double current = simTime().dbl();
+
         // Check timestamp before using packet
-        double delay = simTime().dbl() - tp.getTimestamp();
+        double delay = current - tp.getTimestamp();
         if (delay > par("timeThreshold").doubleValue()) {
             printError(LV_DEBUG, "Too long delay");
             // Discard packet

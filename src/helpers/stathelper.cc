@@ -77,6 +77,7 @@ void StatHelper::initialize()
     sigMeaError = registerSignal("sigMeaError");
     sigPosError = registerSignal("sigPosError");
     sigTRE = registerSignal("sigTRE");
+    sigRHD = registerSignal("sigRHD");
     sigRecvMacPkt = registerSignal("sigRecvMacPkt");
     sigLostMacPkt = registerSignal("sigLostMacPkt");
     sigRecvNetPkt = registerSignal("sigRecvNetPkt");
@@ -123,6 +124,12 @@ void StatHelper::recPosError(double err)
 {
     Enter_Method_Silent("recPosError");
     emit(sigPosError, err);
+}
+
+void StatHelper::recRelayHopDelay(double delay)
+{
+    Enter_Method_Silent("recPosError");
+    emit(sigRHD, delay);
 }
 
 void StatHelper::countRecvMacPkt()

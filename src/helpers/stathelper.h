@@ -33,6 +33,7 @@ class StatHelper : public BaseSimple
         simsignal_t sigMeaError;
         simsignal_t sigPosError; // Positioning error produced by tracking algorithm
         simsignal_t sigTRE; // Total residual energy of sensor nodes
+        simsignal_t sigRHD; // Hop delay in relaying process
         simsignal_t sigRecvMacPkt; // Packet received at link layer
         simsignal_t sigLostMacPkt; // Packet lost at link layer and physical layer
         simsignal_t sigRecvNetPkt; // Packet received at network layer
@@ -58,6 +59,8 @@ class StatHelper : public BaseSimple
         void recMeaError(double err);
         /** Record positioning error produced by tracking algorithm */
         void recPosError(double err);
+        /** Record hop delay in relaying */
+        void recRelayHopDelay(double delay);
         /** Emit a signal with value 1 to count number of received MAC packets */
         void countRecvMacPkt();
         /** Emit a signal with value 1 to count number of lost MAC packets */

@@ -30,4 +30,7 @@ packet NetPkt {
     bool preambleFlag = false; // Using one bit in flag field
     int hopLimit = 32;
     int pktSize = 18; // Packet size in bytes. Please use setByteLength() to set this size to packet.
+    
+    // Virtual fields - for simulation only, not counted for packet size
+    double relayTimestamp;
 }

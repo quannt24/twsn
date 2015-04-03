@@ -29,6 +29,9 @@ namespace twsn {
  *     bool preambleFlag = false; 
  *     int hopLimit = 32;
  *     int pktSize = 18; 
+ *     
+ *     
+ *     double relayTimestamp;
  * }
  * </pre>
  */
@@ -40,6 +43,7 @@ class NetPkt : public ::cPacket
     bool preambleFlag_var;
     int hopLimit_var;
     int pktSize_var;
+    double relayTimestamp_var;
 
   private:
     void copy(const NetPkt& other);
@@ -70,6 +74,8 @@ class NetPkt : public ::cPacket
     virtual void setHopLimit(int hopLimit);
     virtual int getPktSize() const;
     virtual void setPktSize(int pktSize);
+    virtual double getRelayTimestamp() const;
+    virtual void setRelayTimestamp(double relayTimestamp);
 };
 
 inline void doPacking(cCommBuffer *b, NetPkt& obj) {obj.parsimPack(b);}

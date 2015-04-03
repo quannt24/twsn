@@ -4,14 +4,14 @@ set border linewidth 0.5
 set pointsize 1
 
 set style line 1 lt 1 lw 0.5 lc rgb '#ff0000' pt 1
-set style line 2 lt 1 lw 0.5 lc rgb '#ff3333' pt 2
-set style line 3 lt 1 lw 0.5 lc rgb '#ff6666' pt 3
+set style line 2 lt 1 lw 0.5 lc rgb '#ff8800' pt 2
+set style line 3 lt 1 lw 0.5 lc rgb '#ff0088' pt 3
 set style line 4 lt 1 lw 0.5 lc rgb '#00ff00' pt 4
-set style line 5 lt 1 lw 0.5 lc rgb '#33ff33' pt 5
-set style line 6 lt 1 lw 0.5 lc rgb '#66ff66' pt 6
+set style line 5 lt 1 lw 0.5 lc rgb '#88ff00' pt 5
+set style line 6 lt 1 lw 0.5 lc rgb '#00ff88' pt 6
 set style line 7 lt 1 lw 0.5 lc rgb '#0000ff' pt 7
-set style line 8 lt 1 lw 0.5 lc rgb '#3333ff' pt 8
-set style line 9 lt 1 lw 0.5 lc rgb '#6666ff' pt 9
+set style line 8 lt 1 lw 0.5 lc rgb '#0088ff' pt 8
+set style line 9 lt 1 lw 0.5 lc rgb '#8800ff' pt 9
 set style line 10 lt 1 lw 0.5 lc rgb '#000000' pt 10
 
 set terminal postscript eps enhanced color font 'Helvetica,20' lw 8
@@ -24,11 +24,11 @@ set ylabel "Error (m)"
 
 set title "Positioning error (at CH)"
 set output 'posErr1.eps'
-plot "Config21_posErr.csv" u 1:2 t "XT-MAC" w p ls 4, \
+plot "Config21_posErr.csv" u 1:2 t "CSP" w p ls 4, \
      "Config6_posErr.csv" u 1:2 t "X-MAC" w p ls 2, \
      "Config3_posErr.csv" u 1:2 t "B-MAC" w p ls 8
 
-set title "Positioning error of XT-MAC (at CH)"
+set title "Positioning error of CSP (at CH)"
 set output 'posErr2.eps'
 plot "Config2_posErr.csv" u 1:2 t "sleepInterval = 0.1 s" w p ls 1, \
      "Config21_posErr.csv" u 1:2 t "sleepInterval = 0.15 s" w p ls 4, \
@@ -36,12 +36,18 @@ plot "Config2_posErr.csv" u 1:2 t "sleepInterval = 0.1 s" w p ls 1, \
 
 set title "Tracking error (at BS)"
 set output 'trackErr1.eps'
-plot "Config2_trackErr.csv" u 1:2 t "XT-MAC" w p ls 4, \
+plot "Config2_trackErr.csv" u 1:2 t "CSP" w p ls 4, \
      "Config6_trackErr.csv" u 1:2 t "X-MAC" w p ls 2, \
      "Config3_trackErr.csv" u 1:2 t "B-MAC" w p ls 8
 
-set title "Tracking error of XT-MAC (at BS)"
+set title "Tracking error of CSP (at BS)"
 set output 'trackErr2.eps'
 plot "Config2_trackErr.csv" u 1:2 t "sleepInterval = 0.1 s" w p ls 1, \
      "Config21_trackErr.csv" u 1:2 t "sleepInterval = 0.15 s" w p ls 4, \
      "Config22_trackErr.csv" u 1:2 t "sleepInterval = 0.2 s" w p ls 7
+
+set title "Tracking error"
+set output 'trackErr3.eps'
+plot "Config21_trackErr.csv" u 1:2 t "CSP" w p ls 4, \
+     "Config3_trackErr.csv" u 1:2 t "CSP with B-MAC" w p ls 2, \
+     "Config5_trackErr.csv" u 1:2 t "CSP with ARPEES" w p ls 8
